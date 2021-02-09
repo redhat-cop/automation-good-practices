@@ -1,4 +1,4 @@
-= Meta Best Practices
+= Ansible Good Practices - AGP
 
 This document is intended to be a standards document for the Ansible roles contained in the
 AGP Roles repositories.
