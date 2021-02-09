@@ -1,7 +1,7 @@
 = Meta Best Practices
 
 This document is intended to be a standards document for the Ansible roles contained in the
-Oasis Roles repositories.
+AGP Roles repositories.
 
 
 A rationale should be included for best practices, with a reference if applicable. It is
@@ -58,7 +58,7 @@ major releases.
 
 == Basics
 
-* Every repository in the oasis-roles namespace should be a valid Ansible Galaxy compatible role
+* Every repository in the AGP-roles namespace should be a valid Ansible Galaxy compatible role
 with the exception of any whose names begin with "meta_", such as this one.
 * New roles should be initiated in line with the skeleton directory, which has standard boilerplate
 code for a Galaxy-compatible Ansible role and some enforcement around these standards
@@ -370,8 +370,8 @@ specified as a list, but beware of bare variables in `when:`.
 * All roles need to, minimally, pass a basic ansible-playbook syntax check run
 * All task arguments should be spelled out in YAML style and not use `key=value` type of arguments
 * All YAML files need to pass standard yamllint syntax with the modifications listed in
-https://github.com/oasis-roles/meta_test/blob/master/yamllint.yml[yamllint.yml] in the
-https://github.com/oasis-roles/meta_test[meta_test] role. These modifications are minimal:
+https://github.com/AGP-roles/meta_test/blob/master/yamllint.yml[yamllint.yml] in the
+https://github.com/AGP-roles/meta_test[meta_test] role. These modifications are minimal:
 document starter characters (the initial
 `---` string at the top of a file) should not be used, and it is not necessary to start every comment
 with a space. Most comments should start with a space, but no space is allowed when a comment is
@@ -442,7 +442,7 @@ Operators - or any other post-2.7 Jinja2 features. (RHEL 7 has Jinja 2.7.2)
  ** https://github.com/linux-system-roles/storage/pull/26
  ** https://github.com/linux-system-roles/storage/issues/49
 * All tasks should be idempotent, with notable and rare exceptions such as the
-https://github.com/oasis-roles/ansible_collection_system/tree/master/roles/reboot[OASIS reboot role].
+https://github.com/AGP-roles/ansible_collection_system/tree/master/roles/reboot[AGP reboot role].
 * Avoid the use of `when: foo_result is changed` whenever possible. Use
 handlers, and, if necessary, handler
 chains to achieve this same result. Exceptions are permitted but they should be avoided when possible
