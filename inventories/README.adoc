@@ -1,0 +1,1 @@
+= Inventories good practices

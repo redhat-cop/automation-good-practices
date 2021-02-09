@@ -1,0 +1,7 @@
+= Good practices for Ansible
+
+include::roles/README.adoc[leveloffset=1]
+include::collections/README.adoc[leveloffset=1]
+include::playbooks/README.adoc[leveloffset=1]
+include::inventories/README.adoc[leveloffset=1]
+include::plugins/README.adoc[leveloffset=1]
