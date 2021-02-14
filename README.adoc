@@ -1,4 +1,57 @@
-= Good practices for Ansible
+= Good Practices for Ansible - GPA
+
+== Introduction
+
+https://ansible.com/[Ansible] is simple and easy but powerful, and not unlike
+any powerful tool, there are many ways to use it, some better than others.
+
+Gathering good practices from the field of Ansible practitioners at
+Red Hat, consultants, developers, and others, this document aims to give any
+Red Hat employee, partner or customer (or any Ansible user) a guideline from
+which to start in good conditions their automation journey.
+
+Those are opiniated guidelines based on the experience of many people, they
+are not meant to be followed blindly if they don't fit the reader's specific
+use case, organization or needs;
+there is a reason why they are called _good_ and not _best_ practices.
+
+The reader of this document is expected to have working practice of Ansible;
+if they is new to Ansible, the
+https://docs.ansible.com/[official Ansible documentation] is a better place
+to start.
+
+This document is split in five main sections, each covering a different aspect
+of automation using Ansible (and in a broader term the whole
+https://www.redhat.com/en/technologies/management/ansible[Red Hat Ansible Automation Platform], including Ansible Tower):
+
+. roles: as we recommend to use roles to host the most actual Ansible code,
+  this is also where we'll cover the more low level aspects of code (tasks,
+  variables, etc...).
+. collections
+. playbooks
+. inventories
+. plugins
+
+// TODO add a few more words about the content of each section once we know
+// what we write in there...
+
+Each section is then made of guidelines, one sentence hopefully easy to
+remember, followed by description, rationale and examples.
+The HTML version of this document makes the content collapsable so that all
+guidelines can be seen at once in a very overseeable way, for the reader to
+uncollapse the content of guidelines they is interested in.
+
+A rationale is expected for each good practice, with a reference if applicable.
+It is really helpful to know not only how to do certain things, but why to do
+them in this way. It will also help with further revisions of the standards as
+some items may become obsolete or no longer applicable. If the reason is not
+included, there is a risk of keeping items that are no longer applicable, or
+alternatively blindly removing items that should be kept. It also has great
+educational value for understanding how things actually work (or how they
+don't).
+
+// If you're a potential author check the CONTRIBUTE.adoc document before...
+// contributing.
 
 include::roles/README.adoc[leveloffset=1]
 

@@ -1,0 +1,10 @@
+# generated files
+*.pdf
+*.html
+
+# temporary files
+.*.swp
+*~
+
+# my own files, only for local usage
+*[_.]myown[_.]*
