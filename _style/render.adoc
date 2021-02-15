@@ -1,0 +1,27 @@
+:doctype: book
+:toc: macro
+:toclevels: 4
+:sectnumlevels: 6
+:numbered:
+:chapter-label:
+:icons: font
+
+:pdf-page-size: A4
+
+:pygments-style: tango
+:source-highlighter: rouge
+:rouge-style: github
+
+// The following lines could become relevant in the future
+:listing-caption: Listing
+
+////
+:pdf-style: redhat
+:pdf-stylesdir: _styles/pdf/
+:pdf-fontsdir: fonts/
+:imagesdir: images/
+
+ifdef::backend-pdf[]
+:autofit-option:
+endif::[]
+////
