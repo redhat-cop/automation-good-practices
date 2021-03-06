@@ -2,7 +2,7 @@
 
 == Introduction
 
-https://ansible.com/[Ansible] is simple and easy but powerful, and not unlike
+https://ansible.com/[Ansible] is simple, flexible, and powerful. Like
 any powerful tool, there are many ways to use it, some better than others.
 
 Gathering good practices from the field of Ansible practitioners at
