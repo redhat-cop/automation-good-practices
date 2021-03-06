@@ -16,7 +16,7 @@ toc::[]
 ** rationale
 ** examples
 +
-The result looks then as the following template shows (you may copy & paster):
+The result looks then as the following template shows (you may copy & paste):
 +
 [source,asciidoc]
 ------------------------------------------------------------------------
