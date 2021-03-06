@@ -1,8 +1,4 @@
-= Roles Good Practices
-
-This document is intended to be a standards document for the Ansible roles contained in the
-AGP Roles repositories.
-
+= Roles Good Practices for Ansible
 
 == Background
 
