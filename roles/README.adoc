@@ -1,16 +1,4 @@
-= Ansible Good Practices - AGP
-
-This document is intended to be a standards document for the Ansible roles contained in the
-AGP Roles repositories.
-
-
-A rationale should be included for best practices, with a reference if applicable. It is
-really helpful to know not only how to do certain things, but why to do them in this
-way. It will also help with further revisions of the standards as some items may become
-obsolete or no longer applicable.  If the reason is not included, there is a risk of
-keeping items that are no longer applicable, or alternatively blindly removing items that
-should be kept. It also has great educational value for understanding how things actually
-work (or how they don't).
+= Roles Good Practices for Ansible
 
 == Background
 
