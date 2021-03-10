@@ -1,0 +1,99 @@
+= Contribution guidelines
+include::_style/render.adoc[]
+
+Before you suggest _automation_ guidelines, please consider the _contribution_ guidelines layed out in this document.
+
+toc::[]
+
+== Writing
+
+. The guidelines are written in https://asciidoctor.org[asciidoc as described by Asciidoctor].
+. each guideline is made of one sentence, as easy to remember as possible, followed by a collapsible description, made of:
+** explanations
+** rationale
+** examples
++
+The result looks then as the following template shows (you may copy & paste):
++
+[source,asciidoc]
+------------------------------------------------------------------------
+.[big]#**Do this and do not do that is the guideline**#
+[%collapsible]
+====
+Explanations:: These are explanations
+
+Rationale:: This is the rationale
+
+Examples:: These are examples
++
+[source,yaml]
+----
+- name: a mini example of playbook
+  hosts: all
+  gather_facts: false
+  become: false
+
+  tasks:
+
+  - name: say what we all think
+    debug:
+      msg: asciidoctor is {{ my_private_thoughts }}
+----
++
+Even more examples...
+====
+------------------------------------------------------------------------
+// maintain the code above in sync with the example below
++
+NOTE: see how it looks like in the <<_example>> section below.
++
+. Those guidelines are grouped into sections and optionally sub-sections, as far as required for maintainability.
+. Those (sub-)sections can be written in their own source file, but then are included with `include::directory/file.adoc[leveloffset=1]` in the parent section's file.
+  This makes sure that all source files are interlinked and can be rendered all together by rendering the top `README.adoc`, either with `asciidoctor` or with `asciidoctor-pdf`.
++
+NOTE: this contribution file is obviously not meant for inclusion in the overall document.
++
+. Each source file has a single title (the line starting with one equal sign) and can be rendered individually (the `leveloffset` is set such that it fits in the overall headings structure when included).
+. The source code is written as readable as possible in its raw form, without impacting maintainability.
+. We follow the https://asciidoctor.org/docs/asciidoc-recommended-practices/[Asciidoc recommended practices].
+. Sentences are written in the present tense form, avoid "should", "must", etc.
+  For example, "Sentences are written", not "Sentences should be written" or "Sentences must be written". This avoids filler words.
+. The https://en.wikipedia.org/wiki/Singular_they[singular "they"] is used to avoid the unreadable "he/she/it" construct and still be neutral.
+
+== Contributing
+
+. Just fork the repository, create a Pull Request (PR) and offer your changes.
+. Feel free to review existing PR and give your opinion
+. Also an issue against one of the recommendations is a valid approach
+
+== Example
+
+This is how one guideline as shown above looks like once rendered:
+
+// This is a duplicate from the above code, but rendered e.g. by GitHub, it shows how it's supposed to look like.
+
+.[big]#**Do this and do not do that is the guideline**#
+[%collapsible]
+====
+Explanations:: These are explanations
+
+Rationale:: This is the rationale
+
+Examples:: These are examples
++
+[source,yaml]
+----
+- name: a mini example of playbook
+  hosts: all
+  gather_facts: false
+  become: false
+
+  tasks:
+
+  - name: say what we all think
+    debug:
+      msg: asciidoctor is {{ my_private_thoughts }}
+----
++
+Even more examples...
+====
