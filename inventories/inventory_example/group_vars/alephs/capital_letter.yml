@@ -1,0 +1,4 @@
+---
+# variables for the capital_letter role
+# size of the capital letter (default: 12)
+capital_letter_size: 15

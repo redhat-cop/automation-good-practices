@@ -1,0 +1,4 @@
+---
+# variables for the small_caps_letter role
+# font of the small caps letter (default: Sans)
+small_caps_letter_font: "Oxygen Mono"
