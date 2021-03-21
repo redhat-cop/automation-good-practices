@@ -40,7 +40,7 @@ Rationale::
 Mixing up these two kind of information can lead to your automation taking the wrong course of action by thinking that the current situation is aligned with the desired state.
 That can make your automation go awry and your automation engineers confused.
 There is a reason why Ansible makes the difference between "facts" (As-Is) and "variables" (To-Be), and so should you.
-Automation is at the end to make sure that the As-Is situation complies to the To-Be description.
+In the end, automation is making sure that the As-Is situation complies to the To-Be description.
 +
 NOTE: many CMDBs have failed because they don't respect this principle.
 This and the lack of automation leads to a mix of unmaintained As-Is and To-Be information with no clear guideline on how to keep them up-to-date, and no real motivation to do so.
