@@ -1,0 +1,27 @@
+@startuml
+Landscape *- Type
+Type *- Function
+Function *- Component
+class Landscape << (L,orchid) >> {
+	{field} Workflow
+	{method} Playbook of playbooks
+}
+class Type << (T,orange) >> {
+	Playbook
+	{method} _
+}
+class Function << (F,yellow) >> {
+	Role
+	{method} _
+}
+class Component {
+	{field} Task file
+	{method} Role
+}
+hide empty members
+scale 750 width
+skinparam classBackgroundColor Wheat/CornflowerBlue
+skinparam minClassWidth 150
+skinparam classFontSize 16
+skinparam defaultFontSize 12
+@enduml
