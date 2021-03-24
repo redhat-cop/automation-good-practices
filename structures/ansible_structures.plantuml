@@ -20,7 +20,7 @@ class Component {
 }
 hide empty members
 scale 750 width
-skinparam classBackgroundColor Wheat/CornflowerBlue
+skinparam classBackgroundColor Wheat/PowderBlue
 skinparam minClassWidth 150
 skinparam classFontSize 16
 skinparam defaultFontSize 12
