@@ -1,1 +1,159 @@
-= Inventories good practices
+= Inventories Good Practices for Ansible
+
+.[big]#**Identify your Single Source(s) of Truth and use it/them in your inventory**#
+[%collapsible]
+====
+Explanations::
+A Single Source of Truth (SSOT) is the place where the "ultimate" truth about a certain data is generated, stored and maintained.
+There can be more than one SSOT, each for a different piece of information, but they shouldn't overlap and even less conflict.
+As you create your inventory, you identify these SSOTs and combine them into one inventory using dynamic inventory sources (we'll see how later on).
+Only the aspects which are not already provided by other sources are kept statically in your inventory.
+Doing this, your inventory becomes another source of truth, but only for the data it holds statically, because there is no other place to keep it.
+
+Rationale::
+You limit your effort to maintain your inventory to its absolute minimum and you avoid generating potentially conflicting information with the rest of your IT.
+
+Examples::
+You can typically identify three kinds of candidates as SSOTs:
++
+* technical ones, where your managed devices live anyway, like a cloud or virtual manager (OpenStack, RHV, Public Cloud API, ...) or management systems (Satellite, monitoring systems, ...). Those sources provide you with technical information like IP addresses, OS type, etc.
+* managed ones, like a Configuration Management Database (CMDB), where your IT anyway manages a lot of information of use in an inventory. A CMDB provides you with more organizational information, like owner or location, but also with "to-be" technical information.
+* the inventory itself, only for the data which doesn't exist anywhere else.
++
+Ansible provides a lot of https://docs.ansible.com/ansible/latest/plugins/inventory.html[inventory plugins] to pull data from those sources and they can be combined into one big inventory.
+This gives you a complete model of the environment to be automated, with limited effort to maintain it, and no confusion about where to modify it to get the result you need.
+====
+
+
+.[big]#**Differentiate clearly between "As-Is" and "To-Be" information**#
+[%collapsible]
+====
+Explanations::
+As you combine multiple sources, some will represent:
++
+* discovered information grabbed from the existing environment, this is the "As-Is" information.
+* managed information entered in a tool, expressing the state to be reached, hence the "To-Be" information.
++
+In general, the focus of an inventory is on the managed information because it represents the desired state you want to reach with your automation. This said, some discovered information is required for the automation to work.
+
+Rationale::
+Mixing up these two kind of information can lead to your automation taking the wrong course of action by thinking that the current situation is aligned with the desired state.
+That can make your automation go awry and your automation engineers confused.
+There is a reason why Ansible makes the difference between "facts" (As-Is) and "variables" (To-Be), and so should you.
+In the end, automation is making sure that the As-Is situation complies to the To-Be description.
++
+NOTE: many CMDBs have failed because they don't respect this principle.
+This and the lack of automation leads to a mix of unmaintained As-Is and To-Be information with no clear guideline on how to keep them up-to-date, and no real motivation to do so.
+
+Examples::
+The technical tools typically contain a lot of discovered information, like an IP address or the RAM size of a VM.
+In a typical cloud environment, the IP address isn't part of the desired state, it is assigned on the fly by the cloud management layer, so you can only get it dynamically from the cloud API and you won't manage it.
+In a more traditional environment nevertheless, the IP address will be static, managed more or less manually, so it will become part of your desired state.
+In this case, you shouldn't use the discovered information or you might not realize that there is a discrepancy betweeen As-Is and To-Be.
++
+The RAM size of a VM will be always present in two flavours, e.g. As-Is coming from the technical source and To-Be coming from the CMDB, or your static inventory, and you shouldn't confuse them.
+By lack of doing so, your automation might not correct the size of the VM where it should have aligned the As-Is with the To-Be.
+====
+
+
+.[big]#**Define your inventory as structured directory instead of single file**#
+[%collapsible]
+====
+Explanations::
+Everybody has started with a single file inventory in ini-format (the courageous ones among us in YAML format), combining list of hosts, groups and variables.
+An inventory can nevertheless be also a directory containing:
++
+* list(s) of hosts
+* list(s) of groups, with sub-groups and hosts belonging to those groups
+* dynamic inventory plug-ins configuration files
+* dynamic inventory scripts (deprecated but still simple to use)
+* structured `host_vars` directories
+* structured `group_vars` directories
++
+The recommendation is to start with such a structure and extend it step by step.
+
+Rationale::
+It is the only way to combine simply multiple sources into one inventory, without the trouble to call ansible with multiple `-i {inventory_file}` parameters, and keep the door open for extending it with dynamic elements.
++
+It is also simpler to maintain in a Git repository with multiple maintainers as the chance to get a conflict is reduced because the information is spread among multiple files.
+You can drop roles' `defaults/main.yml` file into the structure and adapt it to your needs very quickly.
++
+And finally it gives you a better overview of what is in your inventory without having to dig deeply into it, because already the structure (as revealed with `tree` or `find`) gives you a first idea of where to search what. This makes on-boarding of new maintainers a lot easier.
+
+Examples::
+The following is a complete inventory as described before.
+You don't absolutely need to start at this level of complexity, but the experience shows that once you get used to it, it is actually a lot easier to understand and maintain than a single file.
++
+.Tree of a structured inventory directory
+----
+inventory_example/  <1>
+├── dynamic_inventory_plugin.yml  <2>
+├── dynamic_inventory_script.py  <3>
+├── groups_and_hosts  <4>
+├── group_vars/  <5>
+│   ├── alephs/
+│   │   └── capital_letter.yml
+│   ├── all/
+│   │   └── ansible.yml
+│   ├── alphas/
+│   │   ├── capital_letter.yml
+│   │   └── small_caps_letter.yml
+│   ├── betas/
+│   │   └── capital_letter.yml
+│   ├── greek_letters/
+│   │   └── small_caps_letter.yml
+│   └── hebrew_letters/
+│       └── small_caps_letter.yml
+└── host_vars/  <6>
+    ├── host1.example.com/
+    │   └── ansible.yml
+    ├── host2.example.com/
+    │   └── ansible.yml
+    └── host3.example.com/
+        ├── ansible.yml
+        └── capital_letter.yml
+----
+<1> this is your inventory directory
+<2> a configuration file for a dynamic inventory plug-in
+<3> a dynamic inventory script, old style and deprecated but still used (and supported)
+<4> a file containing a static list of hosts and groups, the name isn't important (often called `hosts` but some might confuse it with `/etc/hosts` and it also contains groups).
+See below for an example.
+<5> the `group_vars` directory to define group variables.
+Notice how each group is represented by a directory of its name containing one or more variable files.
+<6> the `host_vars` directory to define host variables.
+Notice how each host is represented by a directory of its name containing one or more variable files.
++
+The groups and hosts file could look as follows, important is to not put any variable definition in this file.
++
+.Content of the `groups_and_hosts` file
+[source,ini]
+----
+include::inventory_example/groups_and_hosts[]
+----
++
+Listing the hosts under `[all]` isn't really required but makes sure that no host is forgotten, should it not belong to any other group.
+The ini-format isn't either an obligation but it seems easier to read than YAML, as long as no variable is involved, and makes it easier to maintain in an automated manner using `lineinfile` (without needing to care for the indentation).
++
+Regarding the group and host variables, the name of the variable files is actually irrelevant, you can verify it by calling `ansible-inventory -i inventory_example --list`:
+you will see nowhere the name `capital_letter` or `small_caps_letter` (you might see `ansible` though, but for other reasons...).
+We nevertheless follow the convention to name our variable files after the role they are steering (so we assume the roles `capital_letter` and `small_caps_letter`).
+If correctly written, the `defaults/main.yml` file from those roles can be simply "dropped" into our inventory structure and adapted accordingly to our needs.
+We reserve the name `ansible.yml` for the Ansible related variables (user, connection, become, etc).
++
+TIP: you can even create a sub-directory in a host's or group's variable directory and put _there_ the variable files.
+This is useful if you have many variables related to the same topic you want to group together but maintain in separate files.
+For example Satellite requires many variables to be fully configured, so you can have a structure as follows (again, the name of the sub-directory `satellite` and of the files doesn't matter):
++
+.Example of a complex tree of variables with sub-directory
+----
+inventory_satellite/
+├── groups_and_hosts
+└── host_vars/
+    └── sat6.example.com/
+        ├── ansible.yml
+        └── satellite/
+            ├── content_views.yml
+            ├── hostgroups.yml
+            └── locations.yml
+----
+====

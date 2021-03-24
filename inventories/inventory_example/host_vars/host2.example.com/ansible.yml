@@ -1,0 +1,3 @@
+---
+# ansible specific variables
+ansible_host: 192.0.2.2
