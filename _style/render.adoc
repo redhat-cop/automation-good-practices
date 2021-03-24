@@ -5,15 +5,12 @@
 :numbered:
 :chapter-label:
 :icons: font
-
 :pdf-page-size: A4
-
-:pygments-style: tango
 :source-highlighter: rouge
 :rouge-style: github
+:listing-caption: Listing
 
 // The following lines could become relevant in the future
-:listing-caption: Listing
 
 ////
 :pdf-style: redhat

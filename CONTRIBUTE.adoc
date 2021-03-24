@@ -26,6 +26,7 @@ Rationale:: This is the rationale
 
 Examples:: These are examples
 +
+.A mini playbook example
 [source,yaml]
 ----
 - name: a mini example of playbook
@@ -81,6 +82,7 @@ Rationale:: This is the rationale
 
 Examples:: These are examples
 +
+.A mini playbook example
 [source,yaml]
 ----
 - name: a mini example of playbook
