@@ -15,7 +15,7 @@ The result looks then as the following template shows (you may copy & paste):
 +
 [source,asciidoc]
 ------------------------------------------------------------------------
-.[big]#**Do this and do not do that is the guideline**#
+== Do this and do not do that is the guideline
 [%collapsible]
 ====
 Explanations:: These are explanations
@@ -71,7 +71,7 @@ This is how one guideline as shown above looks like once rendered:
 
 // This is a duplicate from the above code, but rendered e.g. by GitHub, it shows how it's supposed to look like.
 
-.[big]#**Do this and do not do that is the guideline**#
+=== Do this and do not do that is the guideline
 [%collapsible]
 ====
 Explanations:: These are explanations

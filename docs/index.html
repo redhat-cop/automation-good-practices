@@ -444,7 +444,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
 <li><a href="#_introduction">1. Introduction</a></li>
-<li><a href="#_automation_structures">2. Automation structures</a></li>
+<li><a href="#_automation_structures">2. Automation structures</a>
+<ul class="sectlevel2">
+<li><a href="#_define_which_structure_to_use_for_which_purpose">2.1. Define which structure to use for which purpose</a></li>
+</ul>
+</li>
 <li><a href="#_roles_good_practices_for_ansible">3. Roles Good Practices for Ansible</a>
 <ul class="sectlevel2">
 <li><a href="#_background">3.1. Background</a></li>
@@ -483,7 +487,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 <li><a href="#_collections_good_practices">4. Collections good practices</a></li>
 <li><a href="#_playbooks_good_practices">5. Playbooks good practices</a></li>
-<li><a href="#_inventories_good_practices_for_ansible">6. Inventories Good Practices for Ansible</a></li>
+<li><a href="#_inventories_good_practices_for_ansible">6. Inventories Good Practices for Ansible</a>
+<ul class="sectlevel2">
+<li><a href="#_identify_your_single_sources_of_truth_and_use_itthem_in_your_inventory">6.1. Identify your Single Source(s) of Truth and use it/them in your inventory</a></li>
+<li><a href="#_differentiate_clearly_between_as_is_and_to_be_information">6.2. Differentiate clearly between "As-Is" and "To-Be" information</a></li>
+<li><a href="#_define_your_inventory_as_structured_directory_instead_of_single_file">6.3. Define your inventory as structured directory instead of single file</a></li>
+</ul>
+</li>
 <li><a href="#_plugins_good_practices">7. Plugins good practices</a></li>
 </ul>
 </div>
@@ -554,8 +564,10 @@ It also has great educational value for understanding how things actually work (
 <p>Before we start to describe roles, playbooks, etc, we need to decide which one we use for what.
 This section is meant for topics which span across multiple structures and don&#8217;t fit nicely within one.</p>
 </div>
+<div class="sect2">
+<h3 id="_define_which_structure_to_use_for_which_purpose">2.1. Define which structure to use for which purpose</h3>
 <details>
-<summary class="title"><span class="big"><strong>Define which structure to use for which purpose</strong></span></summary>
+<summary class="title">Details</summary>
 <div class="content">
 <div class="dlist">
 <dl>
@@ -656,6 +668,7 @@ As long as exceptions are discussed openly in the team, they won&#8217;t hurt.</
 </div>
 </div>
 </details>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -1494,8 +1507,10 @@ Work in Progress&#8230;&#8203;
 <div class="sect1">
 <h2 id="_inventories_good_practices_for_ansible">6. Inventories Good Practices for Ansible</h2>
 <div class="sectionbody">
+<div class="sect2">
+<h3 id="_identify_your_single_sources_of_truth_and_use_itthem_in_your_inventory">6.1. Identify your Single Source(s) of Truth and use it/them in your inventory</h3>
 <details>
-<summary class="title"><span class="big"><strong>Identify your Single Source(s) of Truth and use it/them in your inventory</strong></span></summary>
+<summary class="title">Details</summary>
 <div class="content">
 <div class="dlist">
 <dl>
@@ -1536,8 +1551,11 @@ This gives you a complete model of the environment to be automated, with limited
 </div>
 </div>
 </details>
+</div>
+<div class="sect2">
+<h3 id="_differentiate_clearly_between_as_is_and_to_be_information">6.2. Differentiate clearly between "As-Is" and "To-Be" information</h3>
 <details>
-<summary class="title"><span class="big"><strong>Differentiate clearly between "As-Is" and "To-Be" information</strong></span></summary>
+<summary class="title">Details</summary>
 <div class="content">
 <div class="dlist">
 <dl>
@@ -1593,8 +1611,11 @@ By lack of doing so, your automation might not correct the size of the VM where 
 </div>
 </div>
 </details>
+</div>
+<div class="sect2">
+<h3 id="_define_your_inventory_as_structured_directory_instead_of_single_file">6.3. Define your inventory as structured directory instead of single file</h3>
 <details>
-<summary class="title"><span class="big"><strong>Define your inventory as structured directory instead of single file</strong></span></summary>
+<summary class="title">Details</summary>
 <div class="content">
 <div class="dlist">
 <dl>
@@ -1777,6 +1798,7 @@ For example Satellite requires many variables to be fully configured, so you can
 </div>
 </div>
 </details>
+</div>
 </div>
 </div>
 <div class="sect1">
