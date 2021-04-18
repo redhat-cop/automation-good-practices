@@ -1,4 +1,5 @@
 = Good Practices for Ansible - GPA
+include::_style/render.adoc[]
 
 == Introduction
 

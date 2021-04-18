@@ -1,1 +1,3 @@
 = Collections good practices
+
+NOTE: Work in Progress...

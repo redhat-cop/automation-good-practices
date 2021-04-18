@@ -3,8 +3,6 @@ include::_style/render.adoc[]
 
 Before you suggest _automation_ guidelines, please consider the _contribution_ guidelines layed out in this document.
 
-toc::[]
-
 == Writing
 
 . The guidelines are written in https://asciidoctor.org[asciidoc as described by Asciidoctor].
@@ -99,3 +97,7 @@ Examples:: These are examples
 +
 Even more examples...
 ====
+
+== Publishing
+
+Use for now the following manual command: `asciidoctor -a toc=left -o docs/index.html README.adoc`.

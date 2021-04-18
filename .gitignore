@@ -1,6 +1,7 @@
 # generated files
 *.pdf
 *.html
+!docs/*.html
 
 # temporary files
 .*.swp
