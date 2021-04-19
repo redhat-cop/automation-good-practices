@@ -70,17 +70,6 @@ user to focus on the functionality, not on technical details.
 
 === Naming things
 
-* All YAML or Python files, variables, arguments, repositories, and other such names (like
-dictionary keys) should be valid Python identifiers following standard naming conventions of being
-in snake_case_naming_schemes. In particular, do not use special characters other than
-underscore in variable names, even if YAML/JSON allow them. (Using such variables in Jinja2 or
-Python would be then very confusing and probably not functional.) Rationale: even when Ansible
-currently allows names that are not valid identifier, it may stop allowing them in the future, as
-it happened in the past already. Making all names valid identifiers will avoid encountering
-problems in the future. Dictionary keys that are not valid identifier are also less intuitive to
-use in Jinja2 (a dot in a dictionary key would be particularly confusing).
-* Names should be mnemonic and descriptive and not strive to shorten more than necessary. Systems
-support long identifier names, so use them to be descriptive
 * All defaults and all arguments to a role should have a name that begins with the role name to help
 avoid collision with other names. Avoid names like `packages` in favor of a name like `foo_packages`.
 (Rationale: Ansible has no namespaces, doing so reduces the potential for conflicts and makes
@@ -342,48 +331,6 @@ proper change reporting.
 user request to have it configurable.)
 * Make prominently clear in the HOWTO (at the top) what settings/configuration files are replaced by the role
 instead of just modified.
-
-=== YAML and Jinja2 Syntax
-
-* Indent at two spaces
-* List contents should be indented beyond the list definition
-* It is easy to split long Jinja2 expressions into https://github.com/linux-system-roles/timesync/pull/47/files[multiple
-lines].  If the
-`when:` condition results in a line that is too long, and is an `and`
-expression, then break it into a list of conditions.  Ansible will `and` them
-together (see: https://github.com/linux-system-roles/timesync/pull/36[[1\]]
-https://docs.ansible.com/ansible/latest/user_guide/playbooks_conditionals.html#the-when-statement[[2\]]).
-Multiple conditions that all need to be true (a logical `and`) can also be
-specified as a list, but beware of bare variables in `when:`.
-* All roles need to, minimally, pass a basic ansible-playbook syntax check run
-* All task arguments should be spelled out in YAML style and not use `key=value` type of arguments
-* All YAML files need to pass standard yamllint syntax with the modifications listed in
-https://github.com/AGP-roles/meta_test/blob/master/yamllint.yml[yamllint.yml] in the
-https://github.com/AGP-roles/meta_test[meta_test] role. These modifications are minimal:
-document starter characters (the initial
-`---` string at the top of a file) should not be used, and it is not necessary to start every comment
-with a space. Most comments should start with a space, but no space is allowed when a comment is
-documenting an optional variable with its default value.
- ** As a result of being able to pass basic YAML lint, avoid the use of `True` and `False` for boolean values
- in playbooks. These values are sometimes used because they are the words Python uses. However, they are
- improper YAML and will be treated as either strings or as booleans but generating a warning depending on
- the particular YAML implementation.
- ** Do not use the Ansible-specific `yes` and `no` as boolean values in YAML as these are completely
- custom extensions used by Ansible and are not part of the YAML spec.
-* Although it is not expressly forbidden, comments in playbooks should be avoided when possible. The task
-`name` value should be descriptive enough to tell what a task does. Variables should be well commented in
-the `defaults` and `vars` directories and should, therefore, not need explanation in the playbooks
-themselves.
-* All Jinja2 template points should have a single space separating the template markers from the variable
-name inside. For instance, always write it as `{{ variable_name_here }}`. The same goes if the value is
-an expression. `{{ variable_name | default('hiya, doc') }}`
-* When naming files, use the `.yml` extension and _not_ `.yaml`.  `.yml` is what
-`ansible-galaxy init` does when creating a new role template.
-* Double quotes should be used for YAML strings with the exception of Jinja2
-strings which will use single quotes.
-* Do not use quotes unless you have to, especially for short strings like
-`present`, `absent`, etc.  This is how examples in module documentation
-are typically presented.
 
 === Python Guidelines
 
