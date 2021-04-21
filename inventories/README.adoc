@@ -1,6 +1,6 @@
 = Inventories Good Practices for Ansible
 
-.[big]#**Identify your Single Source(s) of Truth and use it/them in your inventory**#
+== Identify your Single Source(s) of Truth and use it/them in your inventory
 [%collapsible]
 ====
 Explanations::
@@ -25,7 +25,7 @@ This gives you a complete model of the environment to be automated, with limited
 ====
 
 
-.[big]#**Differentiate clearly between "As-Is" and "To-Be" information**#
+== Differentiate clearly between "As-Is" and "To-Be" information
 [%collapsible]
 ====
 Explanations::
@@ -56,7 +56,7 @@ By lack of doing so, your automation might not correct the size of the VM where 
 ====
 
 
-.[big]#**Define your inventory as structured directory instead of single file**#
+== Define your inventory as structured directory instead of single file
 [%collapsible]
 ====
 Explanations::

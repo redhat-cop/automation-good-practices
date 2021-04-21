@@ -3,8 +3,6 @@ include::_style/render.adoc[]
 
 Before you suggest _automation_ guidelines, please consider the _contribution_ guidelines layed out in this document.
 
-toc::[]
-
 == Writing
 
 . The guidelines are written in https://asciidoctor.org[asciidoc as described by Asciidoctor].
@@ -17,7 +15,7 @@ The result looks then as the following template shows (you may copy & paste):
 +
 [source,asciidoc]
 ------------------------------------------------------------------------
-.[big]#**Do this and do not do that is the guideline**#
+== Do this and do not do that is the guideline
 [%collapsible]
 ====
 Explanations:: These are explanations
@@ -73,7 +71,7 @@ This is how one guideline as shown above looks like once rendered:
 
 // This is a duplicate from the above code, but rendered e.g. by GitHub, it shows how it's supposed to look like.
 
-.[big]#**Do this and do not do that is the guideline**#
+=== Do this and do not do that is the guideline
 [%collapsible]
 ====
 Explanations:: These are explanations
@@ -99,3 +97,7 @@ Examples:: These are examples
 +
 Even more examples...
 ====
+
+== Publishing
+
+Use for now the following manual command: `asciidoctor -a toc=left -o docs/index.html README.adoc`.

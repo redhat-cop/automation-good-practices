@@ -1,10 +1,9 @@
 = Automation structures
-include::../_style/render.adoc[]
 
 Before we start to describe roles, playbooks, etc, we need to decide which one we use for what.
 This section is meant for topics which span across multiple structures and don't fit nicely within one.
 
-.[big]#**Define which structure to use for which purpose**#
+== Define which structure to use for which purpose
 [%collapsible]
 ====
 Explanations::

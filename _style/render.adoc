@@ -1,5 +1,5 @@
 :doctype: book
-:toc: macro
+:toc: auto
 :toclevels: 4
 :sectnumlevels: 6
 :numbered:

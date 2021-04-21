@@ -1,5 +1,7 @@
 = Roles Good Practices for Ansible
 
+NOTE: this section has been imported "as-is" from the https://github.com/oasis-roles/meta_standards[OASIS metastandards repository] and still requires re-formatting to fit the overall structure.
+
 == Background
 
 The goal of the Ansible Metateam project (specifically, the https://github.com/linux-system-roles[Linux System Roles
