@@ -2,9 +2,14 @@
 
 * Use valid Python identifiers following standard naming conventions of being in `snake_case_naming_schemes` for all YAML or Python files, variables, arguments, repositories, and other such names (like dictionary keys).
 * Do not use special characters other than underscore in variable names, even if YAML/JSON allow them.
-  (Using such variables in Jinja2 or Python would be then very confusing and probably not functional.)
-  Rationale: even when Ansible currently allows names that are not valid identifier, it may stop allowing them in the future, as it happened in the past already.
-  Making all names valid identifiers will avoid encountering problems in the future. Dictionary keys that are not valid identifiers are also less intuitive to use in Jinja2 (a dot in a dictionary key would be particularly confusing).
++
+[%collapsible]
+====
+Explanation:: Using such variables in Jinja2 or Python would be then very confusing and probably not functional.
+Rationale:: even when Ansible currently allows names that are not valid identifier, it may stop allowing them in the future, as it happened in the past already.
+Making all names valid identifiers will avoid encountering problems in the future. Dictionary keys that are not valid identifiers are also less intuitive to use in Jinja2 (a dot in a dictionary key would be particularly confusing).
+====
++
 * Use mnemonic and descriptive names and do not shorten more than necessary.
   Systems support long identifier names, so use them!
 
@@ -12,7 +17,7 @@
 
 * Indent at two spaces
 * Indent list contents beyond the list definition
-
++
 [%collapsible]
 ====
 .Do this:
@@ -35,16 +40,21 @@ example_list:
 - example_element_4
 ----
 ====
-
++
 * Split long Jinja2 expressions into multiple
 lines.
 * If the `when:` condition results in a line that is too long, and is an `and`
 expression, then break it into a list of conditions.
-  Ansible will `and` them together https://docs.ansible.com/ansible/latest/user_guide/playbooks_conditionals.html#the-when-statement[[1\]].
-  Multiple conditions that all need to be true (a logical `and`) can also be specified as a list, but beware of bare variables in `when:`.
++
+[%collapsible]
+====
+Rationale:: Ansible will `and` thetogether (https://docs.ansible.coansible/latest/user_guidplaybooks_conditionalhtml#the-when-statement[Ansible UseGuide » Conditionals]).
+Multiple conditions that all need tbe true (a logical `and`) can alsbe specified as a list, but bewarof bare variables in `when:`.
+====
++
 * All roles need to, minimally, pass a basic ansible-playbook syntax check run
 * All task arguments should be spelled out in YAML style and not use `key=value` type of arguments
-
++
 [%collapsible]
 ====
 .Do this:
@@ -64,10 +74,15 @@ tasks:
     ansible.builtin.debug: msg="This is the exact opposite of how it's done."
 ----
 ====
-
++
 * Avoid the use of `True` and `False` for boolean values in playbooks.
-  These values are sometimes used because they are the words Python uses.
++
+[%collapsible]
+====
+Explanation:: These values are sometimes used because they are the words Python uses.
   However, they are improper YAML and will be treated as either strings or as booleans but generating a warning depending on the particular YAML implementation.
+====
++
 * Do not use the Ansible-specific `yes` and `no` as boolean values in YAML as these are completely custom extensions used by Ansible and are not part of the YAML spec.
 * Avoid comments in playbooks when possible.
   The task `name` value should be descriptive enough to tell what a task does.
@@ -89,90 +104,101 @@ tasks:
 
 == Ansible Guidelines
 
-* Ansible variables use lazy evaluation. https://github.com/ansible/ansible/issues/10374[more_info]
-* All tags should be namespaced/prefixed with the role name.
-* Use preferably the command module instead of the shell module. Even better, use a dedicated module, if it
-exists. If not, see the <<check-mode-and-idempotency-issues,section>> about idempotency and check mode and
-make sure that you support them properly (your task will likely need options such as `changed_when:`
-and maybe `check_mode:` ). Anytime `command` or `shell` modules are used, a comment in the code with
-justification would help with future maintenance.
-* Beware of bare variables (expressions consisting of just one variable reference without any
-operator) in `when`, their behavior is unexpected
-https://github.com/ansible/ansible/issues/39414[more_info].
-* Do not use `meta: end_play`. It aborts the whole play instead of a given host (with multiple
-hosts in the inventory) https://github.com/ansible/ansible/issues/27973[more_info] - We may
-consider using `meta: end_host` but this was recently introduced in Ansible 2.8
-https://github.com/ansible/ansible/pull/47194[more_info]
-* If reasonable, task names can be made dynamic by using variables (wrapped in Jinja2 templates), this helps
-with reading the logs. On the other hand, don't do this for play names, variables don't get expanded
-properly there.
-* Do not override role defaults or vars or input parameters using `set_fact`. Use a different
-name instead. (Rationale: a fact set using `set_fact` can not be unset and it will override
-the role default or role variable in all subsequent invocations of the role in the same
-playbook. A fact has a different priority than other variables and not the highest, so in
-some cases overriding a given parameter will not work because the parameter has a higher priority)
-https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable[more_info]
-* Use the smallest scope for variables. Facts are global for playbook run, so it is preferable
-to use other types of variables. Therefore limit (preferably avoid) the use of `set_fact`.
-Role variables are exposed to the whole play when the role is applied using `roles:` or
-`import_role:`. A more restricted scope such as task or block variables is preferred.
-* Beware of `ignore_errors: yes`! Especially in tests. If you set on a block, it will ignore
-all the asserts in the block ultimately making them pointless. A comment in the code with
-justification is required to use this statement.
-* Do not use the `eq` (introduced in Jinja 2.10) or `equalto` (introduced in Jinja 2.8) Jinja
-Operators - or any other post-2.7 Jinja2 features. (RHEL 7 has Jinja 2.7.2)
- ** https://github.com/linux-system-roles/storage/pull/26
- ** https://github.com/linux-system-roles/storage/issues/49
-* All tasks should be idempotent, with notable and rare exceptions such as the
-https://github.com/AGP-roles/ansible_collection_system/tree/master/roles/reboot[AGP reboot role].
-* Avoid the use of `when: foo_result is changed` whenever possible. Use
-handlers, and, if necessary, handler
-chains to achieve this same result. Exceptions are permitted but they should be avoided when possible
-* Use the various include/import statements in Ansible when doing so can lead to simplified code and a
-reduction of repetition. This is the closest that Ansible comes to callable sub-routines, so use judgment
-about callable routines to know when to similarly include a sub playbook. Some examples of good times
-to do so are
- ** When a set of multiple commands share a single `when` conditional
- ** When a set of multiple commands are being looped together over a list of items
- ** When a single large role is doing many complicated tasks and cannot easily be broken into multiple roles,
- but the process proceeds in multiple related stages
-* Avoid calling the `package` module iteratively with the `{{ item }}` argument, as this is impressively
-more slow than calling it with the line `name: "{{ foo_packages }}"`.  The same can go for many other
-modules that can be given an entire list of items all at once.
-* Use meta modules when possible. Instead of using the `upstart` and `systemd` modules, use the `service`
-module when at all possible. Similarly for package management, use `package` instead of `yum` or `dnf` or
-similar. This will allow our playbooks to run on the widest selection of operating systems possible without
-having to modify any more tasks than is necessary.
-* Avoid the use of `lineinfile` wherever that might be feasible.  Slight miscalculations in how it is used can
-lead to a loss of idempotence.  Modifying config files with it can cause the Ansible code to become arcane
-and difficult to read, especially for someone not familiar with the file in question.  Try editing files
-directly using other built-in modules (e.g. `ini_file`, `blockinfile`, `xml`), or reading and parsing. If
-you are modifying more than a tiny number of lines or in a manner more than trivially complex, try
-leveraging the `template` module, instead. This will allow the entire structure of the file to be seen by
-later users and maintainers. The use of `lineinfile` should include a comment with justification.
-* Limit use of the `copy` module to copying remote files and to uploading binary blobs. For all other file
-pushes, use the `template` module. Even if there is nothing in the file that is being templated at the
-current moment, having the file handled by the `template` module now makes adding that functionality much
-simpler than if the file is initially handled by the `copy` and then needs to be moved before it can be
-edited.
-* When using the `template` module, refrain from appending `.j2` to the file name. This alters the syntax
-highlighting in most editors and will obscure the benefits of highlighting for the particular file type or
-filename. Anything under the `templates` directory of a role is assumed to be treated as a Jinja 2 template,
-so adding the `.j2` extension is redundant information that is not helpful.
-* Keep filenames and templates as close to the name on the destination system as possible. This will help with
-both editor highlighting as well as identifying source and destination versions of the file at a glance.
-Avoid duplicating the remote full path in the role directory, however, as that creates unnecessary depth in
-the file tree for the role. Grouping sets of similar files into a subdirectory of `templates` is allowable,
-but avoid unnecessary depth to the hierarchy.
-* Use `{{ role_path }}/subdir/` as the filename prefix when including files if
-the name has a variable in it.  The problem is that your role may be
-included by another role, and if you specify a relative path, the file could
-be found in the including role.  For example, if you have something like
-`include_vars: "{{ ansible_facts['distribution'] }}.yml"` and you do not provide
-every possible `vars/{{ ansible_facts['distribution'] }}.yml` in your role,
-Ansible will look in the including role for this file.  Instead, to ensure
-that only your role will be referenced, use `include_vars: "{{
-role_path}}/vars/{{ ansible_facts['distribution'] }}.yml"`. Same with other file
-based includes such as `include_tasks`.
-See https://docs.ansible.com/ansible/latest/dev_guide/overview_architecture.html#the-ansible-search-path[Ansible Search Path]
-for more information.
+* Ensure that all tasks are idempotent.
+* https://github.com/ansible/ansible/issues/10374[Ansible variables use lazy evaluation.]
+* Prefix all tags within a role with the role name or, alternatively, a "unique enough" but descriptive prefix.
+* Prefer the command module over the shell module unless you explicitly need shell functionality such as, e.g., piping.
+  Even better, use a dedicated module, if it exists.
+  If not, see the <<check-mode-and-idempotency-issues,section>> about idempotency and check mode and make sure that your task is idempotent and supports check mode properly;
+  your task will likely need options such as `changed_when:` and maybe `check_mode:`).
+* Anytime `command` or `shell` modules are used, add a comment in the code with justification to help with future maintenance.
+* Use the `| bool` filter when using bare variables (expressions consisting of just one variable reference without any operator) in `when`.
+* Do not use `meta: end_play`.
++
+[%collapsible]
+====
+Explanation:: It aborts the whole play instead of a given host (with multiple hosts in the inventory).
+  If absolutely necessary, consider using `meta: end_host`.
+====
++
+* Task names can be made dynamic by using variables (wrapped in Jinja2 templates), this helps with reading the logs.
+* Do not use variables (wrapped in Jinja2 templates) for play names, variables don't get expanded properly there.
+* Do not override role defaults or vars or input parameters using `set_fact`.
+  Use a different name instead.
++
+[%collapsible]
+====
+Rationale:: a fact set using `set_fact` can not be unset and it will override the role default or role variable in all subsequent invocations of the role in the same playbook.
+  A fact has a different priority than other variables and not the highest, so in some cases overriding a given parameter will not work because the parameter has a higher priority (https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable[Ansible User Guide » Using Variables])
+====
++
+* Use the smallest scope for variables.
+  Facts are global for playbook run, so it is preferable to use other types of variables. Therefore limit (preferably avoid) the use of `set_fact`.
+  Role variables are exposed to the whole play when the role is applied using `roles:` or `import_role:`. A more restricted scope such as task or block variables is preferred.
+* Beware of `ignore_errors: true`; especially in tests.
+  If you set on a block, it will ignore all the asserts in the block ultimately making them pointless.
+* Do not use the `eq` (introduced in Jinja 2.10) or `equalto` Jinja operators.
+* Avoid the use of `when: foo_result is changed` whenever possible.
+  Use handlers, and, if necessary, handler chains to achieve this same result.
+* Use the various include/import statements in Ansible.
++
+[%collapsible]
+====
+Explanation:: Doing so can lead to simplified code and a reduction of repetition.
+This is the closest that Ansible comes to callable sub-routines, so use judgment about callable routines to know when to similarly include a sub playbook.
+Some examples of good times to do so are
+* When a set of multiple commands share a single `when` conditional
+* When a set of multiple commands are being looped together over a list of items
+* When a single large role is doing many complicated tasks and cannot easily be broken into multiple roles, but the process proceeds in multiple related stages
+====
++
+* Avoid calling the `package` module iteratively with the `{{ item }}` argument, as this is impressively more slow than calling it with the line `name: "{{ foo_packages }}"`.
+  The same can go for many other modules that can be given an entire list of items all at once.
+* Use meta modules when possible.
++
+[%collapsible]
+====
+Rationale:: This will allow our playbooks to run on the widest selection of operating systems possible without having to modify any more tasks than is necessary.
+Examples::
+* Instead of using the `upstart` and `systemd` modules, use the `service`
+module when at all possible.
+* Similarly for package management, use `package` instead of `yum` or `dnf` or
+similar.
+====
++
+* Avoid the use of `lineinfile` wherever that might be feasible.
++
+[%collapsible]
+====
+Rationale:: Slight miscalculations in how it is used can lead to a loss of idempotence.
+Modifying config files with it can cause the Ansible code to become arcane and difficult to read, especially for someone not familiar with the file in question.
+Try editing files directly using other built-in modules (e.g. `ini_file`, `blockinfile`, `xml`), or reading and parsing.
+If you are modifying more than a tiny number of lines or in a manner more than trivially complex, try leveraging the `template` module, instead.
+This will allow the entire structure of the file to be seen by later users and maintainers.
+The use of `lineinfile` should include a comment with justification.
+====
++
+* Limit use of the `copy` module to copying remote files and to uploading binary blobs.
+  For all other file pushes, use the `template` module. Even if there is nothing in the file that is being templated at the current moment, having the file handled by the `template` module now makes adding that functionality much simpler than if the file is initially handled by the `copy` and then needs to be moved before it can be edited.
+# TODO: I am not convinced about the following rule:
+* When using the `template` module, refrain from appending `.j2` to the file name. This alters the syntax highlighting in most editors and will obscure the benefits of highlighting for the particular file type or filename.
+  Anything under the `templates` directory of a role is assumed to be treated as a Jinja 2 template, so adding the `.j2` extension is redundant information that is not helpful.
+* Keep filenames and templates as close to the name on the destination system as possible.
++
+[%collapsible]
+====
+Rationale:: This will help with both editor highlighting as well as identifying source and destination versions of the file at a glance.
+Avoid duplicating the remote full path in the role directory, however, as that creates unnecessary depth in the file tree for the role.
+Grouping sets of similar files into a subdirectory of `templates` is allowable, but avoid unnecessary depth to the hierarchy.
+====
++
+* Use `{{ role_path }}/subdir/` as the filename prefix when including files if the name has a variable in it.
++
+[%collapsible]
+====
+Rationale:: your role may be included by another role, and if you specify a relative path, the file could be found in the including role.
+For example, if you have something like `include_vars: "{{ ansible_facts['distribution'] }}.yml"` and you do not provide every possible `vars/{{ ansible_facts['distribution'] }}.yml` in your role, Ansible will look in the including role for this file.
+Instead, to ensure that only your role will be referenced, use `include_vars: "{{role_path}}/vars/{{ ansible_facts['distribution'] }}.yml"`.
+Same with other file based includes such as `include_tasks`.
+See https://docs.ansible.com/ansible/latest/dev_guide/overview_architecture.html#the-ansible-search-path[Ansible Developer Guide » Ansible architecture » The Ansible Search Path] for more information.
+====
