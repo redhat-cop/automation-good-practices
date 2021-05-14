@@ -1,4 +1,4 @@
-= Coding Style Practices for Ansible
+= Coding Style Good Practices for Ansible
 
 It has proven useful to agree on certain guiding principles as early as possible in any automation project.
 Doing so makes it much easier to onboard new Ansible developers.
