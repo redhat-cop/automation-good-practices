@@ -1,3 +1,16 @@
+= Coding Style Practices for Ansible
+
+It has proven useful to agree on certain guiding principles as early as possible in any automation project.
+Doing so makes it much easier to onboard new Ansible developers.
+Project guidelines can also be shared with other departments working on automation which in turn improves the re-usability of playbooks, roles, modules, and documentation.
+
+Another major benefit is that it makes code review process less time-consuming and more reliable; making both the developer and reviewer more likely to engage in a constructive review conversation.
+
+This section contains suggestions for such coding-style guidelines.
+The list is neither complete nor are all of the guidelines necessary in every automation project.
+Experience shows that it makes sense to start with a minimum set of guidelines because the longer the list the lower the chance of people actually reading through it.
+Additional guidelines can always be added later should the situation warrant it.
+
 == Naming things
 
 * Use valid Python identifiers following standard naming conventions of being in `snake_case_naming_schemes` for all YAML or Python files, variables, arguments, repositories, and other such names (like dictionary keys).
