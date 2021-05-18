@@ -1,3 +1,9 @@
 = Plugins good practices
 
 NOTE: Work in Progress...
+
+== Python Guidelines
+
+* Review Ansible guidelines for https://docs.ansible.com/ansible/latest/dev_guide/developing_modules_best_practices.html[modules] and https://docs.ansible.com/ansible/latest/dev_guide/index.html[development].
+* Use https://pep8.org/[PEP8].
+* File headers and functions should have comments for their intent.
