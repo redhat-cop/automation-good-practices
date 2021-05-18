@@ -96,8 +96,8 @@ Rationale:: https://yaml.org/type/bool.html[YAML 1.1] allows all variants wherea
 ====
 +
 * Avoid comments in playbooks when possible.
-  The task `name` value should be descriptive enough to tell what a task does.
-  Variables should be well commented in the `defaults` and `vars` directories and should, therefore, not need explanation in the playbooks themselves.
+  Instead, ensure that the task `name` value is descriptive enough to tell what a task does.
+  Variables are commented in the `defaults` and `vars` directories and, therefore, do not need explanation in the playbooks themselves.
 * Use a single space separating the template markers from the variable name inside all Jinja2 template points.
   For instance, always write it as `{{ variable_name_here }}`.
   The same goes if the value is an expression. `{{ variable_name | default('hiya, doc') }}`
