@@ -90,6 +90,7 @@ some popular roles like
 https://github.com/geerlingguy/ansible-role-apache/blob/f2b91ac84001db3fd4b43306a8f73f1a54f96f7d/vars/Debian.yml#L8[geerlingguy.ansible-role-apache]). This
 includes variables set by set_fact and register, because they persist in the namespace after the
 role has finished!
+* Prefix all tags within a role with the role name or, alternatively, a "unique enough" but descriptive prefix.
 
 === Providers
 
@@ -333,6 +334,17 @@ proper change reporting.
 user request to have it configurable.)
 * Make prominently clear in the HOWTO (at the top) what settings/configuration files are replaced by the role
 instead of just modified.
++
+* Use `{{ role_path }}/subdir/` as the filename prefix when including files if the name has a variable in it.
++
+[%collapsible]
+====
+Rationale:: your role may be included by another role, and if you specify a relative path, the file could be found in the including role.
+For example, if you have something like `include_vars: "{{ ansible_facts['distribution'] }}.yml"` and you do not provide every possible `vars/{{ ansible_facts['distribution'] }}.yml` in your role, Ansible will look in the including role for this file.
+Instead, to ensure that only your role will be referenced, use `include_vars: "{{role_path}}/vars/{{ ansible_facts['distribution'] }}.yml"`.
+Same with other file based includes such as `include_tasks`.
+See https://docs.ansible.com/ansible/latest/dev_guide/overview_architecture.html#the-ansible-search-path[Ansible Developer Guide » Ansible architecture » The Ansible Search Path] for more information.
+====
 
 ==== Vars vs Defaults
 

@@ -54,19 +54,17 @@ example_list:
 ----
 ====
 +
-* Split long Jinja2 expressions into multiple
-lines.
-* If the `when:` condition results in a line that is too long, and is an `and`
-expression, then break it into a list of conditions.
+* Split long Jinja2 expressions into multiple lines.
+* If the `when:` condition results in a line that is too long, and is an `and` expression, then break it into a list of conditions.
 +
 [%collapsible]
 ====
-Rationale:: Ansible will `and` thetogether (https://docs.ansible.coansible/latest/user_guidplaybooks_conditionalhtml#the-when-statement[Ansible UseGuide » Conditionals]).
-Multiple conditions that all need tbe true (a logical `and`) can alsbe specified as a list, but bewarof bare variables in `when:`.
+Rationale:: Ansible will `and` the list elements together (https://docs.ansible.coansible/latest/user_guidplaybooks_conditionalhtml#the-when-statement[Ansible UseGuide » Conditionals]).
+Multiple conditions that all need to be true (a logical `and`) can also be specified as a list, but beware of bare variables in `when:`.
 ====
 +
 * All roles need to, minimally, pass a basic ansible-playbook syntax check run
-* All task arguments should be spelled out in YAML style and not use `key=value` type of arguments
+* Spell out all task arguments in YAML style and do not use `key=value` type of arguments
 +
 [%collapsible]
 ====
@@ -88,15 +86,15 @@ tasks:
 ----
 ====
 +
-* Avoid the use of `True` and `False` for boolean values in playbooks.
+* Use `true` and `false` for boolean values in playbooks.
 +
 [%collapsible]
 ====
-Explanation:: These values are sometimes used because they are the words Python uses.
-  However, they are improper YAML and will be treated as either strings or as booleans but generating a warning depending on the particular YAML implementation.
+Explanation:: Do not use the Ansible-specific `yes` and `no` as boolean values in YAML as these are completely custom extensions used by Ansible and are not part of the YAML spec and also avoid the use of the Python-style `True` and `False` for boolean values in playbooks.
+
+Rationale:: https://yaml.org/type/bool.html[YAML 1.1] allows all variants whereas https://yaml.org/spec/1.2/spec.html#id2803629[YAML 1.2] allows only true/false, and we want to be ready for when it becomes the default, and avoid a massive migration effort.
 ====
 +
-* Do not use the Ansible-specific `yes` and `no` as boolean values in YAML as these are completely custom extensions used by Ansible and are not part of the YAML spec.
 * Avoid comments in playbooks when possible.
   The task `name` value should be descriptive enough to tell what a task does.
   Variables should be well commented in the `defaults` and `vars` directories and should, therefore, not need explanation in the playbooks themselves.
@@ -119,7 +117,6 @@ Explanation:: These values are sometimes used because they are the words Python 
 
 * Ensure that all tasks are idempotent.
 * https://github.com/ansible/ansible/issues/10374[Ansible variables use lazy evaluation.]
-* Prefix all tags within a role with the role name or, alternatively, a "unique enough" but descriptive prefix.
 * Prefer the command module over the shell module unless you explicitly need shell functionality such as, e.g., piping.
   Even better, use a dedicated module, if it exists.
   If not, see the <<check-mode-and-idempotency-issues,section>> about idempotency and check mode and make sure that your task is idempotent and supports check mode properly;
@@ -130,12 +127,12 @@ Explanation:: These values are sometimes used because they are the words Python 
 +
 [%collapsible]
 ====
-Explanation:: It aborts the whole play instead of a given host (with multiple hosts in the inventory).
+Rationale:: It aborts the whole play instead of a given host (with multiple hosts in the inventory).
   If absolutely necessary, consider using `meta: end_host`.
 ====
 +
 * Task names can be made dynamic by using variables (wrapped in Jinja2 templates), this helps with reading the logs.
-* Do not use variables (wrapped in Jinja2 templates) for play names, variables don't get expanded properly there.
+* Do not use variables (wrapped in Jinja2 templates) for play names; variables don't get expanded properly there.
 * Do not override role defaults or vars or input parameters using `set_fact`.
   Use a different name instead.
 +
@@ -193,7 +190,6 @@ The use of `lineinfile` should include a comment with justification.
 +
 * Limit use of the `copy` module to copying remote files and to uploading binary blobs.
   For all other file pushes, use the `template` module. Even if there is nothing in the file that is being templated at the current moment, having the file handled by the `template` module now makes adding that functionality much simpler than if the file is initially handled by the `copy` and then needs to be moved before it can be edited.
-# TODO: I am not convinced about the following rule:
 * When using the `template` module, refrain from appending `.j2` to the file name. This alters the syntax highlighting in most editors and will obscure the benefits of highlighting for the particular file type or filename.
   Anything under the `templates` directory of a role is assumed to be treated as a Jinja 2 template, so adding the `.j2` extension is redundant information that is not helpful.
 * Keep filenames and templates as close to the name on the destination system as possible.
@@ -203,15 +199,4 @@ The use of `lineinfile` should include a comment with justification.
 Rationale:: This will help with both editor highlighting as well as identifying source and destination versions of the file at a glance.
 Avoid duplicating the remote full path in the role directory, however, as that creates unnecessary depth in the file tree for the role.
 Grouping sets of similar files into a subdirectory of `templates` is allowable, but avoid unnecessary depth to the hierarchy.
-====
-+
-* Use `{{ role_path }}/subdir/` as the filename prefix when including files if the name has a variable in it.
-+
-[%collapsible]
-====
-Rationale:: your role may be included by another role, and if you specify a relative path, the file could be found in the including role.
-For example, if you have something like `include_vars: "{{ ansible_facts['distribution'] }}.yml"` and you do not provide every possible `vars/{{ ansible_facts['distribution'] }}.yml` in your role, Ansible will look in the including role for this file.
-Instead, to ensure that only your role will be referenced, use `include_vars: "{{role_path}}/vars/{{ ansible_facts['distribution'] }}.yml"`.
-Same with other file based includes such as `include_tasks`.
-See https://docs.ansible.com/ansible/latest/dev_guide/overview_architecture.html#the-ansible-search-path[Ansible Developer Guide » Ansible architecture » The Ansible Search Path] for more information.
 ====
