@@ -127,6 +127,8 @@ Rationale:: It aborts the whole play instead of a given host (with multiple host
 +
 * Task names can be made dynamic by using variables (wrapped in Jinja2 templates), this helps with reading the logs.
 * Do not use variables (wrapped in Jinja2 templates) for play names; variables don't get expanded properly there.
+  The same applies to loop variables (by default `item`) in task names within a loop.
+  They, too, don't get properly expanded and hence are not to be used there.
 * Do not override role defaults or vars or input parameters using `set_fact`.
   Use a different name instead.
 +
