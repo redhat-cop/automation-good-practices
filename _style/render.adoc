@@ -9,6 +9,7 @@
 :source-highlighter: rouge
 :rouge-style: github
 :listing-caption: Listing
+:imagesdir: _images/
 
 // The following lines could become relevant in the future
 
@@ -16,7 +17,6 @@
 :pdf-style: redhat
 :pdf-stylesdir: _styles/pdf/
 :pdf-fontsdir: fonts/
-:imagesdir: images/
 
 ifdef::backend-pdf[]
 :autofit-option:
