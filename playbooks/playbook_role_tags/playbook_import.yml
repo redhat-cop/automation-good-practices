@@ -1,0 +1,26 @@
+- name: a playbook can be a list of roles imported with tags
+  hosts: localhost
+  gather_facts: false
+  become: false
+
+  tasks:
+
+    - name: import role1
+      import_role:
+        name: role1
+      tags: 
+        - role1
+        - deploy
+    - name: import role2
+      import_role:
+        name: role2
+      tags:
+        - role2
+        - deploy
+        - configure
+    - name: import role3
+      import_role:
+        name: role3
+      tags:
+        - role3
+        - configure

@@ -1,0 +1,32 @@
+- name: a playbook can be a list of roles included with tags
+  hosts: localhost
+  gather_facts: false
+  become: false
+
+  tasks:
+
+    - name: import role1
+      include_role:
+        name: role1
+        apply:
+          tags: [role1, deploy]
+      tags: 
+        - role1
+        - deploy
+    - name: import role2
+      include_role:
+        name: role2
+        apply:
+          tags: [role2, deploy, configure]
+      tags:
+        - role2
+        - deploy
+        - configure
+    - name: import role3
+      include_role:
+        name: role3
+        apply:
+          tags: [role3, configure]
+      tags:
+        - role3
+        - configure
