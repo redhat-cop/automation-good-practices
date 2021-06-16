@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 2.0.10">
+<meta name="generator" content="Asciidoctor 2.0.15">
 <title>Good Practices for Ansible - GPA</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
@@ -47,7 +47,7 @@ textarea{overflow:auto;vertical-align:top}
 table{border-collapse:collapse;border-spacing:0}
 *,*::before,*::after{-moz-box-sizing:border-box;-webkit-box-sizing:border-box;box-sizing:border-box}
 html,body{font-size:100%}
-body{background:#fff;color:rgba(0,0,0,.8);padding:0;margin:0;font-family:"Noto Serif","DejaVu Serif",serif;font-weight:400;font-style:normal;line-height:1;position:relative;cursor:auto;tab-size:4;-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased}
+body{background:#fff;color:rgba(0,0,0,.8);padding:0;margin:0;font-family:"Noto Serif","DejaVu Serif",serif;font-weight:400;font-style:normal;line-height:1;position:relative;cursor:auto;tab-size:4;word-wrap:anywhere;-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased}
 a:hover{cursor:pointer}
 img,object,embed{max-width:100%;height:auto}
 object,embed{height:100%}
@@ -62,10 +62,8 @@ img{-ms-interpolation-mode:bicubic}
 img,object,svg{display:inline-block;vertical-align:middle}
 textarea{height:auto;min-height:50px}
 select{width:100%}
-.center{margin-left:auto;margin-right:auto}
-.stretch{width:100%}
 .subheader,.admonitionblock td.content>.title,.audioblock>.title,.exampleblock>.title,.imageblock>.title,.listingblock>.title,.literalblock>.title,.stemblock>.title,.openblock>.title,.paragraph>.title,.quoteblock>.title,table.tableblock>.title,.verseblock>.title,.videoblock>.title,.dlist>.title,.olist>.title,.ulist>.title,.qlist>.title,.hdlist>.title{line-height:1.45;color:#7a2518;font-weight:400;margin-top:0;margin-bottom:.25em}
-div,dl,dt,dd,ul,ol,li,h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6,pre,form,p,blockquote,th,td{margin:0;padding:0;direction:ltr}
+div,dl,dt,dd,ul,ol,li,h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6,pre,form,p,blockquote,th,td{margin:0;padding:0}
 a{color:#2156a5;text-decoration:underline;line-height:inherit}
 a:hover,a:focus{color:#1d4b8f}
 a img{border:0}
@@ -96,28 +94,28 @@ dl dd{margin-bottom:1.25em}
 abbr,acronym{text-transform:uppercase;font-size:90%;color:rgba(0,0,0,.8);border-bottom:1px dotted #ddd;cursor:help}
 abbr{text-transform:none}
 blockquote{margin:0 0 1.25em;padding:.5625em 1.25em 0 1.1875em;border-left:1px solid #ddd}
-blockquote cite{display:block;font-size:.9375em;color:rgba(0,0,0,.6)}
-blockquote cite::before{content:"\2014 \0020"}
-blockquote cite a,blockquote cite a:visited{color:rgba(0,0,0,.6)}
 blockquote,blockquote p{line-height:1.6;color:rgba(0,0,0,.85)}
 @media screen and (min-width:768px){h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2}
 h1{font-size:2.75em}
 h2{font-size:2.3125em}
 h3,#toctitle,.sidebarblock>.content>.title{font-size:1.6875em}
 h4{font-size:1.4375em}}
-table{background:#fff;margin-bottom:1.25em;border:solid 1px #dedede}
+table{background:#fff;margin-bottom:1.25em;border:solid 1px #dedede;word-wrap:normal}
 table thead,table tfoot{background:#f7f8f7}
 table thead tr th,table thead tr td,table tfoot tr th,table tfoot tr td{padding:.5em .625em .625em;font-size:inherit;color:rgba(0,0,0,.8);text-align:left}
 table tr th,table tr td{padding:.5625em .625em;font-size:inherit;color:rgba(0,0,0,.8)}
 table tr.even,table tr.alt{background:#f8f8f7}
-table thead tr th,table tfoot tr th,table tbody tr td,table tr td,table tfoot tr td{display:table-cell;line-height:1.6}
+table thead tr th,table tfoot tr th,table tbody tr td,table tr td,table tfoot tr td{line-height:1.6}
 h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2;word-spacing:-.05em}
 h1 strong,h2 strong,h3 strong,#toctitle strong,.sidebarblock>.content>.title strong,h4 strong,h5 strong,h6 strong{font-weight:400}
+.center{margin-left:auto;margin-right:auto}
+.stretch{width:100%}
 .clearfix::before,.clearfix::after,.float-group::before,.float-group::after{content:" ";display:table}
 .clearfix::after,.float-group::after{clear:both}
-:not(pre):not([class^=L])>code{font-size:.9375em;font-style:normal!important;letter-spacing:0;padding:.1em .5ex;word-spacing:-.15em;background:#f7f7f8;-webkit-border-radius:4px;border-radius:4px;line-height:1.45;text-rendering:optimizeSpeed;word-wrap:break-word}
-:not(pre)>code.nobreak{word-wrap:normal}
-:not(pre)>code.nowrap{white-space:nowrap}
+:not(pre).nobreak{word-wrap:normal}
+:not(pre).nowrap{white-space:nowrap}
+:not(pre).pre-wrap{white-space:pre-wrap}
+:not(pre):not([class^=L])>code{font-size:.9375em;font-style:normal!important;letter-spacing:0;padding:.1em .5ex;word-spacing:-.15em;background:#f7f7f8;-webkit-border-radius:4px;border-radius:4px;line-height:1.45;text-rendering:optimizeSpeed}
 pre{color:rgba(0,0,0,.9);font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;line-height:1.45;text-rendering:optimizeSpeed}
 pre code,pre pre{color:inherit;font-size:inherit;line-height:inherit}
 pre>code{display:block}
@@ -182,7 +180,7 @@ body.toc2.toc-right{padding-left:0;padding-right:20em}}
 #content #toc{border-style:solid;border-width:1px;border-color:#e0e0dc;margin-bottom:1.25em;padding:1.25em;background:#f8f8f7;-webkit-border-radius:4px;border-radius:4px}
 #content #toc>:first-child{margin-top:0}
 #content #toc>:last-child{margin-bottom:0}
-#footer{max-width:100%;background:rgba(0,0,0,.8);padding:1.25em}
+#footer{max-width:none;background:rgba(0,0,0,.8);padding:1.25em}
 #footer-text{color:rgba(255,255,255,.8);line-height:1.44}
 #content{margin-bottom:.625em}
 .sect1{padding-bottom:.625em}
@@ -205,7 +203,7 @@ table.tableblock #preamble>.sectionbody>[class="paragraph"]:first-of-type p{font
 .admonitionblock>table td.icon{text-align:center;width:80px}
 .admonitionblock>table td.icon img{max-width:none}
 .admonitionblock>table td.icon .title{font-weight:bold;font-family:"Open Sans","DejaVu Sans",sans-serif;text-transform:uppercase}
-.admonitionblock>table td.content{padding-left:1.125em;padding-right:1.25em;border-left:1px solid #dddddf;color:rgba(0,0,0,.6)}
+.admonitionblock>table td.content{padding-left:1.125em;padding-right:1.25em;border-left:1px solid #dddddf;color:rgba(0,0,0,.6);word-wrap:anywhere}
 .admonitionblock>table td.content>:last-child>:last-child{margin-bottom:0}
 .exampleblock>.content{border-style:solid;border-width:1px;border-color:#e6e6e6;margin-bottom:1.25em;padding:1.25em;background:#fff;-webkit-border-radius:4px;border-radius:4px}
 .exampleblock>.content>:first-child{margin-top:0}
@@ -215,7 +213,7 @@ table.tableblock #preamble>.sectionbody>[class="paragraph"]:first-of-type p{font
 .sidebarblock>:last-child{margin-bottom:0}
 .sidebarblock>.content>.title{color:#7a2518;margin-top:0;text-align:center}
 .exampleblock>.content>:last-child>:last-child,.exampleblock>.content .olist>ol>li:last-child>:last-child,.exampleblock>.content .ulist>ul>li:last-child>:last-child,.exampleblock>.content .qlist>ol>li:last-child>:last-child,.sidebarblock>.content>:last-child>:last-child,.sidebarblock>.content .olist>ol>li:last-child>:last-child,.sidebarblock>.content .ulist>ul>li:last-child>:last-child,.sidebarblock>.content .qlist>ol>li:last-child>:last-child{margin-bottom:0}
-.literalblock pre,.listingblock>.content>pre{-webkit-border-radius:4px;border-radius:4px;word-wrap:break-word;overflow-x:auto;padding:1em;font-size:.8125em}
+.literalblock pre,.listingblock>.content>pre{-webkit-border-radius:4px;border-radius:4px;overflow-x:auto;padding:1em;font-size:.8125em}
 @media screen and (min-width:768px){.literalblock pre,.listingblock>.content>pre{font-size:.90625em}}
 @media screen and (min-width:1280px){.literalblock pre,.listingblock>.content>pre{font-size:1em}}
 .literalblock pre,.listingblock>.content>pre:not(.highlight),.listingblock>.content>pre[class="highlight"],.listingblock>.content>pre[class^="highlight "]{background:#f7f7f8}
@@ -260,22 +258,21 @@ pre.pygments .lineno::before{content:"";margin-right:-.125em}
 .quoteblock.excerpt>blockquote,.quoteblock .quoteblock{padding:0 0 .25em 1em;border-left:.25em solid #dddddf}
 .quoteblock.excerpt,.quoteblock .quoteblock{margin-left:0}
 .quoteblock.excerpt blockquote,.quoteblock.excerpt p,.quoteblock .quoteblock blockquote,.quoteblock .quoteblock p{color:inherit;font-size:1.0625rem}
-.quoteblock.excerpt .attribution,.quoteblock .quoteblock .attribution{color:inherit;text-align:left;margin-right:0}
-table.tableblock{max-width:100%;border-collapse:separate}
+.quoteblock.excerpt .attribution,.quoteblock .quoteblock .attribution{color:inherit;font-size:.85rem;text-align:left;margin-right:0}
 p.tableblock:last-child{margin-bottom:0}
+td.tableblock>.content{margin-bottom:1.25em;word-wrap:anywhere}
 td.tableblock>.content>:last-child{margin-bottom:-1.25em}
-td.tableblock>.content>:last-child.sidebarblock{margin-bottom:0}
 table.tableblock,th.tableblock,td.tableblock{border:0 solid #dedede}
-table.grid-all>thead>tr>.tableblock,table.grid-all>tbody>tr>.tableblock{border-width:0 1px 1px 0}
-table.grid-all>tfoot>tr>.tableblock{border-width:1px 1px 0 0}
-table.grid-cols>*>tr>.tableblock{border-width:0 1px 0 0}
-table.grid-rows>thead>tr>.tableblock,table.grid-rows>tbody>tr>.tableblock{border-width:0 0 1px}
-table.grid-rows>tfoot>tr>.tableblock{border-width:1px 0 0}
-table.grid-all>*>tr>.tableblock:last-child,table.grid-cols>*>tr>.tableblock:last-child{border-right-width:0}
-table.grid-all>tbody>tr:last-child>.tableblock,table.grid-all>thead:last-child>tr>.tableblock,table.grid-rows>tbody>tr:last-child>.tableblock,table.grid-rows>thead:last-child>tr>.tableblock{border-bottom-width:0}
+table.grid-all>*>tr>*{border-width:1px}
+table.grid-cols>*>tr>*{border-width:0 1px}
+table.grid-rows>*>tr>*{border-width:1px 0}
 table.frame-all{border-width:1px}
+table.frame-ends{border-width:1px 0}
 table.frame-sides{border-width:0 1px}
-table.frame-topbot,table.frame-ends{border-width:1px 0}
+table.frame-none>colgroup+*>:first-child>*,table.frame-sides>colgroup+*>:first-child>*{border-top-width:0}
+table.frame-none>:last-child>:last-child>*,table.frame-sides>:last-child>:last-child>*{border-bottom-width:0}
+table.frame-none>*>tr>:first-child,table.frame-ends>*>tr>:first-child{border-left-width:0}
+table.frame-none>*>tr>:last-child,table.frame-ends>*>tr>:last-child{border-right-width:0}
 table.stripes-all tr,table.stripes-odd tr:nth-of-type(odd),table.stripes-even tr:nth-of-type(even),table.stripes-hover tr:hover{background:#f8f8f7}
 th.halign-left,td.halign-left{text-align:left}
 th.halign-right,td.halign-right{text-align:right}
@@ -284,7 +281,7 @@ th.valign-top,td.valign-top{vertical-align:top}
 th.valign-bottom,td.valign-bottom{vertical-align:bottom}
 th.valign-middle,td.valign-middle{vertical-align:middle}
 table thead th,table tfoot th{font-weight:bold}
-tbody tr th{display:table-cell;line-height:1.6;background:#f7f8f7}
+tbody tr th{background:#f7f8f7}
 tbody tr th,tbody tr th p,tfoot tr th,tfoot tr th p{color:rgba(0,0,0,.8);font-weight:bold}
 p.tableblock>code:only-child{background:none;padding:0}
 p.tableblock{font-size:1em}
@@ -313,6 +310,7 @@ ol.lowergreek{list-style-type:lower-greek}
 .hdlist>table>tbody>tr,.colist>table>tbody>tr{background:none}
 td.hdlist1,td.hdlist2{vertical-align:top;padding:0 .625em}
 td.hdlist1{font-weight:bold;padding-bottom:1.25em}
+td.hdlist2{word-wrap:anywhere}
 .literalblock+.colist,.listingblock+.colist{margin-top:-.5em}
 .colist td:not([class]):first-child{padding:.4em .75em 0;line-height:1;vertical-align:top}
 .colist td:not([class]):first-child img{max-width:none}
@@ -385,7 +383,7 @@ a span.icon>.fa{cursor:inherit}
 .admonitionblock td.icon .icon-warning::before{content:"\f071";color:#bf6900}
 .admonitionblock td.icon .icon-caution::before{content:"\f06d";color:#bf3400}
 .admonitionblock td.icon .icon-important::before{content:"\f06a";color:#bf0000}
-.conum[data-value]{display:inline-block;color:#fff!important;background:rgba(0,0,0,.8);-webkit-border-radius:100px;border-radius:100px;text-align:center;font-size:.75em;width:1.67em;height:1.67em;line-height:1.67em;font-family:"Open Sans","DejaVu Sans",sans-serif;font-style:normal;font-weight:bold}
+.conum[data-value]{display:inline-block;color:#fff!important;background:rgba(0,0,0,.8);-webkit-border-radius:50%;border-radius:50%;text-align:center;font-size:.75em;width:1.67em;height:1.67em;line-height:1.67em;font-family:"Open Sans","DejaVu Sans",sans-serif;font-style:normal;font-weight:bold}
 .conum[data-value] *{color:#fff!important}
 .conum[data-value]+b{display:none}
 .conum[data-value]::after{content:attr(data-value)}
@@ -412,6 +410,7 @@ thead{display:table-header-group}
 svg{max-width:100%}
 p,blockquote,dt,td.content{font-size:1em;orphans:3;widows:3}
 h2,h3,#toctitle,.sidebarblock>.content>.title{page-break-after:avoid}
+#header,#content,#footnotes,#footer{max-width:none}
 #toc,.sidebarblock,.exampleblock>.content{background:none!important}
 #toc{border-bottom:1px solid #dddddf!important;padding-bottom:0!important}
 body.book #header{text-align:center}
@@ -436,6 +435,221 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+pre.rouge table td { padding: 5px; }
+pre.rouge table pre { margin: 0; }
+pre.rouge .cm {
+  color: #999988;
+  font-style: italic;
+}
+pre.rouge .cp {
+  color: #999999;
+  font-weight: bold;
+}
+pre.rouge .c1 {
+  color: #999988;
+  font-style: italic;
+}
+pre.rouge .cs {
+  color: #999999;
+  font-weight: bold;
+  font-style: italic;
+}
+pre.rouge .c, pre.rouge .ch, pre.rouge .cd, pre.rouge .cpf {
+  color: #999988;
+  font-style: italic;
+}
+pre.rouge .err {
+  color: #a61717;
+  background-color: #e3d2d2;
+}
+pre.rouge .gd {
+  color: #000000;
+  background-color: #ffdddd;
+}
+pre.rouge .ge {
+  color: #000000;
+  font-style: italic;
+}
+pre.rouge .gr {
+  color: #aa0000;
+}
+pre.rouge .gh {
+  color: #999999;
+}
+pre.rouge .gi {
+  color: #000000;
+  background-color: #ddffdd;
+}
+pre.rouge .go {
+  color: #888888;
+}
+pre.rouge .gp {
+  color: #555555;
+}
+pre.rouge .gs {
+  font-weight: bold;
+}
+pre.rouge .gu {
+  color: #aaaaaa;
+}
+pre.rouge .gt {
+  color: #aa0000;
+}
+pre.rouge .kc {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kd {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kn {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kp {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kr {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kt {
+  color: #445588;
+  font-weight: bold;
+}
+pre.rouge .k, pre.rouge .kv {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .mf {
+  color: #009999;
+}
+pre.rouge .mh {
+  color: #009999;
+}
+pre.rouge .il {
+  color: #009999;
+}
+pre.rouge .mi {
+  color: #009999;
+}
+pre.rouge .mo {
+  color: #009999;
+}
+pre.rouge .m, pre.rouge .mb, pre.rouge .mx {
+  color: #009999;
+}
+pre.rouge .sa {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .sb {
+  color: #d14;
+}
+pre.rouge .sc {
+  color: #d14;
+}
+pre.rouge .sd {
+  color: #d14;
+}
+pre.rouge .s2 {
+  color: #d14;
+}
+pre.rouge .se {
+  color: #d14;
+}
+pre.rouge .sh {
+  color: #d14;
+}
+pre.rouge .si {
+  color: #d14;
+}
+pre.rouge .sx {
+  color: #d14;
+}
+pre.rouge .sr {
+  color: #009926;
+}
+pre.rouge .s1 {
+  color: #d14;
+}
+pre.rouge .ss {
+  color: #990073;
+}
+pre.rouge .s, pre.rouge .dl {
+  color: #d14;
+}
+pre.rouge .na {
+  color: #008080;
+}
+pre.rouge .bp {
+  color: #999999;
+}
+pre.rouge .nb {
+  color: #0086B3;
+}
+pre.rouge .nc {
+  color: #445588;
+  font-weight: bold;
+}
+pre.rouge .no {
+  color: #008080;
+}
+pre.rouge .nd {
+  color: #3c5d5d;
+  font-weight: bold;
+}
+pre.rouge .ni {
+  color: #800080;
+}
+pre.rouge .ne {
+  color: #990000;
+  font-weight: bold;
+}
+pre.rouge .nf, pre.rouge .fm {
+  color: #990000;
+  font-weight: bold;
+}
+pre.rouge .nl {
+  color: #990000;
+  font-weight: bold;
+}
+pre.rouge .nn {
+  color: #555555;
+}
+pre.rouge .nt {
+  color: #000080;
+}
+pre.rouge .vc {
+  color: #008080;
+}
+pre.rouge .vg {
+  color: #008080;
+}
+pre.rouge .vi {
+  color: #008080;
+}
+pre.rouge .nv, pre.rouge .vm {
+  color: #008080;
+}
+pre.rouge .ow {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .o {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .w {
+  color: #bbbbbb;
+}
+pre.rouge {
+  background-color: #f8f8f8;
+}
+</style>
 </head>
 <body class="book toc2 toc-left">
 <div id="header">
@@ -471,15 +685,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </ul>
 </li>
 <li><a href="#_supporting_multiple_providers">3.4.4. Supporting multiple providers</a></li>
-<li><a href="#_generating_files_from_templates">3.4.5. Generating files from templates</a></li>
-<li><a href="#_yaml_and_jinja2_syntax">3.4.6. YAML and Jinja2 Syntax</a></li>
-<li><a href="#_python_guidelines">3.4.7. Python Guidelines</a></li>
-<li><a href="#_ansible_best_practices">3.4.8. Ansible Best Practices</a>
+<li><a href="#_generating_files_from_templates">3.4.5. Generating files from templates</a>
 <ul class="sectlevel4">
-<li><a href="#_vars_vs_defaults">3.4.8.1. Vars vs Defaults</a></li>
+<li><a href="#_vars_vs_defaults">3.4.5.1. Vars vs Defaults</a></li>
 </ul>
 </li>
-<li><a href="#_documentation_conventions">3.4.9. Documentation conventions</a></li>
+<li><a href="#_documentation_conventions">3.4.6. Documentation conventions</a></li>
 </ul>
 </li>
 <li><a href="#_references">3.5. References</a></li>
@@ -494,7 +705,18 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_define_your_inventory_as_structured_directory_instead_of_single_file">6.3. Define your inventory as structured directory instead of single file</a></li>
 </ul>
 </li>
-<li><a href="#_plugins_good_practices">7. Plugins good practices</a></li>
+<li><a href="#_plugins_good_practices">7. Plugins good practices</a>
+<ul class="sectlevel2">
+<li><a href="#_python_guidelines">7.1. Python Guidelines</a></li>
+</ul>
+</li>
+<li><a href="#_coding_style_good_practices_for_ansible">8. Coding Style Good Practices for Ansible</a>
+<ul class="sectlevel2">
+<li><a href="#_naming_things_2">8.1. Naming things</a></li>
+<li><a href="#_yaml_and_jinja2_syntax">8.2. YAML and Jinja2 Syntax</a></li>
+<li><a href="#_ansible_guidelines">8.3. Ansible Guidelines</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -590,7 +812,7 @@ Metaphorically speaking, only if stones have been cut at roughly the same size, 
 <p>The following is only one example of how to structure your content but has proven robust enough on multiple occasions.</p>
 <div class="imageblock">
 <div class="content">
-<img src="ansible_structures.svg" alt="a hierarchy of landscape type function and component">
+<img src="_images/ansible_structures.svg" alt="a hierarchy of landscape type function and component">
 </div>
 <div class="title">Figure 1. Structure of Automation</div>
 </div>
@@ -793,21 +1015,6 @@ user to focus on the functionality, not on technical details.</p>
 <div class="ulist">
 <ul>
 <li>
-<p>All YAML or Python files, variables, arguments, repositories, and other such names (like
-dictionary keys) should be valid Python identifiers following standard naming conventions of being
-in snake_case_naming_schemes. In particular, do not use special characters other than
-underscore in variable names, even if YAML/JSON allow them. (Using such variables in Jinja2 or
-Python would be then very confusing and probably not functional.) Rationale: even when Ansible
-currently allows names that are not valid identifier, it may stop allowing them in the future, as
-it happened in the past already. Making all names valid identifiers will avoid encountering
-problems in the future. Dictionary keys that are not valid identifier are also less intuitive to
-use in Jinja2 (a dot in a dictionary key would be particularly confusing).</p>
-</li>
-<li>
-<p>Names should be mnemonic and descriptive and not strive to shorten more than necessary. Systems
-support long identifier names, so use them to be descriptive</p>
-</li>
-<li>
 <p>All defaults and all arguments to a role should have a name that begins with the role name to help
 avoid collision with other names. Avoid names like <code>packages</code> in favor of a name like <code>foo_packages</code>.
 (Rationale: Ansible has no namespaces, doing so reduces the potential for conflicts and makes
@@ -830,6 +1037,9 @@ some popular roles like
 <a href="https://github.com/geerlingguy/ansible-role-apache/blob/f2b91ac84001db3fd4b43306a8f73f1a54f96f7d/vars/Debian.yml#L8">geerlingguy.ansible-role-apache</a>). This
 includes variables set by set_fact and register, because they persist in the namespace after the
 role has finished!</p>
+</li>
+<li>
+<p>Prefix all tags within a role with the role name or, alternatively, a "unique enough" but descriptive prefix.</p>
 </li>
 </ul>
 </div>
@@ -1143,256 +1353,30 @@ user request to have it configurable.)</p>
 <p>Make prominently clear in the HOWTO (at the top) what settings/configuration files are replaced by the role
 instead of just modified.</p>
 </li>
-</ul>
+<li>
+<p>Use <code>{{ role_path }}/subdir/</code> as the filename prefix when including files if the name has a variable in it.</p>
+<details>
+<summary class="title">Details</summary>
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Rationale</dt>
+<dd>
+<p>your role may be included by another role, and if you specify a relative path, the file could be found in the including role.
+For example, if you have something like <code>include_vars: "{{ ansible_facts['distribution'] }}.yml"</code> and you do not provide every possible <code>vars/{{ ansible_facts['distribution'] }}.yml</code> in your role, Ansible will look in the including role for this file.
+Instead, to ensure that only your role will be referenced, use <code>include_vars: "{{role_path}}/vars/{{ ansible_facts['distribution'] }}.yml"</code>.
+Same with other file based includes such as <code>include_tasks</code>.
+See <a href="https://docs.ansible.com/ansible/latest/dev_guide/overview_architecture.html#the-ansible-search-path">Ansible Developer Guide » Ansible architecture » The Ansible Search Path</a> for more information.</p>
+</dd>
+</dl>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_yaml_and_jinja2_syntax">3.4.6. YAML and Jinja2 Syntax</h4>
-<div class="ulist">
-<ul>
-<li>
-<p>Indent at two spaces</p>
-</li>
-<li>
-<p>List contents should be indented beyond the list definition</p>
-</li>
-<li>
-<p>It is easy to split long Jinja2 expressions into <a href="https://github.com/linux-system-roles/timesync/pull/47/files">multiple
-lines</a>.  If the
-<code>when:</code> condition results in a line that is too long, and is an <code>and</code>
-expression, then break it into a list of conditions.  Ansible will <code>and</code> them
-together (see: <a href="https://github.com/linux-system-roles/timesync/pull/36">[1]</a>
-<a href="https://docs.ansible.com/ansible/latest/user_guide/playbooks_conditionals.html#the-when-statement">[2]</a>).
-Multiple conditions that all need to be true (a logical <code>and</code>) can also be
-specified as a list, but beware of bare variables in <code>when:</code>.</p>
-</li>
-<li>
-<p>All roles need to, minimally, pass a basic ansible-playbook syntax check run</p>
-</li>
-<li>
-<p>All task arguments should be spelled out in YAML style and not use <code>key=value</code> type of arguments</p>
-</li>
-<li>
-<p>All YAML files need to pass standard yamllint syntax with the modifications listed in
-<a href="https://github.com/AGP-roles/meta_test/blob/master/yamllint.yml">yamllint.yml</a> in the
-<a href="https://github.com/AGP-roles/meta_test">meta_test</a> role. These modifications are minimal:
-document starter characters (the initial
-<code>---</code> string at the top of a file) should not be used, and it is not necessary to start every comment
-with a space. Most comments should start with a space, but no space is allowed when a comment is
-documenting an optional variable with its default value.</p>
-<div class="ulist">
-<ul>
-<li>
-<p>As a result of being able to pass basic YAML lint, avoid the use of <code>True</code> and <code>False</code> for boolean values
-in playbooks. These values are sometimes used because they are the words Python uses. However, they are
-improper YAML and will be treated as either strings or as booleans but generating a warning depending on
-the particular YAML implementation.</p>
-</li>
-<li>
-<p>Do not use the Ansible-specific <code>yes</code> and <code>no</code> as boolean values in YAML as these are completely
-custom extensions used by Ansible and are not part of the YAML spec.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p>Although it is not expressly forbidden, comments in playbooks should be avoided when possible. The task
-<code>name</code> value should be descriptive enough to tell what a task does. Variables should be well commented in
-the <code>defaults</code> and <code>vars</code> directories and should, therefore, not need explanation in the playbooks
-themselves.</p>
-</li>
-<li>
-<p>All Jinja2 template points should have a single space separating the template markers from the variable
-name inside. For instance, always write it as <code>{{ variable_name_here }}</code>. The same goes if the value is
-an expression. <code>{{ variable_name | default('hiya, doc') }}</code></p>
-</li>
-<li>
-<p>When naming files, use the <code>.yml</code> extension and <em>not</em> <code>.yaml</code>.  <code>.yml</code> is what
-<code>ansible-galaxy init</code> does when creating a new role template.</p>
-</li>
-<li>
-<p>Double quotes should be used for YAML strings with the exception of Jinja2
-strings which will use single quotes.</p>
-</li>
-<li>
-<p>Do not use quotes unless you have to, especially for short strings like
-<code>present</code>, <code>absent</code>, etc.  This is how examples in module documentation
-are typically presented.</p>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_python_guidelines">3.4.7. Python Guidelines</h4>
-<div class="ulist">
-<ul>
-<li>
-<p>Review Ansible guidelines for
-<a href="https://docs.ansible.com/ansible/latest/dev_guide/developing_modules_best_practices.html">modules</a>
-and <a href="https://docs.ansible.com/ansible/latest/dev_guide/index.html">development</a>.</p>
-</li>
-<li>
-<p>Use <a href="https://pep8.org/">PEP8</a>.</p>
-</li>
-<li>
-<p>File headers and functions should have comments for their intent.</p>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_ansible_best_practices">3.4.8. Ansible Best Practices</h4>
-<div class="ulist">
-<ul>
-<li>
-<p>Ansible variables use lazy evaluation. <a href="https://github.com/ansible/ansible/issues/10374">more_info</a></p>
-</li>
-<li>
-<p>All tags should be namespaced/prefixed with the role name.</p>
-</li>
-<li>
-<p>Use preferably the command module instead of the shell module. Even better, use a dedicated module, if it
-exists. If not, see the <a href="#check-mode-and-idempotency-issues">section</a> about idempotency and check mode and
-make sure that you support them properly (your task will likely need options such as <code>changed_when:</code>
-and maybe <code>check_mode:</code> ). Anytime <code>command</code> or <code>shell</code> modules are used, a comment in the code with
-justification would help with future maintenance.</p>
-</li>
-<li>
-<p>Beware of bare variables (expressions consisting of just one variable reference without any
-operator) in <code>when</code>, their behavior is unexpected
-<a href="https://github.com/ansible/ansible/issues/39414">more_info</a>.</p>
-</li>
-<li>
-<p>Do not use <code>meta: end_play</code>. It aborts the whole play instead of a given host (with multiple
-hosts in the inventory) <a href="https://github.com/ansible/ansible/issues/27973">more_info</a> - We may
-consider using <code>meta: end_host</code> but this was recently introduced in Ansible 2.8
-<a href="https://github.com/ansible/ansible/pull/47194">more_info</a></p>
-</li>
-<li>
-<p>If reasonable, task names can be made dynamic by using variables (wrapped in Jinja2 templates), this helps
-with reading the logs. On the other hand, don&#8217;t do this for play names, variables don&#8217;t get expanded
-properly there.</p>
-</li>
-<li>
-<p>Do not override role defaults or vars or input parameters using <code>set_fact</code>. Use a different
-name instead. (Rationale: a fact set using <code>set_fact</code> can not be unset and it will override
-the role default or role variable in all subsequent invocations of the role in the same
-playbook. A fact has a different priority than other variables and not the highest, so in
-some cases overriding a given parameter will not work because the parameter has a higher priority)
-<a href="https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable">more_info</a></p>
-</li>
-<li>
-<p>Use the smallest scope for variables. Facts are global for playbook run, so it is preferable
-to use other types of variables. Therefore limit (preferably avoid) the use of <code>set_fact</code>.
-Role variables are exposed to the whole play when the role is applied using <code>roles:</code> or
-<code>import_role:</code>. A more restricted scope such as task or block variables is preferred.</p>
-</li>
-<li>
-<p>Beware of <code>ignore_errors: yes</code>! Especially in tests. If you set on a block, it will ignore
-all the asserts in the block ultimately making them pointless. A comment in the code with
-justification is required to use this statement.</p>
-</li>
-<li>
-<p>Do not use the <code>eq</code> (introduced in Jinja 2.10) or <code>equalto</code> (introduced in Jinja 2.8) Jinja
-Operators - or any other post-2.7 Jinja2 features. (RHEL 7 has Jinja 2.7.2)</p>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="https://github.com/linux-system-roles/storage/pull/26" class="bare">https://github.com/linux-system-roles/storage/pull/26</a></p>
-</li>
-<li>
-<p><a href="https://github.com/linux-system-roles/storage/issues/49" class="bare">https://github.com/linux-system-roles/storage/issues/49</a></p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p>All tasks should be idempotent, with notable and rare exceptions such as the
-<a href="https://github.com/AGP-roles/ansible_collection_system/tree/master/roles/reboot">AGP reboot role</a>.</p>
-</li>
-<li>
-<p>Avoid the use of <code>when: foo_result is changed</code> whenever possible. Use
-handlers, and, if necessary, handler
-chains to achieve this same result. Exceptions are permitted but they should be avoided when possible</p>
-</li>
-<li>
-<p>Use the various include/import statements in Ansible when doing so can lead to simplified code and a
-reduction of repetition. This is the closest that Ansible comes to callable sub-routines, so use judgment
-about callable routines to know when to similarly include a sub playbook. Some examples of good times
-to do so are</p>
-<div class="ulist">
-<ul>
-<li>
-<p>When a set of multiple commands share a single <code>when</code> conditional</p>
-</li>
-<li>
-<p>When a set of multiple commands are being looped together over a list of items</p>
-</li>
-<li>
-<p>When a single large role is doing many complicated tasks and cannot easily be broken into multiple roles,
-but the process proceeds in multiple related stages</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p>Avoid calling the <code>package</code> module iteratively with the <code>{{ item }}</code> argument, as this is impressively
-more slow than calling it with the line <code>name: "{{ foo_packages }}"</code>.  The same can go for many other
-modules that can be given an entire list of items all at once.</p>
-</li>
-<li>
-<p>Use meta modules when possible. Instead of using the <code>upstart</code> and <code>systemd</code> modules, use the <code>service</code>
-module when at all possible. Similarly for package management, use <code>package</code> instead of <code>yum</code> or <code>dnf</code> or
-similar. This will allow our playbooks to run on the widest selection of operating systems possible without
-having to modify any more tasks than is necessary.</p>
-</li>
-<li>
-<p>Avoid the use of <code>lineinfile</code> wherever that might be feasible.  Slight miscalculations in how it is used can
-lead to a loss of idempotence.  Modifying config files with it can cause the Ansible code to become arcane
-and difficult to read, especially for someone not familiar with the file in question.  Try editing files
-directly using other built-in modules (e.g. <code>ini_file</code>, <code>blockinfile</code>, <code>xml</code>), or reading and parsing. If
-you are modifying more than a tiny number of lines or in a manner more than trivially complex, try
-leveraging the <code>template</code> module, instead. This will allow the entire structure of the file to be seen by
-later users and maintainers. The use of <code>lineinfile</code> should include a comment with justification.</p>
-</li>
-<li>
-<p>Limit use of the <code>copy</code> module to copying remote files and to uploading binary blobs. For all other file
-pushes, use the <code>template</code> module. Even if there is nothing in the file that is being templated at the
-current moment, having the file handled by the <code>template</code> module now makes adding that functionality much
-simpler than if the file is initially handled by the <code>copy</code> and then needs to be moved before it can be
-edited.</p>
-</li>
-<li>
-<p>When using the <code>template</code> module, refrain from appending <code>.j2</code> to the file name. This alters the syntax
-highlighting in most editors and will obscure the benefits of highlighting for the particular file type or
-filename. Anything under the <code>templates</code> directory of a role is assumed to be treated as a Jinja 2 template,
-so adding the <code>.j2</code> extension is redundant information that is not helpful.</p>
-</li>
-<li>
-<p>Keep filenames and templates as close to the name on the destination system as possible. This will help with
-both editor highlighting as well as identifying source and destination versions of the file at a glance.
-Avoid duplicating the remote full path in the role directory, however, as that creates unnecessary depth in
-the file tree for the role. Grouping sets of similar files into a subdirectory of <code>templates</code> is allowable,
-but avoid unnecessary depth to the hierarchy.</p>
-</li>
-<li>
-<p>Use <code>{{ role_path }}/subdir/</code> as the filename prefix when including files if
-the name has a variable in it.  The problem is that your role may be
-included by another role, and if you specify a relative path, the file could
-be found in the including role.  For example, if you have something like
-<code>include_vars: "{{ ansible_facts['distribution'] }}.yml"</code> and you do not provide
-every possible <code>vars/{{ ansible_facts['distribution'] }}.yml</code> in your role,
-Ansible will look in the including role for this file.  Instead, to ensure
-that only your role will be referenced, use <code>include_vars: "{{
-role_path}}/vars/{{ ansible_facts['distribution'] }}.yml"</code>. Same with other file
-based includes such as <code>include_tasks</code>.
-See <a href="https://docs.ansible.com/ansible/latest/dev_guide/overview_architecture.html#the-ansible-search-path">Ansible Search Path</a>
-for more information.</p>
+</details>
 </li>
 </ul>
 </div>
 <div class="sect4">
-<h5 id="_vars_vs_defaults">3.4.8.1. Vars vs Defaults</h5>
+<h5 id="_vars_vs_defaults">3.4.5.1. Vars vs Defaults</h5>
 <div class="ulist">
 <ul>
 <li>
@@ -1425,7 +1409,7 @@ which should default to an empty array in <code>defaults/main.yml</code> and be 
 </div>
 </div>
 <div class="sect3">
-<h4 id="_documentation_conventions">3.4.9. Documentation conventions</h4>
+<h4 id="_documentation_conventions">3.4.6. Documentation conventions</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -1816,228 +1800,407 @@ Work in Progress&#8230;&#8203;
 </tr>
 </table>
 </div>
+<div class="sect2">
+<h3 id="_python_guidelines">7.1. Python Guidelines</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Review Ansible guidelines for <a href="https://docs.ansible.com/ansible/latest/dev_guide/developing_modules_best_practices.html">modules</a> and <a href="https://docs.ansible.com/ansible/latest/dev_guide/index.html">development</a>.</p>
+</li>
+<li>
+<p>Use <a href="https://pep8.org/">PEP8</a>.</p>
+</li>
+<li>
+<p>File headers and functions should have comments for their intent.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_coding_style_good_practices_for_ansible">8. Coding Style Good Practices for Ansible</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>It has proven useful to agree on certain guiding principles as early as possible in any automation project.
+Doing so makes it much easier to onboard new Ansible developers.
+Project guidelines can also be shared with other departments working on automation which in turn improves the re-usability of playbooks, roles, modules, and documentation.</p>
+</div>
+<div class="paragraph">
+<p>Another major benefit is that it makes code review process less time-consuming and more reliable; making both the developer and reviewer more likely to engage in a constructive review conversation.</p>
+</div>
+<div class="paragraph">
+<p>This section contains suggestions for such coding-style guidelines.
+The list is neither complete nor are all of the guidelines necessary in every automation project.
+Experience shows that it makes sense to start with a minimum set of guidelines because the longer the list the lower the chance of people actually reading through it.
+Additional guidelines can always be added later should the situation warrant it.</p>
+</div>
+<div class="sect2">
+<h3 id="_naming_things_2">8.1. Naming things</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Use valid Python identifiers following standard naming conventions of being in <code>snake_case_naming_schemes</code> for all YAML or Python files, variables, arguments, repositories, and other such names (like dictionary keys).</p>
+</li>
+<li>
+<p>Do not use special characters other than underscore in variable names, even if YAML/JSON allow them.</p>
+<details>
+<summary class="title">Details</summary>
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Explanation</dt>
+<dd>
+<p>Using such variables in Jinja2 or Python would be then very confusing and probably not functional.</p>
+</dd>
+<dt class="hdlist1">Rationale</dt>
+<dd>
+<p>even when Ansible currently allows names that are not valid identifier, it may stop allowing them in the future, as it happened in the past already.
+Making all names valid identifiers will avoid encountering problems in the future. Dictionary keys that are not valid identifiers are also less intuitive to use in Jinja2 (a dot in a dictionary key would be particularly confusing).</p>
+</dd>
+</dl>
+</div>
+</div>
+</details>
+</li>
+<li>
+<p>Use mnemonic and descriptive names and do not shorten more than necessary.
+Systems support long identifier names, so use them!</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_yaml_and_jinja2_syntax">8.2. YAML and Jinja2 Syntax</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Indent at two spaces</p>
+</li>
+<li>
+<p>Indent list contents beyond the list definition</p>
+<details>
+<summary class="title">Details</summary>
+<div class="content">
+<div class="listingblock">
+<div class="title">Listing 4. Do this:</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yaml"><span class="na">example_list</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="s">example_element_1</span>
+  <span class="pi">-</span> <span class="s">example_element_2</span>
+  <span class="pi">-</span> <span class="s">example_element_3</span>
+  <span class="pi">-</span> <span class="s">example_element_4</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Listing 5. Don&#8217;t do this:</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yaml"><span class="na">example_list</span><span class="pi">:</span>
+<span class="pi">-</span> <span class="s">example_element_1</span>
+<span class="pi">-</span> <span class="s">example_element_2</span>
+<span class="pi">-</span> <span class="s">example_element_3</span>
+<span class="pi">-</span> <span class="s">example_element_4</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+</li>
+<li>
+<p>Split long Jinja2 expressions into multiple lines.</p>
+</li>
+<li>
+<p>If the <code>when:</code> condition results in a line that is too long, and is an <code>and</code> expression, then break it into a list of conditions.</p>
+<details>
+<summary class="title">Details</summary>
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Rationale</dt>
+<dd>
+<p>Ansible will <code>and</code> the list elements together (<a href="https://docs.ansible.coansible/latest/user_guidplaybooks_conditionalhtml#the-when-statement">Ansible UseGuide » Conditionals</a>).
+Multiple conditions that all need to be true (a logical <code>and</code>) can also be specified as a list, but beware of bare variables in <code>when:</code>.</p>
+</dd>
+</dl>
+</div>
+</div>
+</details>
+</li>
+<li>
+<p>All roles need to, minimally, pass a basic ansible-playbook syntax check run</p>
+</li>
+<li>
+<p>Spell out all task arguments in YAML style and do not use <code>key=value</code> type of arguments</p>
+<details>
+<summary class="title">Details</summary>
+<div class="content">
+<div class="listingblock">
+<div class="title">Listing 6. Do this:</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yaml"><span class="na">tasks</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">Print a message</span>
+    <span class="s">ansible.builtin.debug</span><span class="pi">:</span>
+      <span class="na">msg</span><span class="pi">:</span> <span class="s">This is how it's done.</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Listing 7. Don&#8217;t do this:</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yaml"><span class="na">tasks</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">Print a message</span>
+    <span class="s">ansible.builtin.debug</span><span class="pi">:</span> <span class="s">msg="This is the exact opposite of how it's done."</span></code></pre>
+</div>
+</div>
+</div>
+</details>
+</li>
+<li>
+<p>Use <code>true</code> and <code>false</code> for boolean values in playbooks.</p>
+<details>
+<summary class="title">Details</summary>
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Explanation</dt>
+<dd>
+<p>Do not use the Ansible-specific <code>yes</code> and <code>no</code> as boolean values in YAML as these are completely custom extensions used by Ansible and are not part of the YAML spec and also avoid the use of the Python-style <code>True</code> and <code>False</code> for boolean values in playbooks.</p>
+</dd>
+<dt class="hdlist1">Rationale</dt>
+<dd>
+<p><a href="https://yaml.org/type/bool.html">YAML 1.1</a> allows all variants whereas <a href="https://yaml.org/spec/1.2/spec.html#id2803629">YAML 1.2</a> allows only true/false, and we want to be ready for when it becomes the default, and avoid a massive migration effort.</p>
+</dd>
+</dl>
+</div>
+</div>
+</details>
+</li>
+<li>
+<p>Avoid comments in playbooks when possible.
+Instead, ensure that the task <code>name</code> value is descriptive enough to tell what a task does.
+Variables are commented in the <code>defaults</code> and <code>vars</code> directories and, therefore, do not need explanation in the playbooks themselves.</p>
+</li>
+<li>
+<p>Use a single space separating the template markers from the variable name inside all Jinja2 template points.
+For instance, always write it as <code>{{ variable_name_here }}</code>.
+The same goes if the value is an expression. <code>{{ variable_name | default('hiya, doc') }}</code></p>
+</li>
+<li>
+<p>When naming files, use the <code>.yml</code> extension and <em>not</em> <code>.yaml</code>.
+<code>.yml</code> is what <code>ansible-galaxy init</code> does when creating a new role template.</p>
+</li>
+<li>
+<p>Use double quotes for YAML strings with the exception of Jinja2 strings which will use single quotes.</p>
+</li>
+<li>
+<p>Do not use quotes unless you have to, especially for short module-keyword-like strings like <code>present</code>, <code>absent</code>, etc.
+But do use quotes for user-side strings such as descriptions, names, and messages.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_ansible_guidelines">8.3. Ansible Guidelines</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Ensure that all tasks are idempotent.</p>
+</li>
+<li>
+<p><a href="https://github.com/ansible/ansible/issues/10374">Ansible variables use lazy evaluation.</a></p>
+</li>
+<li>
+<p>Prefer the command module over the shell module unless you explicitly need shell functionality such as, e.g., piping.
+Even better, use a dedicated module, if it exists.
+If not, see the <a href="#check-mode-and-idempotency-issues">section</a> about idempotency and check mode and make sure that your task is idempotent and supports check mode properly;
+your task will likely need options such as <code>changed_when:</code> and maybe <code>check_mode:</code>).</p>
+</li>
+<li>
+<p>Anytime <code>command</code> or <code>shell</code> modules are used, add a comment in the code with justification to help with future maintenance.</p>
+</li>
+<li>
+<p>Use the <code>| bool</code> filter when using bare variables (expressions consisting of just one variable reference without any operator) in <code>when</code>.</p>
+</li>
+<li>
+<p>Do not use <code>meta: end_play</code>.</p>
+<details>
+<summary class="title">Details</summary>
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Rationale</dt>
+<dd>
+<p>It aborts the whole play instead of a given host (with multiple hosts in the inventory).
+If absolutely necessary, consider using <code>meta: end_host</code>.</p>
+</dd>
+</dl>
+</div>
+</div>
+</details>
+</li>
+<li>
+<p>Task names can be made dynamic by using variables (wrapped in Jinja2 templates), this helps with reading the logs.</p>
+</li>
+<li>
+<p>Do not use variables (wrapped in Jinja2 templates) for play names; variables don&#8217;t get expanded properly there.
+The same applies to loop variables (by default <code>item</code>) in task names within a loop.
+They, too, don&#8217;t get properly expanded and hence are not to be used there.</p>
+</li>
+<li>
+<p>Do not override role defaults or vars or input parameters using <code>set_fact</code>.
+Use a different name instead.</p>
+<details>
+<summary class="title">Details</summary>
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Rationale</dt>
+<dd>
+<p>a fact set using <code>set_fact</code> can not be unset and it will override the role default or role variable in all subsequent invocations of the role in the same playbook.
+A fact has a different priority than other variables and not the highest, so in some cases overriding a given parameter will not work because the parameter has a higher priority (<a href="https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable">Ansible User Guide » Using Variables</a>)</p>
+</dd>
+</dl>
+</div>
+</div>
+</details>
+</li>
+<li>
+<p>Use the smallest scope for variables.
+Facts are global for playbook run, so it is preferable to use other types of variables. Therefore limit (preferably avoid) the use of <code>set_fact</code>.
+Role variables are exposed to the whole play when the role is applied using <code>roles:</code> or <code>import_role:</code>. A more restricted scope such as task or block variables is preferred.</p>
+</li>
+<li>
+<p>Beware of <code>ignore_errors: true</code>; especially in tests.
+If you set on a block, it will ignore all the asserts in the block ultimately making them pointless.</p>
+</li>
+<li>
+<p>Do not use the <code>eq</code> (introduced in Jinja 2.10) or <code>equalto</code> Jinja operators.</p>
+</li>
+<li>
+<p>Avoid the use of <code>when: foo_result is changed</code> whenever possible.
+Use handlers, and, if necessary, handler chains to achieve this same result.</p>
+</li>
+<li>
+<p>Use the various include/import statements in Ansible.</p>
+<details>
+<summary class="title">Details</summary>
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Explanation</dt>
+<dd>
+<p>Doing so can lead to simplified code and a reduction of repetition.
+This is the closest that Ansible comes to callable sub-routines, so use judgment about callable routines to know when to similarly include a sub playbook.
+Some examples of good times to do so are</p>
+<div class="ulist">
+<ul>
+<li>
+<p>When a set of multiple commands share a single <code>when</code> conditional</p>
+</li>
+<li>
+<p>When a set of multiple commands are being looped together over a list of items</p>
+</li>
+<li>
+<p>When a single large role is doing many complicated tasks and cannot easily be broken into multiple roles, but the process proceeds in multiple related stages</p>
+</li>
+</ul>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</details>
+</li>
+<li>
+<p>Avoid calling the <code>package</code> module iteratively with the <code>{{ item }}</code> argument, as this is impressively more slow than calling it with the line <code>name: "{{ foo_packages }}"</code>.
+The same can go for many other modules that can be given an entire list of items all at once.</p>
+</li>
+<li>
+<p>Use meta modules when possible.</p>
+<details>
+<summary class="title">Details</summary>
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Rationale</dt>
+<dd>
+<p>This will allow our playbooks to run on the widest selection of operating systems possible without having to modify any more tasks than is necessary.</p>
+</dd>
+<dt class="hdlist1">Examples</dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p>Instead of using the <code>upstart</code> and <code>systemd</code> modules, use the <code>service</code>
+module when at all possible.</p>
+</li>
+<li>
+<p>Similarly for package management, use <code>package</code> instead of <code>yum</code> or <code>dnf</code> or
+similar.</p>
+</li>
+</ul>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</details>
+</li>
+<li>
+<p>Avoid the use of <code>lineinfile</code> wherever that might be feasible.</p>
+<details>
+<summary class="title">Details</summary>
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Rationale</dt>
+<dd>
+<p>Slight miscalculations in how it is used can lead to a loss of idempotence.
+Modifying config files with it can cause the Ansible code to become arcane and difficult to read, especially for someone not familiar with the file in question.
+Try editing files directly using other built-in modules (e.g. <code>ini_file</code>, <code>blockinfile</code>, <code>xml</code>), or reading and parsing.
+If you are modifying more than a tiny number of lines or in a manner more than trivially complex, try leveraging the <code>template</code> module, instead.
+This will allow the entire structure of the file to be seen by later users and maintainers.
+The use of <code>lineinfile</code> should include a comment with justification.</p>
+</dd>
+</dl>
+</div>
+</div>
+</details>
+</li>
+<li>
+<p>Limit use of the <code>copy</code> module to copying remote files and to uploading binary blobs.
+For all other file pushes, use the <code>template</code> module. Even if there is nothing in the file that is being templated at the current moment, having the file handled by the <code>template</code> module now makes adding that functionality much simpler than if the file is initially handled by the <code>copy</code> and then needs to be moved before it can be edited.</p>
+</li>
+<li>
+<p>When using the <code>template</code> module, refrain from appending <code>.j2</code> to the file name. This alters the syntax highlighting in most editors and will obscure the benefits of highlighting for the particular file type or filename.
+Anything under the <code>templates</code> directory of a role is assumed to be treated as a Jinja 2 template, so adding the <code>.j2</code> extension is redundant information that is not helpful.</p>
+</li>
+<li>
+<p>Keep filenames and templates as close to the name on the destination system as possible.</p>
+<details>
+<summary class="title">Details</summary>
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Rationale</dt>
+<dd>
+<p>This will help with both editor highlighting as well as identifying source and destination versions of the file at a glance.
+Avoid duplicating the remote full path in the role directory, however, as that creates unnecessary depth in the file tree for the role.
+Grouping sets of similar files into a subdirectory of <code>templates</code> is allowable, but avoid unnecessary depth to the hierarchy.</p>
+</dd>
+</dl>
+</div>
+</div>
+</details>
+</li>
+</ul>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-04-18 07:04:23 +0200
+Last updated 2021-06-13 17:33:47 +0200
 </div>
 </div>
-<style>
-pre.rouge table td { padding: 5px; }
-pre.rouge table pre { margin: 0; }
-pre.rouge .cm {
-  color: #999988;
-  font-style: italic;
-}
-pre.rouge .cp {
-  color: #999999;
-  font-weight: bold;
-}
-pre.rouge .c1 {
-  color: #999988;
-  font-style: italic;
-}
-pre.rouge .cs {
-  color: #999999;
-  font-weight: bold;
-  font-style: italic;
-}
-pre.rouge .c, pre.rouge .ch, pre.rouge .cd, pre.rouge .cpf {
-  color: #999988;
-  font-style: italic;
-}
-pre.rouge .err {
-  color: #a61717;
-  background-color: #e3d2d2;
-}
-pre.rouge .gd {
-  color: #000000;
-  background-color: #ffdddd;
-}
-pre.rouge .ge {
-  color: #000000;
-  font-style: italic;
-}
-pre.rouge .gr {
-  color: #aa0000;
-}
-pre.rouge .gh {
-  color: #999999;
-}
-pre.rouge .gi {
-  color: #000000;
-  background-color: #ddffdd;
-}
-pre.rouge .go {
-  color: #888888;
-}
-pre.rouge .gp {
-  color: #555555;
-}
-pre.rouge .gs {
-  font-weight: bold;
-}
-pre.rouge .gu {
-  color: #aaaaaa;
-}
-pre.rouge .gt {
-  color: #aa0000;
-}
-pre.rouge .kc {
-  color: #000000;
-  font-weight: bold;
-}
-pre.rouge .kd {
-  color: #000000;
-  font-weight: bold;
-}
-pre.rouge .kn {
-  color: #000000;
-  font-weight: bold;
-}
-pre.rouge .kp {
-  color: #000000;
-  font-weight: bold;
-}
-pre.rouge .kr {
-  color: #000000;
-  font-weight: bold;
-}
-pre.rouge .kt {
-  color: #445588;
-  font-weight: bold;
-}
-pre.rouge .k, pre.rouge .kv {
-  color: #000000;
-  font-weight: bold;
-}
-pre.rouge .mf {
-  color: #009999;
-}
-pre.rouge .mh {
-  color: #009999;
-}
-pre.rouge .il {
-  color: #009999;
-}
-pre.rouge .mi {
-  color: #009999;
-}
-pre.rouge .mo {
-  color: #009999;
-}
-pre.rouge .m, pre.rouge .mb, pre.rouge .mx {
-  color: #009999;
-}
-pre.rouge .sa {
-  color: #000000;
-  font-weight: bold;
-}
-pre.rouge .sb {
-  color: #d14;
-}
-pre.rouge .sc {
-  color: #d14;
-}
-pre.rouge .sd {
-  color: #d14;
-}
-pre.rouge .s2 {
-  color: #d14;
-}
-pre.rouge .se {
-  color: #d14;
-}
-pre.rouge .sh {
-  color: #d14;
-}
-pre.rouge .si {
-  color: #d14;
-}
-pre.rouge .sx {
-  color: #d14;
-}
-pre.rouge .sr {
-  color: #009926;
-}
-pre.rouge .s1 {
-  color: #d14;
-}
-pre.rouge .ss {
-  color: #990073;
-}
-pre.rouge .s, pre.rouge .dl {
-  color: #d14;
-}
-pre.rouge .na {
-  color: #008080;
-}
-pre.rouge .bp {
-  color: #999999;
-}
-pre.rouge .nb {
-  color: #0086B3;
-}
-pre.rouge .nc {
-  color: #445588;
-  font-weight: bold;
-}
-pre.rouge .no {
-  color: #008080;
-}
-pre.rouge .nd {
-  color: #3c5d5d;
-  font-weight: bold;
-}
-pre.rouge .ni {
-  color: #800080;
-}
-pre.rouge .ne {
-  color: #990000;
-  font-weight: bold;
-}
-pre.rouge .nf, pre.rouge .fm {
-  color: #990000;
-  font-weight: bold;
-}
-pre.rouge .nl {
-  color: #990000;
-  font-weight: bold;
-}
-pre.rouge .nn {
-  color: #555555;
-}
-pre.rouge .nt {
-  color: #000080;
-}
-pre.rouge .vc {
-  color: #008080;
-}
-pre.rouge .vg {
-  color: #008080;
-}
-pre.rouge .vi {
-  color: #008080;
-}
-pre.rouge .nv, pre.rouge .vm {
-  color: #008080;
-}
-pre.rouge .ow {
-  color: #000000;
-  font-weight: bold;
-}
-pre.rouge .o {
-  color: #000000;
-  font-weight: bold;
-}
-pre.rouge .w {
-  color: #bbbbbb;
-}
-pre.rouge {
-  background-color: #f8f8f8;
-}
-</style>
 </body>
 </html>
