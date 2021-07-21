@@ -36,6 +36,7 @@ viewpdf: $(OUTFILE)
 
 clean:
 	rm -f $(OUTFILE)
+	rm -f $(OUTFILE2)
 	rm -rf .AppleDouble
 
 spell:
