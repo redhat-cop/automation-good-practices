@@ -98,7 +98,7 @@ Examples:: These are examples
 Even more examples...
 ====
 
-== Publishing
+== Publishing as HTML
 
 Use for now the following manual command:
 
@@ -111,3 +111,29 @@ cp _images/*.svg docs/_images
 ----
 
 NOTE: it doesn't seem that there is any much better way to keep links to images correct according to the https://docs.asciidoctor.org/asciidoctor/latest/html-backend/manage-images/[HTML generation / managed images] chapter.
+
+== Creating a PDF
+
+If you run (a current) Fedora Linux,
+then you can use the `Makefile`.
+
+* `make view` generates both PDF files and displays the GPA guide
+* `make print` prints to your default printer
+* `make spell` runs hunspell for spellchecking
+* …
+
+Alternatively, use the following manual commands to generate the 2 PDFs:
+
+[source,bash]
+----
+asciidoctor-pdf \
+  --attribute=gitdate=$(git log -1 --date=short --pretty=format:%cd) \
+  --attribute=githash=$(git rev-parse --verify HEAD) \
+  --out-file Good_Practices_for_Ansible.pdf \
+  README.adoc
+asciidoctor-pdf \
+  --attribute=gitdate=$(git log -1 --date=short --pretty=format:%cd) \
+  --attribute=githash=$(git rev-parse --verify HEAD) \
+  --out-file Contributing-to-GPA.pdf \
+  CONTRIBUTE.adoc
+----
