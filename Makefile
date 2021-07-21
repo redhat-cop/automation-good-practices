@@ -22,7 +22,7 @@ SPELLOPTS = -d en_GB
 
 all: $(OUTFILE)
 
-$(OUTFILE): $(INFILE) *.adoc */*.adoc _images/* Makefile
+$(OUTFILE): $(INFILE) *.adoc */*.adoc _images/* Makefile .git/index
 	$(ADOCPDF) --out-file $(OUTFILE) $(INFILE)
 	$(ADOCPDF) --out-file $(OUTFILE2) $(INFILE2)
 
