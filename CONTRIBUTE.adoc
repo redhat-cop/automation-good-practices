@@ -98,7 +98,7 @@ Examples:: These are examples
 Even more examples...
 ====
 
-== Publishing as HTML
+== Publish for the website
 
 Use for now the following manual command:
 
