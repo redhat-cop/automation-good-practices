@@ -39,6 +39,10 @@ It also has great educational value for understanding how things actually work (
 
 // If you're a potential author check the CONTRIBUTE.adoc document before... contributing.
 
+=== Where to get and maintain this document
+
+This document is published to https://redhat-cop.github.io/automation-good-practices/, it is open source and its source code is maintained at https://github.com/redhat-cop/automation-good-practices/.
+
 include::structures/README.adoc[leveloffset=1]
 
 include::roles/README.adoc[leveloffset=1]
