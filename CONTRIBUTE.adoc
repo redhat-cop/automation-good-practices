@@ -106,8 +106,8 @@ Use for now the following manual command:
 ----
 asciidoctor -a toc=left -D docs -o index.html README.adoc
 asciidoctor -a toc=left -D docs CONTRIBUTE.adoc
-mkdir docs/_images
-cp _images/*.svg docs/_images
+mkdir -p docs/images
+cp -v images/*.svg docs/images
 ----
 
 NOTE: it doesn't seem that there is any much better way to keep links to images correct according to the https://docs.asciidoctor.org/asciidoctor/latest/html-backend/manage-images/[HTML generation / managed images] chapter.
