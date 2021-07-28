@@ -3,7 +3,8 @@
 NOTE: this section has been imported "as-is" from the https://github.com/oasis-roles/meta_standards[OASIS metastandards repository] and still requires re-formatting to fit the overall structure.
 
 == Background
-
+[%collapsible]
+====
 The goal of the Ansible Metateam project (specifically, the https://github.com/linux-system-roles[Linux System Roles
 project]) is to provide a stable and consistent user
 interface to multiple operating systems (multiple versions of RHEL in the downstream RHEL System
@@ -45,9 +46,11 @@ deemed to be too divergent. Generally, an abstract interface should be something
 always aimed for though, especially if there are multiple providers in use already, and in
 particular when the default provider is changing or is known to be likely to change in the next
 major releases.
+====
 
 == Basics
-
+[%collapsible]
+====
 * Every repository in the AGP-roles namespace should be a valid Ansible Galaxy compatible role
 with the exception of any whose names begin with "meta_", such as this one.
 * New roles should be initiated in line with the skeleton directory, which has standard boilerplate
@@ -59,19 +62,23 @@ versioning, you should be aware that there are some
 https://github.com/ansible/ansible/issues/67512[restrictions] for Ansible
 Galaxy and Automation Hub.  The versioning must be in strict X.Y.Z[ab][W]
 format, where X, Y, and Z are integers.
+====
 
 == Interface design considerations
 
 What should a role do and how can a user tell it what to do.
 
 === Basic design
-
+[%collapsible]
+====
 Try to design the interface focused on the functionality, not on the software implementation behind
 it. This will help abstracting differences between different providers (see above), and help the
 user to focus on the functionality, not on technical details.
+====
 
 === Naming things
-
+[%collapsible]
+====
 * All defaults and all arguments to a role should have a name that begins with the role name to help
 avoid collision with other names. Avoid names like `packages` in favor of a name like `foo_packages`.
 (Rationale: Ansible has no namespaces, doing so reduces the potential for conflicts and makes
@@ -91,9 +98,11 @@ https://github.com/geerlingguy/ansible-role-apache/blob/f2b91ac84001db3fd4b43306
 includes variables set by set_fact and register, because they persist in the namespace after the
 role has finished!
 * Prefix all tags within a role with the role name or, alternatively, a "unique enough" but descriptive prefix.
+====
 
 === Providers
-
+[%collapsible]
+====
 When there are multiple implementations of the same functionality, we call them "`providers`". A role
 supporting multiple providers should have an input variable called `$ROLENAME_provider`. If this
 variable is not defined, the role should detect the currently running provider on the system, and
@@ -113,11 +122,13 @@ is not supported anymore. Exporting `$ROLENAME_provider_os_default` allows the u
 `$ROLENAME_provider: "{{ $ROLENAME_provider_os_default }}"` (thanks to the lazy variable evaluation
 in Ansible) and thus get a consistent setting for all the systems of the given OS version without
 having to decide what the actual value is - the decision is delegated to the role.)
+====
 
 == Implementation considerations
 
 === Role Structure
-
+[%collapsible]
+====
 Avoid testing for distribution and version in tasks. Rather add a variable file to "vars/"
 for each supported distribution and version with the variables that need to change according
 to the distribution and version. This way it is easy to add support to a new distribution by
@@ -128,9 +139,11 @@ into the playbook." Since distribution-specific values are kind of "magic values
 same logic applies for providers: a role can load a provider-specific variable file, include a
 provider-specific task file, or both, as needed. Consider making paths to templates internal variables if you
 need different templates for different distributions.
+====
 
 === Check Mode and Idempotency Issues
-
+[%collapsible]
+====
 * The role should work in check mode, meaning that first of all, they should not fail check mode, and
 they should also not report changes when there are no changes to be done. If it is not possible
 to support it, please state the fact and provide justification in the documentation.
@@ -167,11 +180,13 @@ https://github.com/ansible/molecule/issues/128#issuecomment-245009843[here]. If 
 see hhaniel's proposal
 https://github.com/linux-system-roles/timesync/issues/27#issuecomment-472466223[here], which seems to
 properly guard even against such cases.
+====
 
 === Supporting multiple distributions and versions
 
 ==== Platform specific variables
-
+[%collapsible]
+====
 You normally use `vars/main.yml` (automatically included) to set variables
 used by your role.  If some variables need to be parameterized according to
 distribution and version (name of packages, configuration file paths, names of
@@ -244,9 +259,11 @@ variable, and filter the variable passed to `loop` using the `unique` filter
 ----
 
 Or define your `__rolename_vars_file_list` in your `vars/main.yml`.
+====
 
 ==== Platform specific tasks
-
+[%collapsible]
+====
 Platform specific tasks, however, are different.  You probably want to perform
 platform specific tasks once, for the most specific match.  In that case, use
 `lookup('first_found')` with the file list in order of most specific to least
@@ -307,9 +324,11 @@ notation is what is used in Ansible documentation such as https://docs.ansible.c
 Facts]
 and https://docs.ansible.com/ansible/latest/user_guide/playbooks_best_practices.html#operating-system-and-distribution-variance[Operating System and Distribution
 Variance]
+====
 
 === Supporting multiple providers
-
+[%collapsible]
+====
 Use a task file per provider and include it from the main task file, like this example from `storage:`
 
 [source,yaml]
@@ -322,9 +341,11 @@ The same process should be used for variables (not defaults, as defaults can
 not be loaded according to a variable).  You should guarantee that a file
 exists for each provider supported, or use an explicit, absolute path using
 `role_path`.  See below "Ansible Best Practices" for more information.
+====
 
 === Generating files from templates
-
+[%collapsible]
+====
 * Comment with ``{{ ansible_managed }}``at the top of the file.
 https://docs.ansible.com/ansible/latest/modules/template_module.html#template-module[more_info]
 * When commenting, don't include anything like "Last modified: {{ date }}". This would change the file at
@@ -337,8 +358,7 @@ instead of just modified.
 +
 * Use `{{ role_path }}/subdir/` as the filename prefix when including files if the name has a variable in it.
 +
-[%collapsible]
-====
+
 Rationale:: your role may be included by another role, and if you specify a relative path, the file could be found in the including role.
 For example, if you have something like `include_vars: "{{ ansible_facts['distribution'] }}.yml"` and you do not provide every possible `vars/{{ ansible_facts['distribution'] }}.yml` in your role, Ansible will look in the including role for this file.
 Instead, to ensure that only your role will be referenced, use `include_vars: "{{role_path}}/vars/{{ ansible_facts['distribution'] }}.yml"`.
@@ -347,7 +367,8 @@ See https://docs.ansible.com/ansible/latest/dev_guide/overview_architecture.html
 ====
 
 ==== Vars vs Defaults
-
+[%collapsible]
+====
 * Avoid embedding large lists or "magic values" directly into the playbook. Such static lists should be
 placed into the `vars/main.yml` file and named appropriately
 * Every argument accepted from outside of the role should be given a default value in `defaults/main.yml`.
@@ -363,9 +384,11 @@ are difficult for users and consumers of a role to override.
 additional packages, then the required packages should be placed in `vars/main.yml` with a name such as
 `foo_packages`, and the extra packages should be passed in a variable named `foo_extra_packages`,
 which should default to an empty array in `defaults/main.yml` and be documented as such.
+====
 
 === Documentation conventions
-
+[%collapsible]
+====
 * Use fully qualified role names in examples, like: `linux-system-roles.$ROLENAME` (with
 the Galaxy prefix).
 * Use RFC https://tools.ietf.org/html/rfc5737[5737],
@@ -374,9 +397,11 @@ https://tools.ietf.org/html/rfc3849[3849] addresses in examples.
 * Modules should have complete metadata, documentation, example and return blocks as
 described in the
 https://docs.ansible.com/ansible/latest/dev_guide/developing_modules_documenting.html[Ansible docs].
+====
 
 == References
-
+[%collapsible]
+====
 Links that contain additional standardization information that provide context,
 inspiration or contrast to the standards described above.
 
@@ -385,3 +410,5 @@ inspiration, as the DebOps project has some specific guidance that we do not nec
 want to follow.
 * https://docs.adfinis-sygroup.ch/public/ansible-guide/overview.html
 * https://docs.openstack.org/openstack-ansible/latest/contributor/code-rules.html
+
+====
