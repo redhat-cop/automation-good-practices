@@ -1,0 +1,5 @@
+---
+# tasks file for role3
+- name: output my name
+  debug:
+    msg: I am role 3
