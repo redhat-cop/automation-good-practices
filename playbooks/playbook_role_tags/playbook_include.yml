@@ -2,7 +2,9 @@
   hosts: localhost
   gather_facts: false
   become: false
+  
   tasks:
+  
     - name: include role1
       include_role:
         name: role1
