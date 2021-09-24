@@ -186,8 +186,6 @@ The use of `lineinfile` should include a comment with justification.
 +
 * Limit use of the `copy` module to copying remote files and to uploading binary blobs.
   For all other file pushes, use the `template` module. Even if there is nothing in the file that is being templated at the current moment, having the file handled by the `template` module now makes adding that functionality much simpler than if the file is initially handled by the `copy` and then needs to be moved before it can be edited.
-* When using the `template` module, refrain from appending `.j2` to the file name. This alters the syntax highlighting in most editors and will obscure the benefits of highlighting for the particular file type or filename.
-  Anything under the `templates` directory of a role is assumed to be treated as a Jinja 2 template, so adding the `.j2` extension is redundant information that is not helpful.
 * Keep filenames and templates as close to the name on the destination system as possible.
 +
 [%collapsible]
