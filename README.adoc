@@ -13,7 +13,8 @@ They are not meant to be followed blindly if they don't fit the reader's specifi
 there is a reason why they are called _good_ and not _best_ practices.
 
 The reader of this document is expected to have working practice of Ansible.
-If they are new to Ansible, the https://docs.ansible.com/[official Ansible documentation] is a better place to start.
+If they are new to Ansible, the https://docs.ansible.com/ansible/latest/user_guide/index.html#getting-started[Getting started] section of
+the https://docs.ansible.com/[official Ansible documentation] is a better place to start.
 
 This document is split in six main sections.
 Each section covers a different aspect of automation using Ansible (and in a broader term the whole https://www.redhat.com/en/technologies/management/ansible[Red Hat Ansible Automation Platform], including Ansible Tower):
