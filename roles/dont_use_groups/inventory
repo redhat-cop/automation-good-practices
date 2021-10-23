@@ -1,0 +1,15 @@
+[cluster_group_A]
+host1 ansible_host=localhost
+host2 ansible_host=localhost
+host3 ansible_host=localhost
+
+[cluster_group_B]
+host4 ansible_host=localhost
+host5 ansible_host=localhost
+host6 ansible_host=localhost
+
+[cluster_group_A:vars]
+cluster_group_name=cluster_group_A
+
+[cluster_group_B:vars]
+cluster_group_name=cluster_group_B
