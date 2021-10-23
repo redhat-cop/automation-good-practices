@@ -1,0 +1,8 @@
+[managers]
+manager_a
+manager_b
+
+[managed_hosts]
+host1
+host2
+host3
