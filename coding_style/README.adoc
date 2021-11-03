@@ -186,6 +186,16 @@ The use of `lineinfile` should include a comment with justification.
 +
 * Limit use of the `copy` module to copying remote files and to uploading binary blobs.
   For all other file pushes, use the `template` module. Even if there is nothing in the file that is being templated at the current moment, having the file handled by the `template` module now makes adding that functionality much simpler than if the file is initially handled by the `copy` and then needs to be moved before it can be edited.
+* When using the `template` module, append `.j2` to the template file name. 
++
+[%collapsible]
+====
+Example:: If you want to use the `ansible.builtin.template` module to create a file called `example.conf` somewhere on the managed host, you should name the template for this file `templates/example.conf.j2`.
+Rationale:: When you are at the stage of writing a template file you usually already know how the file should end up looking on the file system, so at that point it is convenient to use Jinja2 syntax highlighting to make sure your templating syntax checks out.
+Should you need syntax highlighting for whatever language the target file should be in, it is very easy to define in your editor settings to use, e.g., HTML syntax highlighting for all files ending in `.html.j2`. 
+It is much less straightforward to automatically enable Jinja2 syntax highlighting for _some_ files ending on `.html`.
+====
++
 * Keep filenames and templates as close to the name on the destination system as possible.
 +
 [%collapsible]
