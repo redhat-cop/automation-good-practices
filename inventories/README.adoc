@@ -162,21 +162,22 @@ inventory_satellite/
 [%collapsible]
 ====
 Explanations::
-When there is the need to do the same task on multiple hosts, don't create a variable with a list of hosts and loop over it.
+To perform the same task on multiple hosts, don't create a variable with a list of hosts and loop over it.
 Instead use as much as possible the capabilities of your inventory, which is already a kind of list of hosts.
 +
-The anti-pattern is especially seen when it comes to the provisioning of hosts against some kind of manager (e.g. a list of VMs against an hypervisor manager, like oVirt/RHV or vCenter, or against a management tool like Foreman/Satellite, or our beloved AWX/Tower/controller).
+The anti-pattern is especially obvious in the example of provisioning hosts on some kind of manager.
+Commonly seen automation tasks of this kind are spinning up a list of VMs via a hypervisor manager like oVirt/RHV or vCenter, or calling a management tool like Foreman/Satellite or even our beloved AWX/Tower/controller.
 
 Rationale::
 There are 4 main reasons for following this advice:
 +
 . a list of hosts is more difficult to maintain than an inventory structure, and tends to become very quickly difficult to oversee.
-It is especially true as you generally need to maintain your hosts in your inventory.
+This is especially true as you generally need to maintain your hosts also in your inventory.
 This brings us to the 2nd advantage:
 . you avoid duplicating information, as you often need the same kind of information in your inventory that you also need in order to provision your VMs.
 In your inventory, you can also use groups to define group variables, automatically inherited by hosts.
-You can try to implement a similar inheritance pattern with your list of hosts, but it becomes difficult and hand-crafted.
-. as you loop through the hosts of an inventory, Ansible helps you with https://docs.ansible.com/ansible/latest/user_guide/playbooks_strategies.html[parallelization, throttling, etc], all kind of things you can't do with your own list (well, you can combine https://docs.ansible.com/ansible/latest/user_guide/playbooks_async.html[async and loop] to reach something like this, but it's a lot more complex to handle).
+You can try to implement a similar inheritance pattern with your list of hosts, but it quickly becomes difficult and _hand-crafted_.
+. as you loop through the hosts of an inventory, Ansible helps you with https://docs.ansible.com/ansible/latest/user_guide/playbooks_strategies.html[parallelization, throttling, etc], all of which you can't do easily with your own list (technically, you _can_ combine https://docs.ansible.com/ansible/latest/user_guide/playbooks_async.html[async and loop] to reach something like this, but it's a lot more complex to handle than letting Ansible do the heavy lifting for you).
 . you can very simply _limit_ the play to certain hosts, using for example the `--limit` parameter of `ansible-playbook` (or the 'limit' field in Tower/controller), even using groups and patterns.
 You can't really do this with your own list of hosts.
 
@@ -236,7 +237,7 @@ include::inventory_loop_hosts/playbook_good.yml[]
 +
 The result isn't overwhelming in this simple setup but you would of course better appreciate if the provisioning would take half an hour instead of a fraction of seconds:
 +
-.Comparaison of the execution times between good and bad
+.Comparison of the execution times between the "good" and the "bad" implementation
 ----
 $ ANSIBLE_STDOUT_CALLBACK=profile_tasks \
 	ansible-playbook -i inventory_bad playbook_bad.yml 
