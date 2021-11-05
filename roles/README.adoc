@@ -413,7 +413,7 @@ You can always set the variable at group level to avoid repetitions.
 
 Rationale::
 Groups are a feature of the data in your inventory, meaning that you mingle data with code when you use those groups in your code.
-You should better rely on the inventory parsing process to provide your code with the variables it needs, not enforcing a specific structure of the inventory.
+Rely on the inventory-parsing process to provide your code with the variables it needs instead of enforcing a specific structure of the inventory.
 Not all inventory sources are flexible enough to provide exactly the expected group name.
 Even more importantly, in a cluster context for example, if the group name is fixed, you can't describe (and hence automate) more than one cluster in each inventory.
 On the other hand, variables can have any kind of value for each host, so that you can have as many clusters as you want.
