@@ -408,7 +408,7 @@ It is relatively common to use (inventory) group names in roles:
 * either to loop through the hosts in the group, generally in a cluster context
 * or to validate that a host is in a specific group
 +
-Use instead a variable (a list variable in the first case), or at least make thegroup's name a parameter of your role.
+Instead, store the host name(s) in a (list) variable, or at least make the group name a parameter of your role.
 You can always set the variable at group level to avoid repetitions.
 
 Rationale::
@@ -436,12 +436,12 @@ include::dont_use_groups/playbook.yml[]
 ----
 +
 The first approach is probably best to create a cluster configuration file listing all cluster's hosts.
-The other approaches are good to make sure each action applies only once, at the price of many skips.
+The other approaches are good to make sure each action is performed only once, but this comes at the price of many skips.
 The second one fails if the first host isn't reachable (which might be what you'd want anyway), and the last one has the best chance to be executed once and only once, even if some hosts aren't available.
 +
 TIP: the variable `cluster_group_name` could have a default group name value in your role, of course properly documented, for simple use cases.
 +
-Overall, it is best if you can avoid this kind of constructs as they are clumsy, but it depends on the use case if it's possible.
+Overall, it is best to avoid this kind of constructs if the use case permits, as they are clumsy.
 ====
 
 
