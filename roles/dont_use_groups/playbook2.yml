@@ -6,11 +6,11 @@
   become: false
 
   tasks:
-  - name: add last host to execution group (why not the last one?)
-    add_host:
-      name: "{{ groups[item][-1] }}"
-      groups: cluster_execution_group
-    loop: "{{ groups | select('match', '^cluster_group_.$') | list }}"
+    - name: add last host to execution group (why not the last one?)
+      add_host:
+        name: "{{ groups[item][-1] }}"
+        groups: cluster_execution_group
+      loop: "{{ groups | select('match', '^cluster_group_.$') | list }}"
 
 - name: now execute something on each first host of each cluster
   hosts: cluster_execution_group
@@ -18,7 +18,7 @@
   become: false
 
   tasks:
-  - name: the loop happens for each execution host
-    debug:
-      msg: do something with {{ item }}
-    loop: "{{ groups[cluster_group_name] }}"
+    - name: the loop happens for each execution host
+      debug:
+        msg: do something with {{ item }}
+      loop: "{{ groups[cluster_group_name] }}"

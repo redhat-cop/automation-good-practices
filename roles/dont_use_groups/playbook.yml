@@ -5,22 +5,22 @@
   become: false
 
   tasks:
-  - name: the loop happens for each host, might be too much
-    debug:
-      msg: do something with {{ item }}
-    loop: "{{ groups[cluster_group_name] }}"
-  - name: the loop happens only for the first host in each group
-    debug:
-      msg: do something with {{ item }}
-    loop: "{{ groups[cluster_group_name] }}"
-    when: inventory_hostname == groups[cluster_group_name][0]
-  - name: make the first host of each group fail to simulate non-availability
-    assert:
-      that: inventory_hostname != groups[cluster_group_name][0]
-  - name: the loop happens only for the first _available_ host in each group
-    debug:
-      msg: do something with {{ item }}
-    loop: "{{ groups[cluster_group_name] }}"
-    when: >-
-      inventory_hostname == (groups[cluster_group_name]
-      | intersect(ansible_play_hosts))[0]
+    - name: the loop happens for each host, might be too much
+      debug:
+        msg: do something with {{ item }}
+      loop: "{{ groups[cluster_group_name] }}"
+    - name: the loop happens only for the first host in each group
+      debug:
+        msg: do something with {{ item }}
+      loop: "{{ groups[cluster_group_name] }}"
+      when: inventory_hostname == groups[cluster_group_name][0]
+    - name: make the first host of each group fail to simulate non-availability
+      assert:
+        that: inventory_hostname != groups[cluster_group_name][0]
+    - name: the loop happens only for the first _available_ host in each group
+      debug:
+        msg: do something with {{ item }}
+      loop: "{{ groups[cluster_group_name] }}"
+      when: >-
+        inventory_hostname == (groups[cluster_group_name]
+        | intersect(ansible_play_hosts))[0]
