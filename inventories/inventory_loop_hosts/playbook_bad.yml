@@ -1,0 +1,12 @@
+- name: provision hosts in a bad way
+  hosts: managers
+  gather_facts: false
+  become: false
+
+  tasks:
+    - name: create some file to simulate an API call to provision a host
+      copy:
+        content: "{{ item.provision_value }}\n"
+        dest: "/tmp/bad_{{ inventory_hostname }}_{{ item.name }}.txt"
+        force: true
+      loop: "{{ provision_list_of_hosts }}"
