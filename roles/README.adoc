@@ -399,6 +399,53 @@ described in the
 https://docs.ansible.com/ansible/latest/dev_guide/developing_modules_documenting.html[Ansible docs].
 ====
 
+=== Don't use host group names or at least make them a parameter
+[%collapsible]
+====
+Explanations::
+It is relatively common to use (inventory) group names in roles:
++
+* either to loop through the hosts in the group, generally in a cluster context
+* or to validate that a host is in a specific group
++
+Instead, store the host name(s) in a (list) variable, or at least make the group name a parameter of your role.
+You can always set the variable at group level to avoid repetitions.
+
+Rationale::
+Groups are a feature of the data in your inventory, meaning that you mingle data with code when you use those groups in your code.
+Rely on the inventory-parsing process to provide your code with the variables it needs instead of enforcing a specific structure of the inventory.
+Not all inventory sources are flexible enough to provide exactly the expected group name.
+Even more importantly, in a cluster context for example, if the group name is fixed, you can't describe (and hence automate) more than one cluster in each inventory.
+You can't possibly have multiple groups with the same name in the same inventory.
+On the other hand, variables can have any kind of value for each host, so that you can have as many clusters as you want.
+
+Examples::
+Assuming we have the following inventory (not according to recommended practices for sake of simplicity):
++
+.An inventory with two clusters
+[source,ini]
+----
+include::dont_use_groups/inventory[]
+----
++
+We can then use one of the following three approaches in our role (here as playbook, again for sake of simplicity):
++
+.A playbook showing how to loop through a group
+[source,yaml]
+----
+include::dont_use_groups/playbook.yml[]
+----
++
+The first approach is probably best to create a cluster configuration file listing all cluster's hosts.
+The other approaches are good to make sure each action is performed only once, but this comes at the price of many skips.
+The second one fails if the first host isn't reachable (which might be what you'd want anyway), and the last one has the best chance to be executed once and only once, even if some hosts aren't available.
++
+TIP: the variable `cluster_group_name` could have a default group name value in your role, of course properly documented, for simple use cases.
++
+Overall, it is best to avoid this kind of constructs if the use case permits, as they are clumsy.
+====
+
+
 == References
 [%collapsible]
 ====

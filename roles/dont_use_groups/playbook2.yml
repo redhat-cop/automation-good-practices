@@ -1,0 +1,24 @@
+---
+# this approach doesn't fit a role, but is too good to not keep it
+- name: show how to loop through a set of groups, avoiding skips
+  hosts: cluster_group_?
+  gather_facts: false
+  become: false
+
+  tasks:
+    - name: add last host to execution group (why not the last one?)
+      add_host:
+        name: "{{ groups[item][-1] }}"
+        groups: cluster_execution_group
+      loop: "{{ groups | select('match', '^cluster_group_.$') | list }}"
+
+- name: now execute something on each first host of each cluster
+  hosts: cluster_execution_group
+  gather_facts: false
+  become: false
+
+  tasks:
+    - name: the loop happens for each execution host
+      debug:
+        msg: do something with {{ item }}
+      loop: "{{ groups[cluster_group_name] }}"
