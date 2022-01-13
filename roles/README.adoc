@@ -346,8 +346,7 @@ exists for each provider supported, or use an explicit, absolute path using
 === Generating files from templates
 [%collapsible]
 ====
-* Comment with ``{{ ansible_managed }}``at the top of the file.
-https://docs.ansible.com/ansible/latest/modules/template_module.html#template-module[more_info]
+* Add ``{{ ansible_managed | comment }}`` at the top of the template file file to indicate that the file is managed by Ansible roles. For more information, see https://docs.ansible.com/ansible/latest/user_guide/playbooks_filters.html#id38[Adding comments to files].
 * When commenting, don't include anything like "Last modified: {{ date }}". This would change the file at
 every application of the role, even if it doesn't need to be changed for other reasons, and thus break
 proper change reporting.
