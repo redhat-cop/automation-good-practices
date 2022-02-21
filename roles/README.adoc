@@ -375,15 +375,12 @@ placed into the `vars/main.yml` file and named appropriately
 This allows a single place for users to look to see what inputs are expected. Document these variables
 in the role's README.md file copiously
 * Use the `defaults/main.yml` file in order to avoid use of the default Jinja2 filter within a playbook.
-Using the default filter is fine for optional keys on a dictionary, but the variable itself should be
-defined in `defaults/main.yml` so that it can have documentation written about it there and so that all
-arguments can easily be located and identified.
-* Avoid giving default values in `vars/main.yml` as such values are very high in the precedence order and
-are difficult for users and consumers of a role to override.
-* As an example, if a role requires a large number of packages to install, but could also accept a list of
-additional packages, then the required packages should be placed in `vars/main.yml` with a name such as
-`foo_packages`, and the extra packages should be passed in a variable named `foo_extra_packages`,
-which should default to an empty array in `defaults/main.yml` and be documented as such.
+Using the default filter is fine for optional keys on a dictionary, but the variable itself should be defined in `defaults/main.yml` so that it can have documentation written about it there and so that all arguments can easily be located and identified.
+* Don't define defaults in `defaults/main.yml` if there is no meaningful default.
+It is better to have the role fail if the variable isn't defined than have it do something dangerously wrong.
+Still do add the variable to `defaults/main.yml` but _commented out_, so that there is one single source of input variables.
+* Avoid giving default values in `vars/main.yml` as such values are very high in the precedence order and are difficult for users and consumers of a role to override.
+* As an example, if a role requires a large number of packages to install, but could also accept a list of additional packages, then the required packages should be placed in `vars/main.yml` with a name such as `foo_packages`, and the extra packages should be passed in a variable named `foo_extra_packages`, which should default to an empty array in `defaults/main.yml` and be documented as such.
 ====
 
 === Documentation conventions
