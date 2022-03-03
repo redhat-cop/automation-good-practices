@@ -22,7 +22,7 @@ Explanation:: Using such variables in Jinja2 or Python would be then very confus
 Rationale:: even when Ansible currently allows names that are not valid identifier, it may stop allowing them in the future, as it happened in the past already.
 Making all names valid identifiers will avoid encountering problems in the future. Dictionary keys that are not valid identifiers are also less intuitive to use in Jinja2 (a dot in a dictionary key would be particularly confusing).
 ====
-+
+
 * Use mnemonic and descriptive names and do not shorten more than necessary.
   A pattern `object[_feature]_action` has proven useful as it guarantees a proper sorting in the file system for roles and playbooks.
   Systems support long identifier names, so use them!
@@ -55,7 +55,7 @@ example_list:
 - example_element_4
 ----
 ====
-+
+
 * Split long expressions into multiple lines.
 +
 [%collapsible]
@@ -94,8 +94,8 @@ Examples::
 [source,yaml]
 ----
 when:
-- myvar is defined
-- myvar | bool
+  - myvar is defined
+  - myvar | bool
 ----
 +
 .instead of this
@@ -103,7 +103,6 @@ when:
 ----
 when: myvar is defined and myvar | bool
 ----
-
 ====
 
 * All roles need to, minimally, pass a basic ansible-playbook syntax check run
@@ -116,8 +115,8 @@ when: myvar is defined and myvar | bool
 ----
 tasks:
 - name: Print a message
-ansible.builtin.debug:
-msg: This is how it's done.
+  ansible.builtin.debug:
+    msg: This is how it's done.
 ----
 
 .Don't do this:
@@ -125,10 +124,10 @@ msg: This is how it's done.
 ----
 tasks:
 - name: Print a message
-ansible.builtin.debug: msg="This is the exact opposite of how it's done."
+  ansible.builtin.debug: msg="This is the exact opposite of how it's done."
 ----
 ====
-+
+
 * Use `true` and `false` for boolean values in playbooks.
 +
 [%collapsible]
@@ -137,29 +136,29 @@ Explanation:: Do not use the Ansible-specific `yes` and `no` as boolean values i
 
 Rationale:: https://yaml.org/type/bool.html[YAML 1.1] allows all variants whereas https://yaml.org/spec/1.2/spec.html#id2803629[YAML 1.2] allows only true/false, and we want to be ready for when it becomes the default, and avoid a massive migration effort.
 ====
-+
+
 * Avoid comments in playbooks when possible.
-Instead, ensure that the task `name` value is descriptive enough to tell what a task does.
-Variables are commented in the `defaults` and `vars` directories and, therefore, do not need explanation in the playbooks themselves.
+  Instead, ensure that the task `name` value is descriptive enough to tell what a task does.
+  Variables are commented in the `defaults` and `vars` directories and, therefore, do not need explanation in the playbooks themselves.
 * Use a single space separating the template markers from the variable name inside all Jinja2 template points.
-For instance, always write it as `{{ variable_name_here }}`.
-The same goes if the value is an expression. `{{ variable_name | default('hiya, doc') }}`
+  For instance, always write it as `{{ variable_name_here }}`.
+  The same goes if the value is an expression. `{{ variable_name | default('hiya, doc') }}`
 * When naming files, use the `.yml` extension and _not_ `.yaml`.
-`.yml` is what `ansible-galaxy init` does when creating a new role template.
+  `.yml` is what `ansible-galaxy init` does when creating a new role template.
 * Use double quotes for YAML strings with the exception of Jinja2 strings which will use single quotes.
 * Do not use quotes unless you have to, especially for short module-keyword-like strings like `present`, `absent`, etc.
-But do use quotes for user-side strings such as descriptions, names, and messages.
+  But do use quotes for user-side strings such as descriptions, names, and messages.
 * Even if JSON is valid YAML and Ansible understands it, do only use JSON syntax if it makes sense (e.g. a variable file automatically generated) or adds to the readability.
-In doubt, nobody expects JSON so stick to YAML.
+  In doubt, nobody expects JSON so stick to YAML.
 
 == Ansible Guidelines
 
 * Ensure that all tasks are idempotent.
 * https://github.com/ansible/ansible/issues/10374[Ansible variables use lazy evaluation.]
 * Prefer the command module over the shell module unless you explicitly need shell functionality such as, e.g., piping.
-Even better, use a dedicated module, if it exists.
-If not, see the <<check-mode-and-idempotency-issues,section>> about idempotency and check mode and make sure that your task is idempotent and supports check mode properly;
-your task will likely need options such as `changed_when:` and maybe `check_mode:`).
+  Even better, use a dedicated module, if it exists.
+  If not, see the <<check-mode-and-idempotency-issues,section>> about idempotency and check mode and make sure that your task is idempotent and supports check mode properly;
+  your task will likely need options such as `changed_when:` and maybe `check_mode:`).
 * Anytime `command` or `shell` modules are used, add a comment in the code with justification to help with future maintenance.
 * Use the `| bool` filter when using bare variables (expressions consisting of just one variable reference without any operator) in `when`.
 * Do not use `meta: end_play`.
@@ -169,28 +168,28 @@ your task will likely need options such as `changed_when:` and maybe `check_mode
 Rationale:: It aborts the whole play instead of a given host (with multiple hosts in the inventory).
 If absolutely necessary, consider using `meta: end_host`.
 ====
-+
+
 * Task names can be made dynamic by using variables (wrapped in Jinja2 templates), this helps with reading the logs.
 * Do not use variables (wrapped in Jinja2 templates) for play names; variables don't get expanded properly there.
-The same applies to loop variables (by default `item`) in task names within a loop.
-They, too, don't get properly expanded and hence are not to be used there.
+  The same applies to loop variables (by default `item`) in task names within a loop.
+  They, too, don't get properly expanded and hence are not to be used there.
 * Do not override role defaults or vars or input parameters using `set_fact`.
-Use a different name instead.
+  Use a different name instead.
 +
 [%collapsible]
 ====
 Rationale:: a fact set using `set_fact` can not be unset and it will override the role default or role variable in all subsequent invocations of the role in the same playbook.
 A fact has a different priority than other variables and not the highest, so in some cases overriding a given parameter will not work because the parameter has a higher priority (https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable[Ansible User Guide » Using Variables])
 ====
-+
+
 * Use the smallest scope for variables.
-Facts are global for playbook run, so it is preferable to use other types of variables. Therefore limit (preferably avoid) the use of `set_fact`.
-Role variables are exposed to the whole play when the role is applied using `roles:` or `import_role:`. A more restricted scope such as task or block variables is preferred.
+  Facts are global for playbook run, so it is preferable to use other types of variables. Therefore limit (preferably avoid) the use of `set_fact`.
+  Role variables are exposed to the whole play when the role is applied using `roles:` or `import_role:`. A more restricted scope such as task or block variables is preferred.
 * Beware of `ignore_errors: true`; especially in tests.
-If you set on a block, it will ignore all the asserts in the block ultimately making them pointless.
+  If you set on a block, it will ignore all the asserts in the block ultimately making them pointless.
 * Do not use the `eq` (introduced in Jinja 2.10) or `equalto` Jinja operators.
 * Avoid the use of `when: foo_result is changed` whenever possible.
-Use handlers, and, if necessary, handler chains to achieve this same result.
+  Use handlers, and, if necessary, handler chains to achieve this same result.
 * Use the various include/import statements in Ansible.
 +
 [%collapsible]
@@ -202,7 +201,7 @@ Some examples of good times to do so are
 * When a set of multiple commands are being looped together over a list of items
 * When a single large role is doing many complicated tasks and cannot easily be broken into multiple roles, but the process proceeds in multiple related stages
 ====
-+
+
 * Avoid calling the `package` module iteratively with the `{{ item }}` argument, as this is impressively more slow than calling it with the line `name: "{{ foo_packages }}"`.
 The same can go for many other modules that can be given an entire list of items all at once.
 * Use meta modules when possible.
@@ -216,7 +215,7 @@ module when at all possible.
 * Similarly for package management, use `package` instead of `yum` or `dnf` or
 similar.
 ====
-+
+
 * Avoid the use of `lineinfile` wherever that might be feasible.
 +
 [%collapsible]
@@ -228,9 +227,10 @@ If you are modifying more than a tiny number of lines or in a manner more than t
 This will allow the entire structure of the file to be seen by later users and maintainers.
 The use of `lineinfile` should include a comment with justification.
 ====
-+
+
 * Limit use of the `copy` module to copying remote files and to uploading binary blobs.
-For all other file pushes, use the `template` module. Even if there is nothing in the file that is being templated at the current moment, having the file handled by the `template` module now makes adding that functionality much simpler than if the file is initially handled by the `copy` and then needs to be moved before it can be edited.
+  For all other file pushes, use the `template` module.
+  Even if there is nothing in the file that is being templated at the current moment, having the file handled by the `template` module now makes adding that functionality much simpler than if the file is initially handled by the `copy` and then needs to be moved before it can be edited.
 * When using the `template` module, append `.j2` to the template file name. 
 +
 [%collapsible]
@@ -240,7 +240,7 @@ Rationale:: When you are at the stage of writing a template file you usually alr
 Should you need syntax highlighting for whatever language the target file should be in, it is very easy to define in your editor settings to use, e.g., HTML syntax highlighting for all files ending in `.html.j2`.
 It is much less straightforward to automatically enable Jinja2 syntax highlighting for _some_ files ending on `.html`.
 ====
-+
+
 * Keep filenames and templates as close to the name on the destination system as possible.
 +
 [%collapsible]
@@ -249,7 +249,7 @@ Rationale:: This will help with both editor highlighting as well as identifying 
 Avoid duplicating the remote full path in the role directory, however, as that creates unnecessary depth in the file tree for the role.
 Grouping sets of similar files into a subdirectory of `templates` is allowable, but avoid unnecessary depth to the hierarchy.
 ====
-+
+
 * Using agnostic modules like `package` only makes sense if the features required are very limited.
 In many cases, if the platform is different, the package name is also different so that using `package` doesn't help a lot.
 Prefer then the more specific `yum`, `dnf` or `apt` module if you anyway need to differentiate.

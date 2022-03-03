@@ -30,7 +30,7 @@ Examples::
 TIP: we'll explain later why there might be a case for using `include_role`/`import_role` tasks instead of the role section.
 ====
 
-== Use either tasks or roles in playbooks, not both
+== Use either the tasks or roles section in playbooks, not both
 
 [%collapsible]
 ====
