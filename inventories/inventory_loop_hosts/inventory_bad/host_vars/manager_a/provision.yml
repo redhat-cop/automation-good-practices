@@ -1,0 +1,5 @@
+provision_list_of_hosts:
+  - name: host1
+    provision_value: uno
+  - name: host2
+    provision_value: due

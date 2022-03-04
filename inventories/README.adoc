@@ -157,3 +157,101 @@ inventory_satellite/
             └── locations.yml
 ----
 ====
+
+== Rely on your inventory to loop over hosts, don't create lists of hosts
+[%collapsible]
+====
+Explanations::
+To perform the same task on multiple hosts, don't create a variable with a list of hosts and loop over it.
+Instead use as much as possible the capabilities of your inventory, which is already a kind of list of hosts.
++
+The anti-pattern is especially obvious in the example of provisioning hosts on some kind of manager.
+Commonly seen automation tasks of this kind are spinning up a list of VMs via a hypervisor manager like oVirt/RHV or vCenter, or calling a management tool like Foreman/Satellite or even our beloved AWX/Tower/controller.
+
+Rationale::
+There are 4 main reasons for following this advice:
++
+. a list of hosts is more difficult to maintain than an inventory structure, and tends to become very quickly difficult to oversee.
+This is especially true as you generally need to maintain your hosts also in your inventory.
+This brings us to the 2nd advantage:
+. you avoid duplicating information, as you often need the same kind of information in your inventory that you also need in order to provision your VMs.
+In your inventory, you can also use groups to define group variables, automatically inherited by hosts.
+You can try to implement a similar inheritance pattern with your list of hosts, but it quickly becomes difficult and _hand-crafted_.
+. as you loop through the hosts of an inventory, Ansible helps you with https://docs.ansible.com/ansible/latest/user_guide/playbooks_strategies.html[parallelization, throttling, etc], all of which you can't do easily with your own list (technically, you _can_ combine https://docs.ansible.com/ansible/latest/user_guide/playbooks_async.html[async and loop] to reach something like this, but it's a lot more complex to handle than letting Ansible do the heavy lifting for you).
+. you can very simply _limit_ the play to certain hosts, using for example the `--limit` parameter of `ansible-playbook` (or the 'limit' field in Tower/controller), even using groups and patterns.
+You can't really do this with your own list of hosts.
+
+Examples::
+Our first idea could be to define managers and hosts first in an inventory:
++
+.Content of the "bad" `groups_and_hosts` file
+[source,ini]
+----
+include::inventory_loop_hosts/inventory_bad/groups_and_hosts[]
+----
++
+Each manager has a list of hosts, which can look like this:
++
+.List of hosts in `inventory_bad/host_vars/manager_a/provision.yml`
+[source,yaml]
+----
+include::inventory_loop_hosts/inventory_bad/host_vars/manager_a/provision.yml[]
+----
++
+So that we can loop over the list in this way:
++
+.The "bad" way to loop over hosts
+[source,yaml]
+----
+include::inventory_loop_hosts/playbook_bad.yml[]
+----
++
+TIP: check the resulting files using e.g. `head -n-0 /tmp/bad_*`.
++
+As said, no way to limit the hosts provisioned, and no parallelism.
+Compare then with the recommended approach, with a slightly different structure:
++
+.Content of the "good" `groups_and_hosts` file
+[source,ini]
+----
+include::inventory_loop_hosts/inventory_good/groups_and_hosts[]
+----
++
+It is now the hosts and their groups which carry the relevant information, it is not anymore parked in one single list (and can be used for other purposes):
++
+.The "good" variable structure
+----
+$ cat inventory_good/host_vars/host1/provision.yml 
+provision_value: uno
+$ cat inventory_good/group_vars/managed_hosts_a/provision.yml 
+manager_hostname: manager_a
+----
++
+And the provisioning playbook now runs in parallel and can be limited to specific hosts:
++
+.The "good" way to loop over hosts
+[source,yaml]
+----
+include::inventory_loop_hosts/playbook_good.yml[]
+----
++
+The result isn't overwhelming in this simple setup but you would of course better appreciate if the provisioning would take half an hour instead of a fraction of seconds:
++
+.Comparison of the execution times between the "good" and the "bad" implementation
+----
+$ ANSIBLE_STDOUT_CALLBACK=profile_tasks \
+	ansible-playbook -i inventory_bad playbook_bad.yml 
+Saturday 23 October 2021  13:11:45 +0200 (0:00:00.040)       0:00:00.040 ****** 
+Saturday 23 October 2021  13:11:45 +0200 (0:00:00.858)       0:00:00.899 ****** 
+=============================================================================== 
+create some file to simulate an API call to provision a host ------------ 0.86s
+$ ANSIBLE_STDOUT_CALLBACK=profile_tasks \
+	ansible-playbook -i inventory_good playbook_good.yml 
+Saturday 23 October 2021  13:11:55 +0200 (0:00:00.040)       0:00:00.040 ****** 
+Saturday 23 October 2021  13:11:56 +0200 (0:00:00.569)       0:00:00.610 ****** 
+=============================================================================== 
+create some file to simulate an API call to provision a host ------------ 0.57s
+----
++
+TIP: if for some reason, you can't follow the recommendation, you can at least avoid duplicating too much information by indirectly referencing the hosts' variables as in `"{{ hostvars[item.name]['provision_value'] }}"`. Not so bad...
+====

@@ -1,0 +1,3 @@
+provision_list_of_hosts:
+  - name: host3
+    provision_value: tres
