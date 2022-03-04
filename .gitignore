@@ -2,6 +2,7 @@
 *.pdf
 *.html
 !docs/*.html
+docs/preview/*
 
 # temporary files
 .*.swp
