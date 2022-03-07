@@ -114,17 +114,17 @@ when: myvar is defined and myvar | bool
 [source,yaml]
 ----
 tasks:
-- name: Print a message
-  ansible.builtin.debug:
-    msg: This is how it's done.
+  - name: Print a message
+    ansible.builtin.debug:
+      msg: This is how it's done.
 ----
 
 .Don't do this:
 [source,yaml]
 ----
 tasks:
-- name: Print a message
-  ansible.builtin.debug: msg="This is the exact opposite of how it's done."
+  - name: Print a message
+    ansible.builtin.debug: msg="This is the exact opposite of how it's done."
 ----
 ====
 
@@ -251,5 +251,5 @@ Grouping sets of similar files into a subdirectory of `templates` is allowable, 
 ====
 
 * Using agnostic modules like `package` only makes sense if the features required are very limited.
-In many cases, if the platform is different, the package name is also different so that using `package` doesn't help a lot.
-Prefer then the more specific `yum`, `dnf` or `apt` module if you anyway need to differentiate.
+  In many cases, if the platform is different, the package name is also different so that using `package` doesn't help a lot.
+  Prefer then the more specific `yum`, `dnf` or `apt` module if you anyway need to differentiate.
