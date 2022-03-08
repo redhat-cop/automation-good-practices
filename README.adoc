@@ -57,3 +57,5 @@ include::inventories/README.adoc[leveloffset=1]
 include::plugins/README.adoc[leveloffset=1]
 
 include::coding_style/README.adoc[leveloffset=1]
+
+include::guidance/README.adoc[leveloffset=1]
