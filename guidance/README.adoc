@@ -27,6 +27,5 @@ Namespaces are one honking great idea -- let's do more of those!
 ----
 
 Examples::
-Some example situations that can be pulled out from this include the use of 'ignore_errors'. While this may make sense to handle some choices during a playbook, what would be a better practice would be using conditionals and skipping irrelevant tasks.
-
-Another example situation would be whether to use Fully Qualified Collection Names (FQCNs). As stated, Explicit is better than implicit, so utilizing FQCNs is recommended.
+Some example situations that can be pulled out from this include the use of 'ignore_errors'. Since Errors should neve pass silently, a better practice would be using conditionals and skipping irrelevant tasks.
+Another example situation would be whether to use Fully Qualified Collection Names (FQCNs). Using these guiding principles, Explicit is better than implicit, so utilizing FQCNs is recommended.
