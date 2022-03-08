@@ -1,3 +1,19 @@
 = Collections good practices
 
-NOTE: Work in Progress...
+Note: Unreviewed work. Please contribute to the discussion in the Automation Red Hat COP
+
+=== Collection Structure
+[%collapsible]
+====
+Explanations:: Collections should be comprised of roles collected either at the type or landscape level. See https://github.com/redhat-cop/automation-good-practices/blob/main/structures/README.adoc[the structures definition]
+
+Rationale:: Gathering and publishing collections, rather than individual roles, allows for easier distribution and particularly becomes more important when we discuss Execution Environments.
+
+====
+=== Importing Collections
+[%collapsible]
+====
+Explanations:: Collections should always be imported using requirements files within the role
+
+Rationale:: Prior art, https://www.jeffgeerling.com/blog/2020/ansible-best-practices-using-project-local-collections-and-roles
+====
