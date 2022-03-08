@@ -1,6 +1,6 @@
 = Guiding principles for Automation Good Practices
 
-As an overall guiding principle for designing good automation, the Zen of Python, by Tim Peters, serves as a good guidepost to follow. The principles defined in this are very applicable and can give guidance when the better practice is  unclear.
+As an overall guiding principle for designing good automation, the Zen of Python, by Tim Peters, serves as a good guidepost to follow. The principles defined in this are very applicable and can give guidance when the better practice is unclear.
 
 ----
 The Zen of Python, by Tim Peters
@@ -27,5 +27,5 @@ Namespaces are one honking great idea -- let's do more of those!
 ----
 
 Examples::
-Some example situations that can be pulled out from this include the use of 'ignore_errors'. Since Errors should neve pass silently, a better practice would be using conditionals and skipping irrelevant tasks.
+Some example situations that can be pulled out from this include the use of 'ignore_errors'. Since Errors should never pass silently, registering errors and providing further information with a debug statement, or using conditionals and skipping irrelevant tasks would be a better practice.
 Another example situation would be whether to use Fully Qualified Collection Names (FQCNs). Using these guiding principles, Explicit is better than implicit, so utilizing FQCNs is recommended.
