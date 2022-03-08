@@ -98,6 +98,7 @@ https://github.com/geerlingguy/ansible-role-apache/blob/f2b91ac84001db3fd4b43306
 includes variables set by set_fact and register, because they persist in the namespace after the
 role has finished!
 * Prefix all tags within a role with the role name or, alternatively, a "unique enough" but descriptive prefix.
+* Do not use dashes in role names. This will cause issues with collections.
 ====
 
 === Providers
