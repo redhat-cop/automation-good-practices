@@ -21,7 +21,7 @@ Examples::
 The following is only one example of how to structure your content but has proven robust enough on multiple occasions.
 +
 .Structure of Automation
-image::ansible_structures.svg[a hierarchy of landscape type function and component]
+image::https://github.com/redhat-cop/automation-good-practices/blob/main/images/ansible_structures.svg[a hierarchy of landscape type function and component]
 +
 * a _landscape_ is anything you want to deploy at once, the underlay of your cloud, a three tiers application, a complete application cluster...
   This level is represented at best by a Tower/AWX workflow, potentially by a "playbook of playbooks", i.e. a playbook made of imported _type_ playbooks, as introduced next.
