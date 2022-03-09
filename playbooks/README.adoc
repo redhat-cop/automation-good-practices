@@ -7,7 +7,7 @@ Explanations:: Don't put too much logic in your playbook, put it in your roles (
 
 Rationale:: Roles are meant to be re-used and the structure helps you to make your code re-usable.
 The more code you put in roles, the higher the chances you, or others, can reuse it.
-Also, if you follow the https://github.com/redhat-cop/automation-good-practices/tree/main/structures#define-which-structure-to-use-for-which-purpose[type-function pattern], you can very easily create new (type) playbooks by just re-shuffling the roles.
+Also, if you follow the <<structures/README.adoc#_define_which_structure_to_use_for_which_purpose,type-function pattern>>, you can very easily create new (type) playbooks by just re-shuffling the roles.
 This way you can create a playbook for each purpose without having to duplicate a lot of code.
 This, in turn, also helps with the maintainability as there is only a single place where necessary changes need to be implemented, and that is in the role
 
