@@ -17,3 +17,35 @@ Explanations:: Collections should always be imported using requirements files wi
 
 Rationale:: Prior art, https://www.jeffgeerling.com/blog/2020/ansible-best-practices-using-project-local-collections-and-roles
 ====
+
+=== Collection Variables
+[%collapsible]
+====
+Explanations:: Often, variables will want to be defined on a collection level, but this can cause issues with roles being able to be reused.  By creating role specific and collection wide variables, this can be made clear and roles can remain reusable.
+
+Rationale:: Variables that are shared across collections can cause collisions when roles are reused outside of the original collection.
+
+Examples::
+For a collection "mycollection", two roles exist. "alpha" and "beta".
++
+.Alpha defaults/main.yml
+[source,yaml]
+----
+# specific role variables
+alpha_job_name: 'some text'
+# collection wide variables
+alpha_controller_username: "{{ mycollection_controller_username }}"
+alpha_no_log: "{{ mycollection_no_log | default('true') }}"
+----
++
+.Beta defaults/main.yml
+[source,yaml]
+----
+# specific role variables
+beta_job_name: 'some other text'
+# collection wide variables
+beta_controller_username: "{{ mycollection_controller_username }}"
+beta_no_log: "{{ mycollection_no_log | default('false') }}"
+----
+====
+
