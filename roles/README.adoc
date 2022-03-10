@@ -368,6 +368,26 @@ TIP: the variable `cluster_group_name` could have a default group name value in 
 Overall, it is best to avoid this kind of constructs if the use case permits, as they are clumsy.
 ====
 
+=== Prefix task names in sub-tasks files of roles
+[%collapsible]
+====
+Explanation:: It is a common practice to have `tasks/main.yml` file including other tasks files, which we'll call sub-tasks files.
+Make sure that the tasks' names in these sub-tasks files are prefixed with a shortcut reminding of the sub-tasks file's name.
+
+Rationale:: Especially in a complex role with multiple (sub-)tasks file, it becomes difficult to understand which task belongs to which file.
+Adding a prefix, in combination with the role's name automatically added by Ansible, makes it a lot easier to follow and troubleshoot a role play.
+
+Examples:: In a role with one `tasks/main.yml` task file, including `tasks/sub.yml`, the tasks in this last file would be named as follows:
++
+.A prefixed task in a sub-tasks file
+[source,yaml]
+----
+- name: sub | some task description
+  mytask: [...]
+----
++
+The log output will then look something like `TASK [myrole : sub | some task description] ****`, which makes it very clear where the task is coming from.
+====
 
 == References
 [%collapsible]
