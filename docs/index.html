@@ -689,24 +689,29 @@ pre.rouge {
 </ul>
 </li>
 <li><a href="#_supporting_multiple_providers">3.4.4. Supporting multiple providers</a></li>
-<li><a href="#_generating_files_from_templates">3.4.5. Generating files from templates</a>
-<ul class="sectlevel4">
-<li><a href="#_vars_vs_defaults">3.4.5.1. Vars vs Defaults</a></li>
-</ul>
-</li>
-<li><a href="#_documentation_conventions">3.4.6. Documentation conventions</a></li>
+<li><a href="#_generating_files_from_templates">3.4.5. Generating files from templates</a></li>
+<li><a href="#_vars_vs_defaults">3.4.6. Vars vs Defaults</a></li>
+<li><a href="#_documentation_conventions">3.4.7. Documentation conventions</a></li>
+<li><a href="#_dont_use_host_group_names_or_at_least_make_them_a_parameter">3.4.8. Don&#8217;t use host group names or at least make them a parameter</a></li>
 </ul>
 </li>
 <li><a href="#_references">3.5. References</a></li>
 </ul>
 </li>
 <li><a href="#_collections_good_practices">4. Collections good practices</a></li>
-<li><a href="#_playbooks_good_practices">5. Playbooks good practices</a></li>
+<li><a href="#_playbooks_good_practices">5. Playbooks good practices</a>
+<ul class="sectlevel2">
+<li><a href="#_keep_your_playbooks_as_simple_as_possible">5.1. Keep your playbooks as simple as possible</a></li>
+<li><a href="#_use_either_the_tasks_or_roles_section_in_playbooks_not_both">5.2. Use either the tasks or roles section in playbooks, not both</a></li>
+<li><a href="#_use_tags_cautiously_either_for_roles_or_for_complete_purposes">5.3. Use tags cautiously either for roles or for complete purposes</a></li>
+</ul>
+</li>
 <li><a href="#_inventories_good_practices_for_ansible">6. Inventories Good Practices for Ansible</a>
 <ul class="sectlevel2">
 <li><a href="#_identify_your_single_sources_of_truth_and_use_itthem_in_your_inventory">6.1. Identify your Single Source(s) of Truth and use it/them in your inventory</a></li>
 <li><a href="#_differentiate_clearly_between_as_is_and_to_be_information">6.2. Differentiate clearly between "As-Is" and "To-Be" information</a></li>
 <li><a href="#_define_your_inventory_as_structured_directory_instead_of_single_file">6.3. Define your inventory as structured directory instead of single file</a></li>
+<li><a href="#_rely_on_your_inventory_to_loop_over_hosts_dont_create_lists_of_hosts">6.4. Rely on your inventory to loop over hosts, don&#8217;t create lists of hosts</a></li>
 </ul>
 </li>
 <li><a href="#_plugins_good_practices">7. Plugins good practices</a>
@@ -736,13 +741,14 @@ pre.rouge {
 And thus it strives to give any Red Hat employee, partner or customer (or any Ansible user) a guideline from which to start in good conditions their automation journey.</p>
 </div>
 <div class="paragraph">
-<p>Those are opiniated guidelines based on the experience of many people.
+<p>Those are opinionated guidelines based on the experience of many people.
 They are not meant to be followed blindly if they don&#8217;t fit the reader&#8217;s specific use case, organization or needs;
 there is a reason why they are called <em>good</em> and not <em>best</em> practices.</p>
 </div>
 <div class="paragraph">
 <p>The reader of this document is expected to have working practice of Ansible.
-If they are new to Ansible, the <a href="https://docs.ansible.com/">official Ansible documentation</a> is a better place to start.</p>
+If they are new to Ansible, the <a href="https://docs.ansible.com/ansible/latest/user_guide/index.html#getting-started">Getting started</a> section of
+the <a href="https://docs.ansible.com/">official Ansible documentation</a> is a better place to start.</p>
 </div>
 <div class="paragraph">
 <p>This document is split in six main sections.
@@ -920,42 +926,34 @@ this section has been imported "as-is" from the <a href="https://github.com/oasi
 </div>
 <div class="sect2">
 <h3 id="_background">3.1. Background</h3>
+<details>
+<summary class="title">Details</summary>
+<div class="content">
 <div class="paragraph">
-<p>The goal of the Ansible Metateam project (specifically, the <a href="https://github.com/linux-system-roles">Linux System Roles
-project</a>) is to provide a stable and consistent user
-interface to multiple operating systems (multiple versions of RHEL in the downstream RHEL System
-Roles package, additionally CentOS, Fedora at least). Stable and consistent means that the same
-Ansible playbook will be usable to manage the equivalent functionality in the supported versions
-without the administrator (the user of the role) being forced to change anything in the playbook
-(the roles should serve as abstractions to shield the administrator from differences). Of course,
-this means that the interface of the roles should be itself stable (i.e. changing only in a backward
-compatible way). This implies a great responsibility in the design of the interface, because the
-interface, unlike the underlying implementation, can not be easily changed.</p>
+<p>The goal of the Ansible Metateam project (specifically, the <a href="https://github.com/linux-system-roles">Linux System Roles project</a>) is to provide a stable and consistent user interface to multiple operating systems (multiple versions of RHEL in the downstream RHEL System Roles package, additionally CentOS, Fedora at least).
+Stable and consistent means that the same Ansible playbook will be usable to manage the equivalent functionality in the supported versions without the administrator (the user of the role) being forced to change anything in the playbook (the roles should serve as abstractions to shield the administrator from differences).
+Of course, this means that the interface of the roles should be itself stable (i.e. changing only in a backward compatible way).
+This implies a great responsibility in the design of the interface, because the interface, unlike the underlying implementation, can not be easily changed.</p>
 </div>
 <div class="paragraph">
-<p>The differences in the underlying operating systems that the roles need to compensate for are
-basically of two types:</p>
+<p>The differences in the underlying operating systems that the roles need to compensate for are basically of two types:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Trivial differences like changed names of packages, services, changed location of configuration
-files. Roles must deals with those by using internal variables based on the OS defaults. This is
-fairly simple, but still it brings value to the user, because they then do not have to worry about
-keeping up with such trivial changes.</p>
+<p>Trivial differences like changed names of packages, services, changed location of configuration files.
+Roles must deals with those by using internal variables based on the OS defaults.
+This is fairly simple, but still it brings value to the user, because they then do not have to worry about keeping up with such trivial changes.</p>
 </li>
 <li>
-<p>Change of the underlying implementation of a given functionality. Quite often, there are multiple
-packages/components implementing the same functionality. Classic examples are the various MTAs
-(sendmail, postfix, qmail, exim), FTP daemons, etc. In the context of Linux System Roles, we call
-them &#8220;providers&#8221;. The goal of the roles is to abstract even such differences, so that when the OS
-changes to a different component (provider), the role continues to work. An example is time
-synchronization, where RHEL used to use the ntpd package, then chrony was introduced and became
-the default, but both components have been shipped in RHEL 6 and RHEL 7, until finally ntpd was
-dropped from RHEL 8, leaving only chrony. A role covering time synchronization should therefore
-support both components with the same interface, and on systems which ship both components, both
-should be supported. The appropriate supported component should be automatically selected on
-systems that ship only one of them. This covers several related use cases:</p>
+<p>Change of the underlying implementation of a given functionality.
+Quite often, there are multiple packages/components implementing the same functionality.
+Classic examples are the various MTAs (sendmail, postfix, qmail, exim), FTP daemons, etc. In the context of Linux System Roles, we call them &#8220;providers&#8221;.
+The goal of the roles is to abstract even such differences, so that when the OS changes to a different component (provider), the role continues to work.
+An example is time synchronization, where RHEL used to use the ntpd package, then chrony was introduced and became the default, but both components have been shipped in RHEL 6 and RHEL 7, until finally ntpd was dropped from RHEL 8, leaving only chrony.
+A role covering time synchronization should therefore support both components with the same interface, and on systems which ship both components, both should be supported.
+The appropriate supported component should be automatically selected on systems that ship only one of them.
+This covers several related use cases:</p>
 <div class="ulist">
 <ul>
 <li>
@@ -965,8 +963,7 @@ systems that ship only one of them. This covers several related use cases:</p>
 <p>Users that want to migrate to a new version of the system without changing their automation (playbook).</p>
 </li>
 <li>
-<p>Users who want to switch to a different provider in the same version of the OS (like switching
-from ntpd to chrony to RHEL 7) and keep the same playbook.</p>
+<p>Users who want to switch to a different provider in the same version of the OS (like switching from ntpd to chrony to RHEL 7) and keep the same playbook.</p>
 </li>
 </ul>
 </div>
@@ -974,38 +971,39 @@ from ntpd to chrony to RHEL 7) and keep the same playbook.</p>
 </ul>
 </div>
 <div class="paragraph">
-<p>Designing the interface in the latter case is difficult because it has to be sufficiently abstract
-to cover different providers. We, for example, do not provide an email role in the Linux System
-Roles project, only a postfix role, because the underlying implementations (sendmail, postfix) were
-deemed to be too divergent. Generally, an abstract interface should be something that should be
-always aimed for though, especially if there are multiple providers in use already, and in
-particular when the default provider is changing or is known to be likely to change in the next
-major releases.</p>
+<p>Designing the interface in the latter case is difficult because it has to be sufficiently abstract to cover different providers.
+We, for example, do not provide an email role in the Linux System Roles project, only a postfix role, because the underlying implementations (sendmail, postfix) were deemed to be too divergent.
+Generally, an abstract interface should be something that should be always aimed for though, especially if there are multiple providers in use already, and in
+particular when the default provider is changing or is known to be likely to change in the next major releases.</p>
 </div>
+</div>
+</details>
 </div>
 <div class="sect2">
 <h3 id="_basics">3.2. Basics</h3>
+<details>
+<summary class="title">Details</summary>
+<div class="content">
 <div class="ulist">
 <ul>
 <li>
-<p>Every repository in the AGP-roles namespace should be a valid Ansible Galaxy compatible role
-with the exception of any whose names begin with "meta_", such as this one.</p>
+<p>Every repository in the AGP-roles namespace should be a valid Ansible Galaxy compatible role with the exception of any whose names begin with "meta_", such as this one.</p>
 </li>
 <li>
-<p>New roles should be initiated in line with the skeleton directory, which has standard boilerplate
-code for a Galaxy-compatible Ansible role and some enforcement around these standards</p>
+<p>New roles should be initiated in line with the skeleton directory, which has standard boilerplate code for a Galaxy-compatible Ansible role and some enforcement around these standards</p>
 </li>
 <li>
-<p>Use <a href="https://semver.org/">semantic versioning</a> for Git release tags.  Use
-0.y.z before the role is declared stable (interface-wise).  Although it has
-not been a problem so far for linux system roles, since they use strict X.Y.Z
-versioning, you should be aware that there are some
+<p>Use <a href="https://semver.org/">semantic versioning</a> for Git release tags.
+  Use 0.y.z before the role is declared stable (interface-wise).
+  Although it has not been a problem so far for linux system roles, since they use strict X.Y.Z versioning, you should be aware that there are some
 <a href="https://github.com/ansible/ansible/issues/67512">restrictions</a> for Ansible
-Galaxy and Automation Hub.  The versioning must be in strict X.Y.Z[ab][W]
-format, where X, Y, and Z are integers.</p>
+Galaxy and Automation Hub.
+  The versioning must be in strict X.Y.Z[ab][W] format, where X, Y, and Z are integers.</p>
 </li>
 </ul>
 </div>
+</div>
+</details>
 </div>
 <div class="sect2">
 <h3 id="_interface_design_considerations">3.3. Interface design considerations</h3>
@@ -1014,39 +1012,53 @@ format, where X, Y, and Z are integers.</p>
 </div>
 <div class="sect3">
 <h4 id="_basic_design">3.3.1. Basic design</h4>
+<details>
+<summary class="title">Details</summary>
+<div class="content">
 <div class="paragraph">
-<p>Try to design the interface focused on the functionality, not on the software implementation behind
-it. This will help abstracting differences between different providers (see above), and help the
-user to focus on the functionality, not on technical details.</p>
+<p>Try to design the interface focused on the functionality, not on the software implementation behind it.
+This will help abstracting differences between different providers (see above), and help the user to focus on the functionality, not on technical details.</p>
 </div>
+</div>
+</details>
 </div>
 <div class="sect3">
 <h4 id="_naming_things">3.3.2. Naming things</h4>
+<details>
+<summary class="title">Details</summary>
+<div class="content">
 <div class="ulist">
 <ul>
 <li>
-<p>All defaults and all arguments to a role should have a name that begins with the role name to help
-avoid collision with other names. Avoid names like <code>packages</code> in favor of a name like <code>foo_packages</code>.
-(Rationale: Ansible has no namespaces, doing so reduces the potential for conflicts and makes
-clear what role a given variable belongs to.)</p>
+<p>All defaults and all arguments to a role should have a name that begins with the role name to help avoid collision with other names.
+Avoid names like <code>packages</code> in favor of a name like <code>foo_packages</code>.</p>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Rationale</dt>
+<dd>
+<p>Ansible has no namespaces, doing so reduces the potential for conflicts and makes clear what role a given variable belongs to.)</p>
+</dd>
+</dl>
+</div>
 </li>
 <li>
 <p>Same argument applies for modules provided in the roles, they also need a <code>$ROLENAME_</code> prefix:
-<code>foo_module</code>. While they are usually implementation details and not intended for direct use in
-playbooks, the unfortunate fact is that importing a role makes them available to the rest of the
-playbook and therefore creates opportunities for name collisions.</p>
+<code>foo_module</code>. While they are usually implementation details and not intended for direct use in playbooks, the unfortunate fact is that importing a role makes them available to the rest of the playbook and therefore creates opportunities for name collisions.</p>
 </li>
 <li>
-<p>Moreover, internal variables (those that are not expected to be set by users) are to be prefixed
-by two underscores: <code>__foo_variable</code>. (Rationale: role variables, registered variables, custom
-facts are usually intended to be local to the role, but in reality are not local to the role - as
-such a concept does not exist, and pollute the global namespace. Using the name of the role
-reduces the potential for name conflicts and using the underscores clearly marks the variables as
-internals and not part of the common interface. The two underscores convention has prior art in
-some popular roles like
-<a href="https://github.com/geerlingguy/ansible-role-apache/blob/f2b91ac84001db3fd4b43306a8f73f1a54f96f7d/vars/Debian.yml#L8">geerlingguy.ansible-role-apache</a>). This
-includes variables set by set_fact and register, because they persist in the namespace after the
-role has finished!</p>
+<p>Moreover, internal variables (those that are not expected to be set by users) are to be prefixed by two underscores: <code>__foo_variable</code>.</p>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Rationale</dt>
+<dd>
+<p>role variables, registered variables, custom facts are usually intended to be local to the role, but in reality are not local to the role - as such a concept does not exist, and pollute the global namespace.
+Using the name of the role reduces the potential for name conflicts and using the underscores clearly marks the variables as internals and not part of the common interface.
+The two underscores convention has prior art in some popular roles like
+<a href="https://github.com/geerlingguy/ansible-role-apache/blob/f2b91ac84001db3fd4b43306a8f73f1a54f96f7d/vars/Debian.yml#L8">geerlingguy.ansible-role-apache</a>).
+This includes variables set by set_fact and register, because they persist in the namespace after the role has finished!</p>
+</dd>
+</dl>
+</div>
 </li>
 <li>
 <p>Prefix all tags within a role with the role name or, alternatively, a "unique enough" but descriptive prefix.</p>
@@ -1054,112 +1066,127 @@ role has finished!</p>
 </ul>
 </div>
 </div>
+</details>
+</div>
 <div class="sect3">
 <h4 id="_providers">3.3.3. Providers</h4>
+<details>
+<summary class="title">Details</summary>
+<div class="content">
 <div class="paragraph">
-<p>When there are multiple implementations of the same functionality, we call them &#8220;providers&#8221;. A role
-supporting multiple providers should have an input variable called <code>$ROLENAME_provider</code>. If this
-variable is not defined, the role should detect the currently running provider on the system, and
-respect it. (Rationale: users can be surprised if the role changes the provider if they are running
-one already.) If there is no provider currently running, the role should select one according to the
-OS version. (E.g. on RHEL 7, chrony should be selected as the provider of time synchronization,
-unless there is ntpd already running on the system, or user requests it specifically. Chrony should
-be chosen on RHEL 8 as well, because it is the only provider available.) The role should set a
-variable or custom fact called <code>$ROLENAME_provider_os_default</code> to the appropriate default value for
-the given OS version. (Rationale: users may want to set all their managed systems to a consistent
-state, regardless of the provider that has been used previously. Setting <code>$ROLENAME_provider</code> would
-achieve it, but is suboptimal, because it requires selecting the appropriate value by the user, and
-if the user has multiple system versions managed by a single playbook, a common value supported by
-all of them may not even exist. Moreover, after a major upgrade of their systems, it may force the
-users to change their playbooks to change their <code>$ROLENAME_provider</code> setting, if the previous value
-is not supported anymore. Exporting <code>$ROLENAME_provider_os_default</code> allows the users to set
-<code>$ROLENAME_provider: "{{ $ROLENAME_provider_os_default }}"</code> (thanks to the lazy variable evaluation
-in Ansible) and thus get a consistent setting for all the systems of the given OS version without
-having to decide what the actual value is - the decision is delegated to the role.)</p>
+<p>When there are multiple implementations of the same functionality, we call them &#8220;providers&#8221;.
+A role supporting multiple providers should have an input variable called <code>$ROLENAME_provider</code>.
+If this variable is not defined, the role should detect the currently running provider on the system, and respect it.</p>
 </div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Rationale</dt>
+<dd>
+<p>users can be surprised if the role changes the provider if they are running one already.
+If there is no provider currently running, the role should select one according to the OS version.</p>
+</dd>
+<dt class="hdlist1">Example</dt>
+<dd>
+<p>on RHEL 7, chrony should be selected as the provider of time synchronization, unless there is ntpd already running on the system, or user requests it specifically.
+Chrony should be chosen on RHEL 8 as well, because it is the only provider available.</p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>The role should set a variable or custom fact called <code>$ROLENAME_provider_os_default</code> to the appropriate default value for the given OS version.</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Rationale</dt>
+<dd>
+<p>users may want to set all their managed systems to a consistent
+state, regardless of the provider that has been used previously.
+Setting <code>$ROLENAME_provider</code> would achieve it, but is suboptimal, because it requires selecting the appropriate value by the user, and if the user has multiple system versions managed by a single playbook, a common value supported by all of them may not even exist.
+Moreover, after a major upgrade of their systems, it may force the users to change their playbooks to change their <code>$ROLENAME_provider</code> setting, if the previous value is not supported anymore.
+Exporting <code>$ROLENAME_provider_os_default</code> allows the users to set <code>$ROLENAME_provider: "{{ $ROLENAME_provider_os_default }}"</code> (thanks to the lazy variable evaluation in Ansible) and thus get a consistent setting for all the systems of the given OS version without having to decide what the actual value is - the decision is delegated to the role).</p>
+</dd>
+</dl>
+</div>
+</div>
+</details>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_implementation_considerations">3.4. Implementation considerations</h3>
 <div class="sect3">
 <h4 id="_role_structure">3.4.1. Role Structure</h4>
+<details>
+<summary class="title">Details</summary>
+<div class="content">
 <div class="paragraph">
-<p>Avoid testing for distribution and version in tasks. Rather add a variable file to "vars/"
-for each supported distribution and version with the variables that need to change according
-to the distribution and version. This way it is easy to add support to a new distribution by
+<p>Avoid testing for distribution and version in tasks.
+Rather add a variable file to "vars/" for each supported distribution and version with the variables that need to change according to the distribution and version.
+This way it is easy to add support to a new distribution by
 simply dropping a new file in to "vars/", see below
-<a href="#supporting-multiple-distributions-and-versions">Supporting multiple distributions and versions</a>. See also
-<a href="#vars-vs-defaults">Vars vs Defaults</a> which mandates "Avoid embedding large lists or 'magic values' directly
-into the playbook." Since distribution-specific values are kind of "magic values", it applies to them. The
-same logic applies for providers: a role can load a provider-specific variable file, include a
-provider-specific task file, or both, as needed. Consider making paths to templates internal variables if you
-need different templates for different distributions.</p>
+<a href="#supporting-multiple-distributions-and-versions">Supporting multiple distributions and versions</a>.
+See also <a href="#vars-vs-defaults">Vars vs Defaults</a> which mandates "Avoid embedding large lists or 'magic values' directly into the playbook."
+Since distribution-specific values are kind of "magic values", it applies to them.
+The same logic applies for providers: a role can load a provider-specific variable file, include a provider-specific task file, or both, as needed.
+Consider making paths to templates internal variables if you need different templates for different distributions.</p>
 </div>
+</div>
+</details>
 </div>
 <div class="sect3">
 <h4 id="_check_mode_and_idempotency_issues">3.4.2. Check Mode and Idempotency Issues</h4>
+<details>
+<summary class="title">Details</summary>
+<div class="content">
 <div class="ulist">
 <ul>
 <li>
-<p>The role should work in check mode, meaning that first of all, they should not fail check mode, and
-they should also not report changes when there are no changes to be done. If it is not possible
-to support it, please state the fact and provide justification in the documentation.
+<p>The role should work in check mode, meaning that first of all, they should not fail check mode, and they should also not report changes when there are no changes to be done.
+If it is not possible to support it, please state the fact and provide justification in the documentation.
 This applies to the first run of the role.</p>
 </li>
 <li>
-<p>Reporting changes properly is related to the other requirement: <strong>idempotency</strong>. Roles
-should not perform changes when applied a second time to the same system with the same parameters,
-and it should not report that changes have been done if they have not been done. Due to this,
-using <code>command:</code> is problematic, as it always reports changes. Therefore, override the result by
-using <code>changed_when:</code></p>
+<p>Reporting changes properly is related to the other requirement: <strong>idempotency</strong>.
+Roles should not perform changes when applied a second time to the same system with the same parameters, and it should not report that changes have been done if they have not been done.
+Due to this, using <code>command:</code> is problematic, as it always reports changes.
+Therefore, override the result by using <code>changed_when:</code></p>
 </li>
 <li>
-<p>Concerning check mode, one usual obstacle to supporting it are registered variables. If there
-is a task which registers a variable and this task does not get executed (e.g. because it is a
-<code>command:</code> or another task which is not properly idempotent), the variable will not get registered
-and further accesses to it will fail (or worse, use the previous value, if the role has been
-applied before in the play, because variables are global and there is no way to unregister them).
-To fix, either use a properly idempotent module to obtain the information (e.g. instead of
-using <code>command: cat</code> to read file into a registered variable, use <code>slurp</code> and apply <code>.content|b64decode</code>
-to the result like
-<a href="https://github.com/linux-system-roles/kdump/pull/23/files#diff-d2414d4ec8ba189e1a244b0afc9aa81eL8">here</a>),
-or apply proper <code>check_mode:</code> and <code>changed_when:</code> attributes to the task.
+<p>Concerning check mode, one usual obstacle to supporting it are registered variables.
+If there is a task which registers a variable and this task does not get executed (e.g. because it is a <code>command:</code> or another task which is not properly idempotent), the variable will not get registered and further accesses to it will fail (or worse, use the previous value, if the role has been applied before in the play, because variables are global and there is no way to unregister them).
+To fix, either use a properly idempotent module to obtain the information (e.g. instead of using <code>command: cat</code> to read file into a registered variable, use <code>slurp</code> and apply <code>.content|b64decode</code> to the result like <a href="https://github.com/linux-system-roles/kdump/pull/23/files#diff-d2414d4ec8ba189e1a244b0afc9aa81eL8">here</a>), or apply proper <code>check_mode:</code> and <code>changed_when:</code> attributes to the task.
 <a href="https://github.com/ansible/molecule/issues/128#issue-135906202">more_info</a>.</p>
 </li>
 <li>
-<p>Another problem are commands that you need to execute to make changes. In check mode, you
-need to test for changes without actually applying them. If the command has some kind of "--dry-run"
-flag to enable executing without making actual changes, use it in check_mode (use the variable
-<code>ansible_check_mode</code> to determine whether we are in check mode). But you then need to set <code>changed_when:</code>
-according to the command status or output to indicate changes. See
-(<a href="https://github.com/linux-system-roles/selinux/pull/38/files#diff-2444ad0870f91f17ca6c2a5e96b26823L101" class="bare">https://github.com/linux-system-roles/selinux/pull/38/files#diff-2444ad0870f91f17ca6c2a5e96b26823L101</a>) for
-an example.</p>
+<p>Another problem are commands that you need to execute to make changes.
+In check mode, you need to test for changes without actually applying them.
+If the command has some kind of "--dry-run" flag to enable executing without making actual changes, use it in check_mode (use the variable <code>ansible_check_mode</code> to determine whether we are in check mode).
+But you then need to set <code>changed_when:</code> according to the command status or output to indicate changes.
+See (<a href="https://github.com/linux-system-roles/selinux/pull/38/files#diff-2444ad0870f91f17ca6c2a5e96b26823L101" class="bare">https://github.com/linux-system-roles/selinux/pull/38/files#diff-2444ad0870f91f17ca6c2a5e96b26823L101</a>) for an example.</p>
 </li>
 <li>
-<p>Another problem is using commands that get installed during the install phase, which is
-skipped in check mode. This will make check mode fail if the role has not been executed
-before (and the packages are not there), but does the right thing if check mode is executed after
-normal mode.</p>
+<p>Another problem is using commands that get installed during the install phase, which is skipped in check mode.
+This will make check mode fail if the role has not been executed before (and the packages are not there), but does the right thing if check mode is executed after normal mode.</p>
 </li>
 <li>
-<p>To view reasoning for supporting why check mode in first execution may not be worthwhile: see
-<a href="https://github.com/ansible/molecule/issues/128#issuecomment-245009843">here</a>. If this is to be supported,
-see hhaniel&#8217;s proposal
-<a href="https://github.com/linux-system-roles/timesync/issues/27#issuecomment-472466223">here</a>, which seems to
-properly guard even against such cases.</p>
+<p>To view reasoning for supporting why check mode in first execution may not be worthwhile: see <a href="https://github.com/ansible/molecule/issues/128#issuecomment-245009843">here</a>.
+If this is to be supported, see <a href="https://github.com/linux-system-roles/timesync/issues/27#issuecomment-472466223">hhaniel&#8217;s proposal</a>, which seems to properly guard even against such cases.</p>
 </li>
 </ul>
 </div>
+</div>
+</details>
 </div>
 <div class="sect3">
 <h4 id="_supporting_multiple_distributions_and_versions">3.4.3. Supporting multiple distributions and versions</h4>
 <div class="sect4">
 <h5 id="_platform_specific_variables">3.4.3.1. Platform specific variables</h5>
+<details>
+<summary class="title">Details</summary>
+<div class="content">
 <div class="paragraph">
 <p>You normally use <code>vars/main.yml</code> (automatically included) to set variables
-used by your role.  If some variables need to be parameterized according to
-distribution and version (name of packages, configuration file paths, names of
-services), use this in the beginning of your <code>tasks/main.yml</code>:</p>
+used by your role.
+If some variables need to be parameterized according to distribution and version (name of packages, configuration file paths, names of services), use this in the beginning of your <code>tasks/main.yml</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1181,48 +1208,44 @@ services), use this in the beginning of your <code>tasks/main.yml</code>:</p>
 <div class="ulist">
 <ul>
 <li>
-<p><code>os_family</code> covers a group of closely related platforms (e.g. <code>RedHat</code>
-covers RHEL, CentOS, Fedora)</p>
+<p><code>os_family</code> covers a group of closely related platforms (e.g. <code>RedHat</code> covers RHEL, CentOS, Fedora)</p>
 </li>
 <li>
 <p><code>distribution</code> (e.g. <code>Fedora</code>) is more specific than <code>os_family</code></p>
 </li>
 <li>
-<p><code>distribution</code>_<code>distribution_major_version</code> (e.g. <code>RedHat_8</code>) is more
-specific than <code>distribution</code></p>
+<p><code>distribution</code>_<code>distribution_major_version</code> (e.g. <code>RedHat_8</code>) is more specific than <code>distribution</code></p>
 </li>
 <li>
-<p><code>distribution</code>_<code>distribution_version</code> (e.g. <code>RedHat_8.3</code>) is the most
-specific</p>
+<p><code>distribution</code>_<code>distribution_version</code> (e.g. <code>RedHat_8.3</code>) is the most specific</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>See <a href="https://docs.ansible.com/ansible/latest/user_guide/playbooks_conditionals.html#ansible-facts-distribution">Commonly Used
-Facts</a>
-for an explanation of the facts and their common values.</p>
+<p>See <a href="https://docs.ansible.com/ansible/latest/user_guide/playbooks_conditionals.html#ansible-facts-distribution">Commonly Used Facts</a> for an explanation of the facts and their common values.</p>
 </div>
 <div class="paragraph">
-<p>Each file in the <code>loop</code> list will allow you to add or override variables to
-specialize the values for platform and/or version.  Using the <code>when: item is
-file</code> test means that you do not have to provide all of the <code>vars/</code> files,
-only the ones you need.  For example, if every platform except Fedora uses
-<code>srv_name</code> for the service name, you can define <code>myrole_service: srv_name</code> in
-<code>vars/main.yml</code> then define <code>myrole_service: srv2_name</code> in <code>vars/Fedora.yml</code>.
-In cases where this would lead to duplicate vars files for similar
-distributions (e.g. CentOS 7 and RHEL 7), use symlinks to avoid the
-duplication.</p>
+<p>Each file in the <code>loop</code> list will allow you to add or override variables to specialize the values for platform and/or version.
+Using the <code>when: item is file</code> test means that you do not have to provide all of the <code>vars/</code> files, only the ones you need.
+For example, if every platform except Fedora uses <code>srv_name</code> for the service name, you can define <code>myrole_service: srv_name</code> in <code>vars/main.yml</code> then define <code>myrole_service: srv2_name</code> in <code>vars/Fedora.yml</code>.
+In cases where this would lead to duplicate vars files for similar distributions (e.g. CentOS 7 and RHEL 7), use symlinks to avoid the duplication.</p>
 </div>
-<div class="paragraph">
-<p><strong>NOTE</strong>: With this setup, files can be loaded twice.  For example, on Fedora,
-the <code>distribution_major_version</code> is the same as <code>distribution_version</code> so the
-file <code>vars/Fedora_31.yml</code> will be loaded twice if you are managing a Fedora 31
-host.  If <code>distribution</code> is <code>RedHat</code> then <code>os_family</code> will also be <code>RedHat</code>,
-and <code>vars/RedHat.yml</code> will be loaded twice. This is usually not a problem -
-you will be replacing the variable with the same value, and the performance
-hit is negligible.  If this is a problem, construct the file list as a list
-variable, and filter the variable passed to <code>loop</code> using the <code>unique</code> filter
-(which preserves the order):</p>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+With this setup, files can be loaded twice.
+For example, on Fedora, the <code>distribution_major_version</code> is the same as <code>distribution_version</code> so the file <code>vars/Fedora_31.yml</code> will be loaded twice if you are managing a Fedora 31 host.
+If <code>distribution</code> is <code>RedHat</code> then <code>os_family</code> will also be <code>RedHat</code>,
+and <code>vars/RedHat.yml</code> will be loaded twice.
+This is usually not a problem - you will be replacing the variable with the same value, and the performance hit is negligible.
+If this is a problem, construct the file list as a list variable, and filter the variable passed to <code>loop</code> using the <code>unique</code> filter (which preserves the order):
+</td>
+</tr>
+</table>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1246,13 +1269,17 @@ variable, and filter the variable passed to <code>loop</code> using the <code>un
 <p>Or define your <code>__rolename_vars_file_list</code> in your <code>vars/main.yml</code>.</p>
 </div>
 </div>
+</details>
+</div>
 <div class="sect4">
 <h5 id="_platform_specific_tasks">3.4.3.2. Platform specific tasks</h5>
+<details>
+<summary class="title">Details</summary>
+<div class="content">
 <div class="paragraph">
-<p>Platform specific tasks, however, are different.  You probably want to perform
-platform specific tasks once, for the most specific match.  In that case, use
-<code>lookup('first_found')</code> with the file list in order of most specific to least
-specific, including a "default":</p>
+<p>Platform specific tasks, however, are different.
+You probably want to perform platform specific tasks once, for the most specific match.
+In that case, use <code>lookup('first_found')</code> with the file list in order of most specific to least specific, including a "default":</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1271,14 +1298,11 @@ specific, including a "default":</p>
 </div>
 </div>
 <div class="paragraph">
-<p>Then you would provide <code>tasks/setup/default.yml</code> to do the generic setup, and
-e.g. <code>tasks/setup/Fedora.yml</code> to do the Fedora specific setup.  The
-<code>tasks/setup/default.yml</code> is required in order to use <code>lookup('first_found')</code>,
-which will give an error if no file is found.</p>
+<p>Then you would provide <code>tasks/setup/default.yml</code> to do the generic setup, and e.g. <code>tasks/setup/Fedora.yml</code> to do the Fedora specific setup.
+The <code>tasks/setup/default.yml</code> is required in order to use <code>lookup('first_found')</code>, which will give an error if no file is found.</p>
 </div>
 <div class="paragraph">
-<p>If you want to have the "use first file found" semantics, but do not want to
-have to provide a default file, add <code>skip: true</code>:</p>
+<p>If you want to have the "use first file found" semantics, but do not want to have to provide a default file, add <code>skip: true</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1300,32 +1324,32 @@ have to provide a default file, add <code>skip: true</code>:</p>
 <div class="ulist">
 <ul>
 <li>
-<p>Use <code>include_tasks</code> or <code>include_vars</code> with <code>lookup('first_found')</code> instead
-of <code>with_first_found</code>.  <code>loop</code> is not needed - the include forms take a
-string or a list directly.</p>
+<p>Use <code>include_tasks</code> or <code>include_vars</code> with <code>lookup('first_found')</code> instead of <code>with_first_found</code>.
+<code>loop</code> is not needed - the include forms take a string or a list directly.</p>
 </li>
 <li>
 <p>Always specify the explicit, absolute path to the files to be included,
 using <code>{{ role_path }}/vars</code> or <code>{{ role_path }}/tasks</code>, when using these
-idioms. See below "Ansible Best Practices" for more information.</p>
+idioms.
+  See below "Ansible Best Practices" for more information.</p>
 </li>
 <li>
-<p>Use the <code>ansible_facts['name']</code> bracket notation rather than the
-<code>ansible_facts.name</code> or <code>ansible_name</code> form.  For example, use
-<code>ansible_facts['distribution']</code> instead of <code>ansible_distribution</code> or
-<code>ansible.distribution</code>.  The <code>ansible_name</code> form relies on fact injection,
-which can break if there is already a fact of that name. Also, the bracket
-notation is what is used in Ansible documentation such as <a href="https://docs.ansible.com/ansible/latest/user_guide/playbooks_conditionals.html#ansible-facts-distribution">Commonly Used
-Facts</a>
-and <a href="https://docs.ansible.com/ansible/latest/user_guide/playbooks_best_practices.html#operating-system-and-distribution-variance">Operating System and Distribution
-Variance</a></p>
+<p>Use the <code>ansible_facts['name']</code> bracket notation rather than the <code>ansible_facts.name</code> or <code>ansible_name</code> form.
+For example, use <code>ansible_facts['distribution']</code> instead of <code>ansible_distribution</code> or <code>ansible.distribution</code>.
+The <code>ansible_name</code> form relies on fact injection, which can break if there is already a fact of that name.
+Also, the bracket notation is what is used in Ansible documentation such as <a href="https://docs.ansible.com/ansible/latest/user_guide/playbooks_conditionals.html#ansible-facts-distribution">Commonly Used Facts</a> and <a href="https://docs.ansible.com/ansible/latest/user_guide/playbooks_best_practices.html#operating-system-and-distribution-variance">Operating System and Distribution Variance</a>.</p>
 </li>
 </ul>
 </div>
 </div>
+</details>
+</div>
 </div>
 <div class="sect3">
 <h4 id="_supporting_multiple_providers">3.4.4. Supporting multiple providers</h4>
+<details>
+<summary class="title">Details</summary>
+<div class="content">
 <div class="paragraph">
 <p>Use a task file per provider and include it from the main task file, like this example from <code>storage:</code></p>
 </div>
@@ -1337,37 +1361,36 @@ Variance</a></p>
 </div>
 <div class="paragraph">
 <p>The same process should be used for variables (not defaults, as defaults can
-not be loaded according to a variable).  You should guarantee that a file
-exists for each provider supported, or use an explicit, absolute path using
-<code>role_path</code>.  See below "Ansible Best Practices" for more information.</p>
+not be loaded according to a variable).
+You should guarantee that a file exists for each provider supported, or use an explicit, absolute path using <code>role_path</code>.
+See below "Ansible Best Practices" for more information.</p>
 </div>
+</div>
+</details>
 </div>
 <div class="sect3">
 <h4 id="_generating_files_from_templates">3.4.5. Generating files from templates</h4>
-<div class="ulist">
-<ul>
-<li>
-<p>Comment with <code>{{ ansible_managed }}</code>at the top of the file.
-<a href="https://docs.ansible.com/ansible/latest/modules/template_module.html#template-module">more_info</a></p>
-</li>
-<li>
-<p>When commenting, don&#8217;t include anything like "Last modified: {{ date }}". This would change the file at
-every application of the role, even if it doesn&#8217;t need to be changed for other reasons, and thus break
-proper change reporting.</p>
-</li>
-<li>
-<p>Use standard module parameters for backups, keep it on unconditionally (<code>backup: true</code>). (Until there is a
-user request to have it configurable.)</p>
-</li>
-<li>
-<p>Make prominently clear in the HOWTO (at the top) what settings/configuration files are replaced by the role
-instead of just modified.</p>
-</li>
-<li>
-<p>Use <code>{{ role_path }}/subdir/</code> as the filename prefix when including files if the name has a variable in it.</p>
 <details>
 <summary class="title">Details</summary>
 <div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>Add <code>{{ ansible_managed | comment }}</code> at the top of the template file file to indicate that the file is managed by Ansible roles, while making sure that multi-line values are properly commented.
+For more information, see <a href="https://docs.ansible.com/ansible/latest/user_guide/playbooks_filters.html#adding-comments-to-files">Adding comments to files</a>.</p>
+</li>
+<li>
+<p>When commenting, don&#8217;t include anything like "Last modified: {{ date }}".
+This would change the file at every application of the role, even if it doesn&#8217;t need to be changed for other reasons, and thus break proper change reporting.</p>
+</li>
+<li>
+<p>Use standard module parameters for backups, keep it on unconditionally (<code>backup: true</code>), until there is a user request to have it configurable.</p>
+</li>
+<li>
+<p>Make prominently clear in the HOWTO (at the top) what settings/configuration files are replaced by the role instead of just modified.</p>
+</li>
+<li>
+<p>Use <code>{{ role_path }}/subdir/</code> as the filename prefix when including files if the name has a variable in it.</p>
 <div class="dlist">
 <dl>
 <dt class="hdlist1">Rationale</dt>
@@ -1380,68 +1403,192 @@ See <a href="https://docs.ansible.com/ansible/latest/dev_guide/overview_architec
 </dd>
 </dl>
 </div>
-</div>
-</details>
 </li>
 </ul>
 </div>
-<div class="sect4">
-<h5 id="_vars_vs_defaults">3.4.5.1. Vars vs Defaults</h5>
+</div>
+</details>
+</div>
+<div class="sect3">
+<h4 id="_vars_vs_defaults">3.4.6. Vars vs Defaults</h4>
+<details>
+<summary class="title">Details</summary>
+<div class="content">
 <div class="ulist">
 <ul>
 <li>
-<p>Avoid embedding large lists or "magic values" directly into the playbook. Such static lists should be
-placed into the <code>vars/main.yml</code> file and named appropriately</p>
+<p>Avoid embedding large lists or "magic values" directly into the playbook.
+Such static lists should be placed into the <code>vars/main.yml</code> file and named appropriately</p>
 </li>
 <li>
 <p>Every argument accepted from outside of the role should be given a default value in <code>defaults/main.yml</code>.
-This allows a single place for users to look to see what inputs are expected. Document these variables
-in the role&#8217;s README.md file copiously</p>
+This allows a single place for users to look to see what inputs are expected.
+Document these variables in the role&#8217;s README.md file copiously</p>
 </li>
 <li>
 <p>Use the <code>defaults/main.yml</code> file in order to avoid use of the default Jinja2 filter within a playbook.
-Using the default filter is fine for optional keys on a dictionary, but the variable itself should be
-defined in <code>defaults/main.yml</code> so that it can have documentation written about it there and so that all
-arguments can easily be located and identified.</p>
+Using the default filter is fine for optional keys on a dictionary, but the variable itself should be defined in <code>defaults/main.yml</code> so that it can have documentation written about it there and so that all arguments can easily be located and identified.</p>
 </li>
 <li>
-<p>Avoid giving default values in <code>vars/main.yml</code> as such values are very high in the precedence order and
-are difficult for users and consumers of a role to override.</p>
+<p>Don&#8217;t define defaults in <code>defaults/main.yml</code> if there is no meaningful default.
+It is better to have the role fail if the variable isn&#8217;t defined than have it do something dangerously wrong.
+Still do add the variable to <code>defaults/main.yml</code> but <em>commented out</em>, so that there is one single source of input variables.</p>
 </li>
 <li>
-<p>As an example, if a role requires a large number of packages to install, but could also accept a list of
-additional packages, then the required packages should be placed in <code>vars/main.yml</code> with a name such as
-<code>foo_packages</code>, and the extra packages should be passed in a variable named <code>foo_extra_packages</code>,
-which should default to an empty array in <code>defaults/main.yml</code> and be documented as such.</p>
+<p>Avoid giving default values in <code>vars/main.yml</code> as such values are very high in the precedence order and are difficult for users and consumers of a role to override.</p>
+</li>
+<li>
+<p>As an example, if a role requires a large number of packages to install, but could also accept a list of additional packages, then the required packages should be placed in <code>vars/main.yml</code> with a name such as <code>foo_packages</code>, and the extra packages should be passed in a variable named <code>foo_extra_packages</code>, which should default to an empty array in <code>defaults/main.yml</code> and be documented as such.</p>
 </li>
 </ul>
 </div>
 </div>
+</details>
 </div>
 <div class="sect3">
-<h4 id="_documentation_conventions">3.4.6. Documentation conventions</h4>
+<h4 id="_documentation_conventions">3.4.7. Documentation conventions</h4>
+<details>
+<summary class="title">Details</summary>
+<div class="content">
 <div class="ulist">
 <ul>
 <li>
-<p>Use fully qualified role names in examples, like: <code>linux-system-roles.$ROLENAME</code> (with
-the Galaxy prefix).</p>
+<p>Use fully qualified role names in examples, like: <code>linux-system-roles.$ROLENAME</code> (with the Galaxy prefix).</p>
 </li>
 <li>
-<p>Use RFC <a href="https://tools.ietf.org/html/rfc5737">5737</a>,
-<a href="https://tools.ietf.org/html/rfc7042#section-2.1.1">7042</a> and
-<a href="https://tools.ietf.org/html/rfc3849">3849</a> addresses in examples.</p>
+<p>Use RFC <a href="https://tools.ietf.org/html/rfc5737">5737</a>, <a href="https://tools.ietf.org/html/rfc7042#section-2.1.1">7042</a> and <a href="https://tools.ietf.org/html/rfc3849">3849</a> addresses in examples.</p>
 </li>
 <li>
-<p>Modules should have complete metadata, documentation, example and return blocks as
-described in the
-<a href="https://docs.ansible.com/ansible/latest/dev_guide/developing_modules_documenting.html">Ansible docs</a>.</p>
+<p>Modules should have complete metadata, documentation, example and return blocks as described in the <a href="https://docs.ansible.com/ansible/latest/dev_guide/developing_modules_documenting.html">Ansible docs</a>.</p>
 </li>
 </ul>
 </div>
+</div>
+</details>
+</div>
+<div class="sect3">
+<h4 id="_dont_use_host_group_names_or_at_least_make_them_a_parameter">3.4.8. Don&#8217;t use host group names or at least make them a parameter</h4>
+<details>
+<summary class="title">Details</summary>
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Explanations</dt>
+<dd>
+<p>It is relatively common to use (inventory) group names in roles:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>either to loop through the hosts in the group, generally in a cluster context</p>
+</li>
+<li>
+<p>or to validate that a host is in a specific group</p>
+<div class="paragraph">
+<p>Instead, store the host name(s) in a (list) variable, or at least make the group name a parameter of your role.
+You can always set the variable at group level to avoid repetitions.</p>
+</div>
+</li>
+</ul>
+</div>
+</dd>
+<dt class="hdlist1">Rationale</dt>
+<dd>
+<p>Groups are a feature of the data in your inventory, meaning that you mingle data with code when you use those groups in your code.
+Rely on the inventory-parsing process to provide your code with the variables it needs instead of enforcing a specific structure of the inventory.
+Not all inventory sources are flexible enough to provide exactly the expected group name.
+Even more importantly, in a cluster context for example, if the group name is fixed, you can&#8217;t describe (and hence automate) more than one cluster in each inventory.
+You can&#8217;t possibly have multiple groups with the same name in the same inventory.
+On the other hand, variables can have any kind of value for each host, so that you can have as many clusters as you want.</p>
+</dd>
+<dt class="hdlist1">Examples</dt>
+<dd>
+<p>Assuming we have the following inventory (not according to recommended practices for sake of simplicity):</p>
+<div class="listingblock">
+<div class="title">Listing 1. An inventory with two clusters</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="ini"><span class="nn">[cluster_group_A]</span>
+<span class="err">host1</span> <span class="py">ansible_host</span><span class="p">=</span><span class="s">localhost</span>
+<span class="err">host2</span> <span class="py">ansible_host</span><span class="p">=</span><span class="s">localhost</span>
+<span class="err">host3</span> <span class="py">ansible_host</span><span class="p">=</span><span class="s">localhost</span>
+
+<span class="nn">[cluster_group_B]</span>
+<span class="err">host4</span> <span class="py">ansible_host</span><span class="p">=</span><span class="s">localhost</span>
+<span class="err">host5</span> <span class="py">ansible_host</span><span class="p">=</span><span class="s">localhost</span>
+<span class="err">host6</span> <span class="py">ansible_host</span><span class="p">=</span><span class="s">localhost</span>
+
+<span class="nn">[cluster_group_A:vars]</span>
+<span class="py">cluster_group_name</span><span class="p">=</span><span class="s">cluster_group_A</span>
+
+<span class="nn">[cluster_group_B:vars]</span>
+<span class="py">cluster_group_name</span><span class="p">=</span><span class="s">cluster_group_B</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We can then use one of the following three approaches in our role (here as playbook, again for sake of simplicity):</p>
+</div>
+<div class="listingblock">
+<div class="title">Listing 2. A playbook showing how to loop through a group</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yaml"><span class="nn">---</span>
+<span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">show how to loop through a set of groups</span>
+  <span class="na">hosts</span><span class="pi">:</span> <span class="s">cluster_group_?</span>
+  <span class="na">gather_facts</span><span class="pi">:</span> <span class="no">false</span>
+  <span class="na">become</span><span class="pi">:</span> <span class="no">false</span>
+
+  <span class="na">tasks</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">the loop happens for each host, might be too much</span>
+      <span class="na">debug</span><span class="pi">:</span>
+        <span class="na">msg</span><span class="pi">:</span> <span class="s">do something with {{ item }}</span>
+      <span class="na">loop</span><span class="pi">:</span> <span class="s2">"</span><span class="s">{{</span><span class="nv"> </span><span class="s">groups[cluster_group_name]</span><span class="nv"> </span><span class="s">}}"</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">the loop happens only for the first host in each group</span>
+      <span class="na">debug</span><span class="pi">:</span>
+        <span class="na">msg</span><span class="pi">:</span> <span class="s">do something with {{ item }}</span>
+      <span class="na">loop</span><span class="pi">:</span> <span class="s2">"</span><span class="s">{{</span><span class="nv"> </span><span class="s">groups[cluster_group_name]</span><span class="nv"> </span><span class="s">}}"</span>
+      <span class="na">when</span><span class="pi">:</span> <span class="s">inventory_hostname == groups[cluster_group_name][0]</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">make the first host of each group fail to simulate non-availability</span>
+      <span class="na">assert</span><span class="pi">:</span>
+        <span class="na">that</span><span class="pi">:</span> <span class="s">inventory_hostname != groups[cluster_group_name][0]</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">the loop happens only for the first _available_ host in each group</span>
+      <span class="na">debug</span><span class="pi">:</span>
+        <span class="na">msg</span><span class="pi">:</span> <span class="s">do something with {{ item }}</span>
+      <span class="na">loop</span><span class="pi">:</span> <span class="s2">"</span><span class="s">{{</span><span class="nv"> </span><span class="s">groups[cluster_group_name]</span><span class="nv"> </span><span class="s">}}"</span>
+      <span class="na">when</span><span class="pi">:</span> <span class="pi">&gt;-</span>
+        <span class="s">inventory_hostname == (groups[cluster_group_name]</span>
+        <span class="s">| intersect(ansible_play_hosts))[0]</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The first approach is probably best to create a cluster configuration file listing all cluster&#8217;s hosts.
+The other approaches are good to make sure each action is performed only once, but this comes at the price of many skips.
+The second one fails if the first host isn&#8217;t reachable (which might be what you&#8217;d want anyway), and the last one has the best chance to be executed once and only once, even if some hosts aren&#8217;t available.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+the variable <code>cluster_group_name</code> could have a default group name value in your role, of course properly documented, for simple use cases.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Overall, it is best to avoid this kind of constructs if the use case permits, as they are clumsy.</p>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</details>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_references">3.5. References</h3>
+<details>
+<summary class="title">Details</summary>
+<div class="content">
 <div class="paragraph">
 <p>Links that contain additional standardization information that provide context,
 inspiration or contrast to the standards described above.</p>
@@ -1449,9 +1596,8 @@ inspiration or contrast to the standards described above.</p>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="https://github.com/debops/debops/blob/v0.7.2/docs/debops-policy/code-standards-policy.rst" class="bare">https://github.com/debops/debops/blob/v0.7.2/docs/debops-policy/code-standards-policy.rst</a>). For
-inspiration, as the DebOps project has some specific guidance that we do not necessarily
-want to follow.</p>
+<p><a href="https://github.com/debops/debops/blob/v0.7.2/docs/debops-policy/code-standards-policy.rst" class="bare">https://github.com/debops/debops/blob/v0.7.2/docs/debops-policy/code-standards-policy.rst</a>).
+For inspiration, as the DebOps project has some specific guidance that we do not necessarily want to follow.</p>
 </li>
 <li>
 <p><a href="https://docs.adfinis-sygroup.ch/public/ansible-guide/overview.html" class="bare">https://docs.adfinis-sygroup.ch/public/ansible-guide/overview.html</a></p>
@@ -1461,6 +1607,8 @@ want to follow.</p>
 </li>
 </ul>
 </div>
+</div>
+</details>
 </div>
 </div>
 </div>
@@ -1484,17 +1632,210 @@ Work in Progress&#8230;&#8203;
 <div class="sect1">
 <h2 id="_playbooks_good_practices">5. Playbooks good practices</h2>
 <div class="sectionbody">
-<div class="admonitionblock note">
+<div class="sect2">
+<h3 id="_keep_your_playbooks_as_simple_as_possible">5.1. Keep your playbooks as simple as possible</h3>
+<details>
+<summary class="title">Details</summary>
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Explanations</dt>
+<dd>
+<p>Don&#8217;t put too much logic in your playbook, put it in your roles (or even in custom modules), and try to limit your playbooks to a list of a roles.</p>
+</dd>
+<dt class="hdlist1">Rationale</dt>
+<dd>
+<p>Roles are meant to be re-used and the structure helps you to make your code re-usable.
+The more code you put in roles, the higher the chances you, or others, can reuse it.
+Also, if you follow the <a href="#_define_which_structure_to_use_for_which_purpose">type-function pattern</a>, you can very easily create new (type) playbooks by just re-shuffling the roles.
+This way you can create a playbook for each purpose without having to duplicate a lot of code.
+This, in turn, also helps with the maintainability as there is only a single place where necessary changes need to be implemented, and that is in the role</p>
+</dd>
+<dt class="hdlist1">Examples</dt>
+<dd>
+<div class="listingblock">
+<div class="title">Listing 3. An example of playbook containing only roles</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yaml"><span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">a playbook can solely be a list of roles</span>
+  <span class="na">hosts</span><span class="pi">:</span> <span class="s">all</span>
+  <span class="na">gather_facts</span><span class="pi">:</span> <span class="no">false</span>
+  <span class="na">become</span><span class="pi">:</span> <span class="no">false</span>
+
+  <span class="na">roles</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="s">role1</span>
+    <span class="pi">-</span> <span class="s">role2</span>
+    <span class="pi">-</span> <span class="s">role3</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
 <table>
 <tr>
 <td class="icon">
-<i class="fa icon-note" title="Note"></i>
+<i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-Work in Progress&#8230;&#8203;
+we&#8217;ll explain later why there might be a case for using <code>include_role</code>/<code>import_role</code> tasks instead of the role section.
 </td>
 </tr>
 </table>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</details>
+</div>
+<div class="sect2">
+<h3 id="_use_either_the_tasks_or_roles_section_in_playbooks_not_both">5.2. Use either the tasks or roles section in playbooks, not both</h3>
+<details>
+<summary class="title">Details</summary>
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Explanations</dt>
+<dd>
+<p>A playbook can contain <code>pre_tasks</code>, <code>roles</code>, <code>tasks</code> and <code>post_tasks</code> sections.
+Avoid using both <code>roles</code> and <code>tasks</code> sections, the latter possibly containing <code>import_role</code> or <code>include_role</code> tasks.</p>
+</dd>
+<dt class="hdlist1">Rationale</dt>
+<dd>
+<p>The order of execution between <code>roles</code> and <code>tasks</code> isn&#8217;t obvious, and hence mixing them should be avoided.</p>
+</dd>
+<dt class="hdlist1">Examples</dt>
+<dd>
+<p>Either you need only static importing of roles and you can use the <code>roles</code> section, or you need dynamic inclusion and you should use <em>only</em> the <code>tasks</code> section.
+Of course, for very simple cases, you can just use <code>tasks</code> without <code>roles</code>.</p>
+</dd>
+</dl>
+</div>
+</div>
+</details>
+</div>
+<div class="sect2">
+<h3 id="_use_tags_cautiously_either_for_roles_or_for_complete_purposes">5.3. Use tags cautiously either for roles or for complete purposes</h3>
+<details>
+<summary class="title">Details</summary>
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Explanations</dt>
+<dd>
+<p>limit your usage of tags to two aspects:</p>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>either tags called like the roles to switch on/off single roles,</p>
+</li>
+<li>
+<p>or specific tags to reach a meaningful purpose</p>
+</li>
+</ol>
+</div>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>Don&#8217;t set tags which can&#8217;t be used on their own, or can be destructive if used on their own.</p>
+</div>
+<div class="paragraph">
+<p>Also document tags and their purpose(s).</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Rationale</dt>
+<dd>
+<p>there is nothing worse than tags which can&#8217;t be used alone, they bear the risk to destroy something by being called standalone.
+An acceptable exception is the pattern to use the role name as tag name, which can be useful while developing the playbook to test, or exclude, individual roles.</p>
+<div class="paragraph">
+<p>Important is that your users don&#8217;t need to learn the right sequence of tags necessary to get a meaningful result, one tag should be enough.</p>
+</div>
+</dd>
+<dt class="hdlist1">Examples</dt>
+<dd>
+<div class="listingblock">
+<div class="title">Listing 4. An example of playbook importing roles with tags</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yaml"><span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">a playbook can be a list of roles imported with tags</span>
+  <span class="na">hosts</span><span class="pi">:</span> <span class="s">all</span>
+  <span class="na">gather_facts</span><span class="pi">:</span> <span class="no">false</span>
+  <span class="na">become</span><span class="pi">:</span> <span class="no">false</span>
+
+  <span class="na">tasks</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">import role1</span>
+      <span class="na">import_role</span><span class="pi">:</span>
+        <span class="na">name</span><span class="pi">:</span> <span class="s">role1</span>
+      <span class="na">tags</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">role1</span>
+        <span class="pi">-</span> <span class="s">deploy</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">import role2</span>
+      <span class="na">import_role</span><span class="pi">:</span>
+        <span class="na">name</span><span class="pi">:</span> <span class="s">role2</span>
+      <span class="na">tags</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">role2</span>
+        <span class="pi">-</span> <span class="s">deploy</span>
+        <span class="pi">-</span> <span class="s">configure</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">import role3</span>
+      <span class="na">import_role</span><span class="pi">:</span>
+        <span class="na">name</span><span class="pi">:</span> <span class="s">role3</span>
+      <span class="na">tags</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">role3</span>
+        <span class="pi">-</span> <span class="s">configure</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You see that each role can be skipped/run individually, but also that the tags <code>deploy</code> and <code>configure</code> can be used to do something we&#8217;ll assume to be meaningful, without having to explain at length what they do.</p>
+</div>
+<div class="paragraph">
+<p>The same approach is also possible with <code>include_role</code> but requires additionally to <code>apply</code> the same tags to the role&#8217;s tasks, which doesn&#8217;t make the code easier to read:</p>
+</div>
+<div class="listingblock">
+<div class="title">Listing 5. An example of playbook including roles with tags</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yaml"><span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">a playbook can be a list of roles included with tags applied</span>
+  <span class="na">hosts</span><span class="pi">:</span> <span class="s">all</span>
+  <span class="na">gather_facts</span><span class="pi">:</span> <span class="no">false</span>
+  <span class="na">become</span><span class="pi">:</span> <span class="no">false</span>
+
+  <span class="na">tasks</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">include role1</span>
+      <span class="na">include_role</span><span class="pi">:</span>
+        <span class="na">name</span><span class="pi">:</span> <span class="s">role1</span>
+        <span class="na">apply</span><span class="pi">:</span>
+          <span class="na">tags</span><span class="pi">:</span>
+            <span class="pi">-</span> <span class="s">role1</span>
+            <span class="pi">-</span> <span class="s">deploy</span>
+      <span class="na">tags</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">role1</span>
+        <span class="pi">-</span> <span class="s">deploy</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">include role2</span>
+      <span class="na">include_role</span><span class="pi">:</span>
+        <span class="na">name</span><span class="pi">:</span> <span class="s">role2</span>
+        <span class="na">apply</span><span class="pi">:</span>
+          <span class="na">tags</span><span class="pi">:</span>
+            <span class="pi">-</span> <span class="s">role2</span>
+            <span class="pi">-</span> <span class="s">deploy</span>
+            <span class="pi">-</span> <span class="s">configure</span>
+      <span class="na">tags</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">role2</span>
+        <span class="pi">-</span> <span class="s">deploy</span>
+        <span class="pi">-</span> <span class="s">configure</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">include role3</span>
+      <span class="na">include_role</span><span class="pi">:</span>
+        <span class="na">name</span><span class="pi">:</span> <span class="s">role3</span>
+        <span class="na">apply</span><span class="pi">:</span>
+          <span class="na">tags</span><span class="pi">:</span>
+            <span class="pi">-</span> <span class="s">role3</span>
+            <span class="pi">-</span> <span class="s">configure</span>
+      <span class="na">tags</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">role3</span>
+        <span class="pi">-</span> <span class="s">configure</span></code></pre>
+</div>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</details>
 </div>
 </div>
 </div>
@@ -1659,7 +2000,7 @@ You can drop roles' <code>defaults/main.yml</code> file into the structure and a
 <p>The following is a complete inventory as described before.
 You don&#8217;t absolutely need to start at this level of complexity, but the experience shows that once you get used to it, it is actually a lot easier to understand and maintain than a single file.</p>
 <div class="listingblock">
-<div class="title">Listing 1. Tree of a structured inventory directory</div>
+<div class="title">Listing 6. Tree of a structured inventory directory</div>
 <div class="content">
 <pre>inventory_example/  <i class="conum" data-value="1"></i><b>(1)</b>
 ├── dynamic_inventory_plugin.yml  <i class="conum" data-value="2"></i><b>(2)</b>
@@ -1724,7 +2065,7 @@ Notice how each host is represented by a directory of its name containing one or
 <p>The groups and hosts file could look as follows, important is to not put any variable definition in this file.</p>
 </div>
 <div class="listingblock">
-<div class="title">Listing 2. Content of the <code>groups_and_hosts</code> file</div>
+<div class="title">Listing 7. Content of the <code>groups_and_hosts</code> file</div>
 <div class="content">
 <pre class="rouge highlight"><code data-lang="ini"><span class="nn">[all]</span>
 <span class="err">host1.example.com</span>
@@ -1774,7 +2115,7 @@ For example Satellite requires many variables to be fully configured, so you can
 </table>
 </div>
 <div class="listingblock">
-<div class="title">Listing 3. Example of a complex tree of variables with sub-directory</div>
+<div class="title">Listing 8. Example of a complex tree of variables with sub-directory</div>
 <div class="content">
 <pre>inventory_satellite/
 ├── groups_and_hosts
@@ -1786,6 +2127,200 @@ For example Satellite requires many variables to be fully configured, so you can
             ├── hostgroups.yml
             └── locations.yml</pre>
 </div>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</details>
+</div>
+<div class="sect2">
+<h3 id="_rely_on_your_inventory_to_loop_over_hosts_dont_create_lists_of_hosts">6.4. Rely on your inventory to loop over hosts, don&#8217;t create lists of hosts</h3>
+<details>
+<summary class="title">Details</summary>
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Explanations</dt>
+<dd>
+<p>To perform the same task on multiple hosts, don&#8217;t create a variable with a list of hosts and loop over it.
+Instead use as much as possible the capabilities of your inventory, which is already a kind of list of hosts.</p>
+<div class="paragraph">
+<p>The anti-pattern is especially obvious in the example of provisioning hosts on some kind of manager.
+Commonly seen automation tasks of this kind are spinning up a list of VMs via a hypervisor manager like oVirt/RHV or vCenter, or calling a management tool like Foreman/Satellite or even our beloved AWX/Tower/controller.</p>
+</div>
+</dd>
+<dt class="hdlist1">Rationale</dt>
+<dd>
+<p>There are 4 main reasons for following this advice:</p>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>a list of hosts is more difficult to maintain than an inventory structure, and tends to become very quickly difficult to oversee.
+This is especially true as you generally need to maintain your hosts also in your inventory.
+This brings us to the 2nd advantage:</p>
+</li>
+<li>
+<p>you avoid duplicating information, as you often need the same kind of information in your inventory that you also need in order to provision your VMs.
+In your inventory, you can also use groups to define group variables, automatically inherited by hosts.
+You can try to implement a similar inheritance pattern with your list of hosts, but it quickly becomes difficult and <em>hand-crafted</em>.</p>
+</li>
+<li>
+<p>as you loop through the hosts of an inventory, Ansible helps you with <a href="https://docs.ansible.com/ansible/latest/user_guide/playbooks_strategies.html">parallelization, throttling, etc</a>, all of which you can&#8217;t do easily with your own list (technically, you <em>can</em> combine <a href="https://docs.ansible.com/ansible/latest/user_guide/playbooks_async.html">async and loop</a> to reach something like this, but it&#8217;s a lot more complex to handle than letting Ansible do the heavy lifting for you).</p>
+</li>
+<li>
+<p>you can very simply <em>limit</em> the play to certain hosts, using for example the <code>--limit</code> parameter of <code>ansible-playbook</code> (or the 'limit' field in Tower/controller), even using groups and patterns.
+You can&#8217;t really do this with your own list of hosts.</p>
+</li>
+</ol>
+</div>
+</dd>
+<dt class="hdlist1">Examples</dt>
+<dd>
+<p>Our first idea could be to define managers and hosts first in an inventory:</p>
+<div class="listingblock">
+<div class="title">Listing 9. Content of the "bad" <code>groups_and_hosts</code> file</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="ini"><span class="nn">[managers]</span>
+<span class="err">manager_a</span>
+<span class="err">manager_b</span>
+
+<span class="nn">[managed_hosts]</span>
+<span class="err">host1</span>
+<span class="err">host2</span>
+<span class="err">host3</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Each manager has a list of hosts, which can look like this:</p>
+</div>
+<div class="listingblock">
+<div class="title">Listing 10. List of hosts in <code>inventory_bad/host_vars/manager_a/provision.yml</code></div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yaml"><span class="na">provision_list_of_hosts</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">host1</span>
+    <span class="na">provision_value</span><span class="pi">:</span> <span class="s">uno</span>
+  <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">host2</span>
+    <span class="na">provision_value</span><span class="pi">:</span> <span class="s">due</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>So that we can loop over the list in this way:</p>
+</div>
+<div class="listingblock">
+<div class="title">Listing 11. The "bad" way to loop over hosts</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yaml"><span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">provision hosts in a bad way</span>
+  <span class="na">hosts</span><span class="pi">:</span> <span class="s">managers</span>
+  <span class="na">gather_facts</span><span class="pi">:</span> <span class="no">false</span>
+  <span class="na">become</span><span class="pi">:</span> <span class="no">false</span>
+
+  <span class="na">tasks</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">create some file to simulate an API call to provision a host</span>
+      <span class="na">copy</span><span class="pi">:</span>
+        <span class="na">content</span><span class="pi">:</span> <span class="s2">"</span><span class="s">{{</span><span class="nv"> </span><span class="s">item.provision_value</span><span class="nv"> </span><span class="s">}}</span><span class="se">\n</span><span class="s">"</span>
+        <span class="na">dest</span><span class="pi">:</span> <span class="s2">"</span><span class="s">/tmp/bad_{{</span><span class="nv"> </span><span class="s">inventory_hostname</span><span class="nv"> </span><span class="s">}}_{{</span><span class="nv"> </span><span class="s">item.name</span><span class="nv"> </span><span class="s">}}.txt"</span>
+        <span class="na">force</span><span class="pi">:</span> <span class="no">true</span>
+      <span class="na">loop</span><span class="pi">:</span> <span class="s2">"</span><span class="s">{{</span><span class="nv"> </span><span class="s">provision_list_of_hosts</span><span class="nv"> </span><span class="s">}}"</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+check the resulting files using e.g. <code>head -n-0 /tmp/bad_*</code>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>As said, no way to limit the hosts provisioned, and no parallelism.
+Compare then with the recommended approach, with a slightly different structure:</p>
+</div>
+<div class="listingblock">
+<div class="title">Listing 12. Content of the "good" <code>groups_and_hosts</code> file</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="ini"><span class="nn">[managers]</span>
+<span class="err">manager_a</span>
+<span class="err">manager_b</span>
+
+<span class="nn">[managed_hosts_a]</span>
+<span class="err">host1</span>
+<span class="err">host2</span>
+
+<span class="nn">[managed_hosts_b]</span>
+<span class="err">host3</span>
+
+<span class="nn">[managed_hosts:children]</span>
+<span class="err">managed_hosts_a</span>
+<span class="err">managed_hosts_b</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It is now the hosts and their groups which carry the relevant information, it is not anymore parked in one single list (and can be used for other purposes):</p>
+</div>
+<div class="listingblock">
+<div class="title">Listing 13. The "good" variable structure</div>
+<div class="content">
+<pre>$ cat inventory_good/host_vars/host1/provision.yml
+provision_value: uno
+$ cat inventory_good/group_vars/managed_hosts_a/provision.yml
+manager_hostname: manager_a</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And the provisioning playbook now runs in parallel and can be limited to specific hosts:</p>
+</div>
+<div class="listingblock">
+<div class="title">Listing 14. The "good" way to loop over hosts</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yaml"><span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">provision hosts in a good way</span>
+  <span class="na">hosts</span><span class="pi">:</span> <span class="s">managed_hosts</span>
+  <span class="na">gather_facts</span><span class="pi">:</span> <span class="no">false</span>
+  <span class="na">become</span><span class="pi">:</span> <span class="no">false</span>
+
+  <span class="na">tasks</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">create some file to simulate an API call to provision a host</span>
+      <span class="na">copy</span><span class="pi">:</span>
+        <span class="na">content</span><span class="pi">:</span> <span class="s2">"</span><span class="s">{{</span><span class="nv"> </span><span class="s">provision_value</span><span class="nv"> </span><span class="s">}}</span><span class="se">\n</span><span class="s">"</span>
+        <span class="na">dest</span><span class="pi">:</span> <span class="s2">"</span><span class="s">/tmp/good_{{</span><span class="nv"> </span><span class="s">manager_hostname</span><span class="nv"> </span><span class="s">}}_{{</span><span class="nv"> </span><span class="s">inventory_hostname</span><span class="nv"> </span><span class="s">}}.txt"</span>
+        <span class="na">force</span><span class="pi">:</span> <span class="no">true</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The result isn&#8217;t overwhelming in this simple setup but you would of course better appreciate if the provisioning would take half an hour instead of a fraction of seconds:</p>
+</div>
+<div class="listingblock">
+<div class="title">Listing 15. Comparison of the execution times between the "good" and the "bad" implementation</div>
+<div class="content">
+<pre>$ ANSIBLE_STDOUT_CALLBACK=profile_tasks \
+	ansible-playbook -i inventory_bad playbook_bad.yml
+Saturday 23 October 2021  13:11:45 +0200 (0:00:00.040)       0:00:00.040 ******
+Saturday 23 October 2021  13:11:45 +0200 (0:00:00.858)       0:00:00.899 ******
+===============================================================================
+create some file to simulate an API call to provision a host ------------ 0.86s
+$ ANSIBLE_STDOUT_CALLBACK=profile_tasks \
+	ansible-playbook -i inventory_good playbook_good.yml
+Saturday 23 October 2021  13:11:55 +0200 (0:00:00.040)       0:00:00.040 ******
+Saturday 23 October 2021  13:11:56 +0200 (0:00:00.569)       0:00:00.610 ******
+===============================================================================
+create some file to simulate an API call to provision a host ------------ 0.57s</pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+if for some reason, you can&#8217;t follow the recommendation, you can at least avoid duplicating too much information by indirectly referencing the hosts' variables as in <code>"{{ hostvars[item.name]['provision_value'] }}"</code>. Not so bad&#8230;&#8203;
+</td>
+</tr>
+</table>
 </div>
 </dd>
 </dl>
@@ -1875,7 +2410,11 @@ Making all names valid identifiers will avoid encountering problems in the futur
 </li>
 <li>
 <p>Use mnemonic and descriptive names and do not shorten more than necessary.
+A pattern <code>object[_feature]_action</code> has proven useful as it guarantees a proper sorting in the file system for roles and playbooks.
 Systems support long identifier names, so use them!</p>
+</li>
+<li>
+<p>Avoid numbering roles and playbooks, you&#8217;ll never know how they&#8217;ll be used in the future.</p>
 </li>
 </ul>
 </div>
@@ -1893,7 +2432,7 @@ Systems support long identifier names, so use them!</p>
 <summary class="title">Details</summary>
 <div class="content">
 <div class="listingblock">
-<div class="title">Listing 4. Do this:</div>
+<div class="title">Listing 16. Do this:</div>
 <div class="content">
 <pre class="rouge highlight"><code data-lang="yaml"><span class="na">example_list</span><span class="pi">:</span>
   <span class="pi">-</span> <span class="s">example_element_1</span>
@@ -1903,7 +2442,7 @@ Systems support long identifier names, so use them!</p>
 </div>
 </div>
 <div class="listingblock">
-<div class="title">Listing 5. Don&#8217;t do this:</div>
+<div class="title">Listing 17. Don&#8217;t do this:</div>
 <div class="content">
 <pre class="rouge highlight"><code data-lang="yaml"><span class="na">example_list</span><span class="pi">:</span>
 <span class="pi">-</span> <span class="s">example_element_1</span>
@@ -1916,7 +2455,52 @@ Systems support long identifier names, so use them!</p>
 </details>
 </li>
 <li>
-<p>Split long Jinja2 expressions into multiple lines.</p>
+<p>Split long expressions into multiple lines.</p>
+<details>
+<summary class="title">Details</summary>
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Rationale</dt>
+<dd>
+<p>long lines are difficult to read, many teams even ask for a line length limit around 120-150 characters.</p>
+</dd>
+<dt class="hdlist1">Examples</dt>
+<dd>
+<p>there are multiple ways to avoid long lines but the most generic one is to use the YAML folding sign (<code>&gt;</code>):</p>
+<div class="listingblock">
+<div class="title">Listing 18. Usage of the YAML folding sign</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yaml"><span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">call a very long command line</span>
+  <span class="na">command</span><span class="pi">:</span> <span class="pi">&gt;</span>
+    <span class="s">echo Lorem ipsum dolor sit amet, consectetur adipiscing elit.</span>
+    <span class="s">Maecenas mollis, ante in cursus congue, mauris orci tincidunt nulla,</span>
+    <span class="s">non gravida tortor mi non nunc.</span>
+<span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">set a very long variable</span>
+  <span class="na">set_fact</span><span class="pi">:</span>
+    <span class="na">meaningless_variable</span><span class="pi">:</span> <span class="pi">&gt;-</span>
+      <span class="s">Ut ac neque sit amet turpis ullamcorper auctor.</span>
+      <span class="s">Cras placerat dolor non ipsum posuere malesuada at ac ipsum.</span>
+      <span class="s">Duis a neque fermentum nulla imperdiet blandit.</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+use the sign <code>&gt;-</code> if it is important that the last line return code doesn&#8217;t become part of the string (e.g. when defining a string variable).
+</td>
+</tr>
+</table>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</details>
 </li>
 <li>
 <p>If the <code>when:</code> condition results in a line that is too long, and is an <code>and</code> expression, then break it into a list of conditions.</p>
@@ -1929,6 +2513,23 @@ Systems support long identifier names, so use them!</p>
 <dd>
 <p>Ansible will <code>and</code> the list elements together (<a href="https://docs.ansible.coansible/latest/user_guidplaybooks_conditionalhtml#the-when-statement">Ansible UseGuide » Conditionals</a>).
 Multiple conditions that all need to be true (a logical <code>and</code>) can also be specified as a list, but beware of bare variables in <code>when:</code>.</p>
+</dd>
+<dt class="hdlist1">Examples</dt>
+<dd>
+<div class="listingblock">
+<div class="title">Listing 19. Do this</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yaml"><span class="na">when</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="s">myvar is defined</span>
+  <span class="pi">-</span> <span class="s">myvar | bool</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Listing 20. instead of this</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yaml"><span class="na">when</span><span class="pi">:</span> <span class="s">myvar is defined and myvar | bool</span></code></pre>
+</div>
+</div>
 </dd>
 </dl>
 </div>
@@ -1944,20 +2545,20 @@ Multiple conditions that all need to be true (a logical <code>and</code>) can al
 <summary class="title">Details</summary>
 <div class="content">
 <div class="listingblock">
-<div class="title">Listing 6. Do this:</div>
+<div class="title">Listing 21. Do this:</div>
 <div class="content">
 <pre class="rouge highlight"><code data-lang="yaml"><span class="na">tasks</span><span class="pi">:</span>
-  <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">Print a message</span>
-    <span class="s">ansible.builtin.debug</span><span class="pi">:</span>
-      <span class="na">msg</span><span class="pi">:</span> <span class="s">This is how it's done.</span></code></pre>
+<span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">Print a message</span>
+  <span class="na">ansible.builtin.debug</span><span class="pi">:</span>
+    <span class="na">msg</span><span class="pi">:</span> <span class="s">This is how it's done.</span></code></pre>
 </div>
 </div>
 <div class="listingblock">
-<div class="title">Listing 7. Don&#8217;t do this:</div>
+<div class="title">Listing 22. Don&#8217;t do this:</div>
 <div class="content">
 <pre class="rouge highlight"><code data-lang="yaml"><span class="na">tasks</span><span class="pi">:</span>
-  <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">Print a message</span>
-    <span class="s">ansible.builtin.debug</span><span class="pi">:</span> <span class="s">msg="This is the exact opposite of how it's done."</span></code></pre>
+<span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">Print a message</span>
+  <span class="na">ansible.builtin.debug</span><span class="pi">:</span> <span class="s">msg="This is the exact opposite of how it's done."</span></code></pre>
 </div>
 </div>
 </div>
@@ -2003,6 +2604,10 @@ The same goes if the value is an expression. <code>{{ variable_name | default('h
 <li>
 <p>Do not use quotes unless you have to, especially for short module-keyword-like strings like <code>present</code>, <code>absent</code>, etc.
 But do use quotes for user-side strings such as descriptions, names, and messages.</p>
+</li>
+<li>
+<p>Even if JSON is valid YAML and Ansible understands it, do only use JSON syntax if it makes sense (e.g. a variable file automatically generated) or adds to the readability.
+In doubt, nobody expects JSON so stick to YAML.</p>
 </li>
 </ul>
 </div>
@@ -2177,11 +2782,30 @@ The use of <code>lineinfile</code> should include a comment with justification.<
 </li>
 <li>
 <p>Limit use of the <code>copy</code> module to copying remote files and to uploading binary blobs.
-For all other file pushes, use the <code>template</code> module. Even if there is nothing in the file that is being templated at the current moment, having the file handled by the <code>template</code> module now makes adding that functionality much simpler than if the file is initially handled by the <code>copy</code> and then needs to be moved before it can be edited.</p>
+For all other file pushes, use the <code>template</code> module.
+Even if there is nothing in the file that is being templated at the current moment, having the file handled by the <code>template</code> module now makes adding that functionality much simpler than if the file is initially handled by the <code>copy</code> and then needs to be moved before it can be edited.</p>
 </li>
 <li>
-<p>When using the <code>template</code> module, refrain from appending <code>.j2</code> to the file name. This alters the syntax highlighting in most editors and will obscure the benefits of highlighting for the particular file type or filename.
-Anything under the <code>templates</code> directory of a role is assumed to be treated as a Jinja 2 template, so adding the <code>.j2</code> extension is redundant information that is not helpful.</p>
+<p>When using the <code>template</code> module, append <code>.j2</code> to the template file name.</p>
+<details>
+<summary class="title">Details</summary>
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Example</dt>
+<dd>
+<p>If you want to use the <code>ansible.builtin.template</code> module to create a file called <code>example.conf</code> somewhere on the managed host, name the template for this file <code>templates/example.conf.j2</code>.</p>
+</dd>
+<dt class="hdlist1">Rationale</dt>
+<dd>
+<p>When you are at the stage of writing a template file you usually already know how the file should end up looking on the file system, so at that point it is convenient to use Jinja2 syntax highlighting to make sure your templating syntax checks out.
+Should you need syntax highlighting for whatever language the target file should be in, it is very easy to define in your editor settings to use, e.g., HTML syntax highlighting for all files ending in <code>.html.j2</code>.
+It is much less straightforward to automatically enable Jinja2 syntax highlighting for <em>some</em> files ending on <code>.html</code>.</p>
+</dd>
+</dl>
+</div>
+</div>
+</details>
 </li>
 <li>
 <p>Keep filenames and templates as close to the name on the destination system as possible.</p>
@@ -2201,6 +2825,11 @@ Grouping sets of similar files into a subdirectory of <code>templates</code> is 
 </div>
 </details>
 </li>
+<li>
+<p>Using agnostic modules like <code>package</code> only makes sense if the features required are very limited.
+In many cases, if the platform is different, the package name is also different so that using <code>package</code> doesn&#8217;t help a lot.
+Prefer then the more specific <code>yum</code>, <code>dnf</code> or <code>apt</code> module if you anyway need to differentiate.</p>
+</li>
 </ul>
 </div>
 </div>
@@ -2209,7 +2838,7 @@ Grouping sets of similar files into a subdirectory of <code>templates</code> is 
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-07-23 15:14:46 +0200
+Last updated 2021-11-05 16:19:20 +0100
 </div>
 </div>
 </body>
