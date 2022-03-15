@@ -1,4 +1,4 @@
-= Inventories Good Practices for Ansible
+= Inventories and Variables Good Practices for Ansible
 
 == Identify your Single Source(s) of Truth and use it/them in your inventory
 [%collapsible]
@@ -25,6 +25,7 @@ This gives you a complete model of the environment to be automated, with limited
 ====
 
 
+[[differentiate]]
 == Differentiate clearly between "As-Is" and "To-Be" information
 [%collapsible]
 ====
@@ -254,4 +255,53 @@ create some file to simulate an API call to provision a host ------------ 0.57s
 ----
 +
 TIP: if for some reason, you can't follow the recommendation, you can at least avoid duplicating too much information by indirectly referencing the hosts' variables as in `"{{ hostvars[item.name]['provision_value'] }}"`. Not so bad...
+====
+
+== Restrict your usage of variable types
+[%collapsible]
+====
+Explanations::
+* Do not use playbook and play variables, as well as include_vars, prefer inventory variables.
+* Avoid using scoped variables unless you need for runtime reasons (loop and similar). 
+
+Rationale::
+There are https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#understanding-variable-precedence[22 levels of variable precedence], this is almost impossible to keep in mind for a "normal" human and can lead to all kind of weird behaviours if not under control.
+It also needs to be noted that many variable types tend to blur the separation between code and data and are to be avoided.
+By reducing the number of variable types, you come to a more simple and overseeable list of variables, with explanations why they have their specific precedence, so that they become easier to remember and use wisely:
++
+. role defaults (defined in `defaults/main.yml`), they are... defaults and can be overwritten by anything.
+. inventory vars, they truly represent your desired state.
+  They have their own internal precedence (group before host) but that's easy to remember.
+. host facts don't represent a desired state but the current state, and no other variable should have the same name because of <<differentiate>> so that the precedence doesn't really matter.
+. role vars (defined in `vars/main.yml`) represent constants used by the role to separate code from data, and shouldn't either collide with the inventory variables, but can be overwritten by extra vars if you know what you're doing.
+. scoped vars, at the block or task level, are local to their scope and hence internal to the role, and can't collide with other variable types.
+. runtime vars, defined by register or set_facts, are taking precedence over almost everything defined previously, which makes sense as they represent the current state of the automation.
+. scoped params, at the role or include level this time, are admittedly a bit out of order and should be avoided to limit surprises.
+. and extra_vars overwrite everything else (even runtime vars, which can be quite surprising)
+
+The following picture shows how this can be summarized in a simplified way to keep in mind, highlighting which variables are meant to overwrite each other:
+
+.Flow of variable precedences
+image::variable_precedences.png[flow of variable precedences in 3 lanes]
+
+CAUTION: even if we write that variables _shouldn't_ overwrite each other, they still all share the same namespace and _can_ potentially overwrite each other.
+It is your responsibility as automation author to make sure they don't.
+====
+
+== Prefer inventory variables for desired state variables over extra vars
+[%collapsible]
+====
+Explanations::
+Don't use extra vars to define your desired state.
+Make sure your inventory contains the complete state of your environment as you want to reach.
+Use extra vars only for troubleshooting, debugging or validation purposes.
+
+Rationale::
+Inventory variables are typically in some kind of persistent tracked storage (be it a database or Git), and should be your sole source representing your desired state so that you can refer to it non-ambiguously.
+On the other hand, extra vars are bound to a specific job or ansible-call and disappear together with history. 
+
+Examples::
+Don't use extra vars for the RAM size of VM to create, because this is part of the desired state of your environment, and nobody would know one year down the line if the VM was really created with the proper RAM size according to the state of the inventory.
+You may use an extra variable to protect a critical part of a destructive playbook, something like `are_you_really_really_sure: true/false`, which is validated before e.g. a VM is destroyed and recreated to change parameters which can't be changed on the fly.
+You can also use extra vars to enforce fact values which can't be reproduced easily, like overwriting `ansible_memtotal_mb` to simulate a RAM size fact of terabytes to validate that your code can cope with it.
 ====
