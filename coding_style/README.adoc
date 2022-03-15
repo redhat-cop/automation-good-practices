@@ -226,7 +226,8 @@ Try editing files directly using other built-in modules (e.g. `ini_file`, `block
 If you are modifying more than a tiny number of lines or in a manner more than trivially complex, try leveraging the `template` module, instead.
 This will allow the entire structure of the file to be seen by later users and maintainers.
 The use of `lineinfile` should include a comment with justification.
-Alternatively, most configuration files have their own modules, such as community.general.ssh_config or community.general.nmcli.  Using these make code cleaner to read and ensure idempotence.
+Alternatively, most configuration files have their own modules, such as https://docs.ansible.com/ansible/latest/collections/community/general/ssh_config_module.html[community.general.ssh_config] or https://docs.ansible.com/ansible/latest/collections/community/general/nmcli_module.html[community.general.nmcli].
+Using these make code cleaner to read and ensure idempotence.
 ====
 
 * Limit use of the `copy` module to copying remote files and to uploading binary blobs.
