@@ -6,7 +6,7 @@ NOTE: Work in Progress...
 
 [%collapsible]
 ====
-Explanations:: Every role name in a collection should begin with a prefix that is reasonably unique to the collection.
+Explanations:: Every role name in a collection should begin with a prefix that is reasonably similar to the collection name and unique.
 If the collection name is short enough, you can of course use it directly.
 For variables, either use the role name (or a short version of it) _and_ the collection name (or a short version of it)  as a prefix, or use the _collection name_ (or a short version of it)  only in case the variable are used in more than one of the collection's roles.
 
