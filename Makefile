@@ -9,7 +9,6 @@
 # rubygem-json ?
 
 ADOCPDF = asciidoctor-pdf --attribute=gitdate=$(shell git log -1 --date=short --pretty=format:%cd) --attribute=githash=$(shell git rev-parse --verify HEAD)
-ADOCHTML = asciidoctor --attribute=gitdate=$(shell git log -1 --date=short --pretty=format:%cd) --attribute=githash=$(shell git rev-parse --verify HEAD)
 ACROREAD = okular
 VCS = git
 INFILE = README.adoc
@@ -21,31 +20,11 @@ SPELL = hunspell
 SPELLOPTS = -d en_GB
 
 
-all: $(OUTFILE) html_$(OUTFILE)
+all: $(OUTFILE)
 
-pdf: $(OUTFILE)
-
-$(OUTFILE):
+$(OUTFILE): $(INFILE) *.adoc */*.adoc _images/* Makefile .git/index
 	$(ADOCPDF) --out-file $(OUTFILE) $(INFILE)
 	$(ADOCPDF) --out-file $(OUTFILE2) $(INFILE2)
-
-html: html_$(OUTFILE)
-
-html_$(OUTFILE):
-	$(ADOCHTML) --out-file docs/index.html $(INFILE)
-	$(ADOCHTML) --out-file docs/CONTRIBUTE.html $(INFILE2)
-
-preview_html: preview_html_$(OUTFILE)
-
-preview_html_$(OUTFILE):
-	$(ADOCHTML) --out-file docs/preview/index.html $(INFILE)
-	$(ADOCHTML) --out-file docs/preview/CONTRIBUTE.html $(INFILE2)
-
-preview_pdf: preview_$(OUTFILE)
-
-preview_$(OUTFILE):
-	$(ADOCPDF) --out-file docs/preview/$(OUTFILE) $(INFILE)
-	$(ADOCPDF) --out-file docs/preview/$(OUTFILE2) $(INFILE2)
 
 view: viewpdf
 
