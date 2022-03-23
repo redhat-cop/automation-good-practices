@@ -261,13 +261,18 @@ TIP: if for some reason, you can't follow the recommendation, you can at least a
 [%collapsible]
 ====
 Explanations::
-* Do not use playbook and play variables, as well as include_vars, prefer inventory variables.
-* Avoid using scoped variables unless you need for runtime reasons (loop and similar). 
+* Avoid playbook and play variables, as well as `include_vars`.
+  Opt for inventory variables instead.
+* Avoid using scoped variables unless required for runtime reasons, e.g. for loops and for temporary variables based on runtime variables.
+  Another valid exception is when nested variables are too complicated to be defined at once.
 
 Rationale::
-There are https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#understanding-variable-precedence[22 levels of variable precedence], this is almost impossible to keep in mind for a "normal" human and can lead to all kind of weird behaviours if not under control.
-It also needs to be noted that many variable types tend to blur the separation between code and data and are to be avoided.
-By reducing the number of variable types, you come to a more simple and overseeable list of variables, with explanations why they have their specific precedence, so that they become easier to remember and use wisely:
+There are https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#understanding-variable-precedence[22 levels of variable precedence].
+This is almost impossible to keep in mind for a "normal" human and can lead to all kind of weird behaviours if not under control.
+In addition, the use of play(book) variables is not recommended as it blurs the separation between code and data.
+The same applies to all constructs including specific variable files as part of the play (i.e. `include_vars`).
+By reducing the number of variable types, you end up with a more simple and overseeable list of variables.
+Together with some explanations why they have their specific precedence, so that they become easier to remember and use wisely:
 +
 . role defaults (defined in `defaults/main.yml`), they are... defaults and can be overwritten by anything.
 . inventory vars, they truly represent your desired state.
@@ -277,9 +282,9 @@ By reducing the number of variable types, you come to a more simple and overseea
 . scoped vars, at the block or task level, are local to their scope and hence internal to the role, and can't collide with other variable types.
 . runtime vars, defined by register or set_facts, are taking precedence over almost everything defined previously, which makes sense as they represent the current state of the automation.
 . scoped params, at the role or include level this time, are admittedly a bit out of order and should be avoided to limit surprises.
-. and extra_vars overwrite everything else (even runtime vars, which can be quite surprising)
+. and lastly, extra_vars overwrite everything else (even runtime vars, which can be quite surprising)
 
-The following picture shows how this can be summarized in a simplified way to keep in mind, highlighting which variables are meant to overwrite each other:
+The following picture summarizes this list in a simplified and easier to keep in mind way, highlighting which variables are meant to overwrite others:
 
 .Flow of variable precedences
 image::variable_precedences.png[flow of variable precedences in 3 lanes]
@@ -288,12 +293,12 @@ CAUTION: even if we write that variables _shouldn't_ overwrite each other, they 
 It is your responsibility as automation author to make sure they don't.
 ====
 
-== Prefer inventory variables for desired state variables over extra vars
+== Prefer inventory variables over extra vars to describe the desired state
 [%collapsible]
 ====
 Explanations::
 Don't use extra vars to define your desired state.
-Make sure your inventory contains the complete state of your environment as you want to reach.
+Make sure your inventory completely describes how your environment is supposed to look like.
 Use extra vars only for troubleshooting, debugging or validation purposes.
 
 Rationale::
@@ -304,4 +309,6 @@ Examples::
 Don't use extra vars for the RAM size of VM to create, because this is part of the desired state of your environment, and nobody would know one year down the line if the VM was really created with the proper RAM size according to the state of the inventory.
 You may use an extra variable to protect a critical part of a destructive playbook, something like `are_you_really_really_sure: true/false`, which is validated before e.g. a VM is destroyed and recreated to change parameters which can't be changed on the fly.
 You can also use extra vars to enforce fact values which can't be reproduced easily, like overwriting `ansible_memtotal_mb` to simulate a RAM size fact of terabytes to validate that your code can cope with it.
++
+Another example could be the usage of `no_log: "{{ no_log_in_case_of_trouble | default(true) }}` to exceptionally "uncover" the output of failing tasks even though they are security relevant.
 ====
