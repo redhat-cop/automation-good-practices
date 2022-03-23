@@ -8,7 +8,8 @@ NOTE: Work in Progress...
 ====
 Explanations:: Every role name in a collection should begin with a prefix that is reasonably similar to the collection name and unique.
 If the collection name is short enough, you can of course use it directly.
-For variables, either use the role name (or a short version of it) _and_ the collection name (or a short version of it)  as a prefix, or use the _collection name_ (or a short version of it)  only in case the variable are used in more than one of the collection's roles.
+For variables, either use the collection name (or a short version of it) _and_ the role name (or a short version of it)  as a prefix.
+Use the _collection name_ (or a short version of it)  only in case the variable are used in more than one of the collection's roles (see xxx for details).
 
 Rationale:: This avoids confusion when using more than one collection, and it makes it easier to idetify where a role/variable comes from in projects where modules are called without the full collection name.
 
