@@ -1,3 +1,53 @@
 = Collections good practices
 
 NOTE: Work in Progress...
+
+== Use "unique-enough" prefixes for all role and variable names within a collection
+
+[%collapsible]
+====
+Explanations:: Every role name in a collection should begin with a prefix that is reasonably unique to the collection.
+If the collection name is short enough, you can of course use it directly.
+For variables, either use the role name (or a short version of it) _and_ the collection name (or a short version of it)  as a prefix, or use the _collection name_ (or a short version of it)  only in case the variable are used in more than one of the collection's roles.
+
+Rationale:: This avoids confusion when using more than one collection, and it makes it easier to idetify where a role/variable comes from in projects where modules are called without the full collection name.
+
+Examples::
++
+.Use names like this
+[source,yaml]
+----
+  roles:
+    # example using role name and collection name
+    - role: redhat_cop.aap_utils.aap_utils_setup_prepare
+      vars:
+        - __aap_utils_setup_prepare_variable1
+        - aap_utils_setup_prepare_variable2
+        - __aap_utils_variable3
+        - aap_utils_variable4
+    # example using shorter versions
+    - role: redhat_cop.aap_utils.aap_setup_install
+      vars:
+        - __aap_setup_install_variable1
+        - aap_setup_install_variable2
+        - __aap_utils_variable3
+        - aap_utils_variable4
+        - __aap_install_variable5
+        - aap_install_variable4
+----
++
+.Don't use names like this
+[source,yaml]
+----
+  roles:
+    # Don't use role and variable names that don't indicate the collection they belong to
+    - role: redhat_cop.aap_utils.setup_prepare
+      vars:
+        - setup_prepare_variable1
+        - __setup_prepare_variable2
+        - variable3
+        - __variable4
+    # example using shorter versions
+----
+====
+
