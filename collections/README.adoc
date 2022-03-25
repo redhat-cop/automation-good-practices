@@ -5,7 +5,7 @@ Note: Unreviewed work. Please contribute to the discussion in the Automation Red
 === Collection Structure
 [%collapsible]
 ====
-Explanations:: Collections should be comprised of roles collected either at the type or landscape level. See https://github.com/redhat-cop/automation-good-practices/blob/main/structures/README.adoc[the structures definition]
+Explanations:: Collections should be comprised of roles collected either at the type or landscape level. See <<structures/README.adoc#_define_which_structure_to_use_for_which_purpose,The Structures Definition>>
 
 Rationale:: Gathering and publishing collections, rather than individual roles, allows for easier distribution and particularly becomes more important when we discuss Execution Environments.
 
