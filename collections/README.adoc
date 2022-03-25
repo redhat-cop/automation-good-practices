@@ -18,7 +18,7 @@ Explanations:: Collections should always be imported using requirements files wi
 Rationale:: Prior art, https://www.jeffgeerling.com/blog/2020/ansible-best-practices-using-project-local-collections-and-roles
 ====
 
-=== Collection Variables
+=== Create implicit collection variables and reference them in your roles' defaults variables
 [%collapsible]
 ====
 Explanations:: Often, variables will want to be defined on a collection level, but this can cause issues with roles being able to be reused.  By creating role specific and collection wide variables, this can be made clear and roles can remain reusable.
