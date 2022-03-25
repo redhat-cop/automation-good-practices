@@ -19,9 +19,14 @@ By defining collection wide variables and referencing them in roles' defaults va
 Collection variables are nowhere defined explicitly and are to be documented in the collection's documentation.
 
 Rationale:: Variables that are shared across collections can cause collisions when roles are reused outside of the original collection.
+Role variables should continue to be named according to our <<roles/README.adoc#naming-things,recommendations for naming variables>>
+It still remains possible to overwrite collection variable values for a specific role.
+Each role has it's own set of defaults for the variable.
 
 Examples::
-For a collection "mycollection", two roles exist. "alpha" and "beta".
+For a collection "mycollection", two roles exist. "alpha" and "beta".  For this example, there is no default for the controller_username
+and would have to be defined in one's inventory. The no_log variable does have defaults defined, and thus only needs to be defined if the default
+is being overwritten.
 +
 .Alpha defaults/main.yml
 [source,yaml]
