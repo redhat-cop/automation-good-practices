@@ -21,7 +21,9 @@ Rationale:: Prior art, https://www.jeffgeerling.com/blog/2020/ansible-best-pract
 === Create implicit collection variables and reference them in your roles' defaults variables
 [%collapsible]
 ====
-Explanations:: Often, variables will want to be defined on a collection level, but this can cause issues with roles being able to be reused.  By creating role specific and collection wide variables, this can be made clear and roles can remain reusable.
+Explanations:: Often, variables will want to be defined on a collection level, but this can cause issues with roles being able to be reused.
+By defining collection wide variables and referencing them in roles' defaults variables, this can be made clear and roles can remain reusable.
+Collection variables are nowhere defined explicitly and are to be documented in the collection's documentation.
 
 Rationale:: Variables that are shared across collections can cause collisions when roles are reused outside of the original collection.
 
