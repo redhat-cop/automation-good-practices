@@ -2,7 +2,7 @@
 
 Note: Unreviewed work. Please contribute to the discussion in the Automation Red Hat COP
 
-=== Collection Structure
+=== Collection Structure should be at the type or landscape level
 [%collapsible]
 ====
 Explanations:: Collections should be comprised of roles collected either at the type or landscape level. See <<structures/README.adoc#_define_which_structure_to_use_for_which_purpose,The Structures Definition>>
