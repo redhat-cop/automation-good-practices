@@ -143,8 +143,9 @@ Examples::
 - debug:
    msg: "Don't make messages always display"
 
-- debug:
-   msg: "Show this only when verbosity is 2 or more"
-   verbosity: 2
+- name: this message will only appear when verbosity is 2 or more
+  debug:
+    msg: "Some more debug information if needed"
+    verbosity: 2
 ----
 ====
