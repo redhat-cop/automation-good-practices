@@ -1,6 +1,7 @@
 = Guiding principles for Automation Good Practices
 
-As an overall guiding principle for designing good automation, the Zen of Python, by Tim Peters, serves as a good guidepost to follow. The principles defined in this are very applicable and can give guidance when the better practice is unclear.
+As an overall guiding principle for designing good automation, the https://peps.python.org/pep-0020/[Zen of Python, by Tim Peters], serves as a good guidepost to follow.
+The principles defined in this are very applicable and can give guidance when the better practice is unclear.
 
 ----
 The Zen of Python, by Tim Peters
