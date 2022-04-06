@@ -140,8 +140,9 @@ Examples::
 .Adding verbosity to debug messages
 [source, yaml]
 ----
-- debug:
-   msg: "Don't make messages always display"
+- name: don't make messages always display
+  debug:
+    msg: "This message will clutter your log in production"
 
 - name: this message will only appear when verbosity is 2 or more
   debug:
