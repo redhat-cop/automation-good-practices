@@ -170,7 +170,7 @@ used by your role.
 If some variables need to be parameterized according to distribution and version (name of packages, configuration file paths, names of services), do the following:
 
 * Add the following to `vars/main.yml` (create the file if it does not exist):
-
++
 [source,yaml]
 ----
 # ansible_facts required by the role
@@ -186,7 +186,7 @@ requires.  Try to add only the facts required by the role.  If you add more
 facts, you may need to change `gather_subset: min` - see below.
 
 * Create a file called `tasks/set_vars.yml` with the following contents:
-
++
 [source,yaml]
 ----
 - name: Ensure ansible_facts used by role
@@ -208,7 +208,7 @@ facts, you may need to change `gather_subset: min` - see below.
 ----
 
 * Add this as the first task in `tasks/main.yml`:
-
++
 [source,yaml]
 ----
 - name: Set platform/version specific variables
