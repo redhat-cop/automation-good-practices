@@ -180,7 +180,7 @@ __rolename_required_facts:
   - distribution_version
   - os_family
 ----
-
++
 You may need to add more facts, depending on what Ansible facts your role
 requires.  Try to add only the facts required by the role.  If you add more
 facts, you may need to change `gather_subset: min` - see below.
