@@ -1,6 +1,13 @@
 = Collections good practices
 
-NOTE: Work in Progress...
+== Collection Structure should be at the type or landscape level
+[%collapsible]
+====
+Explanations:: Collections should be comprised of roles collected either at the type or landscape level. See <<structures/README.adoc#_define_which_structure_to_use_for_which_purpose,The Structures Definition>>
+
+Rationale:: Gathering and publishing collections, rather than individual roles, allows for easier distribution and particularly becomes more important when we discuss Execution Environments.
+
+====
 
 == Use "unique-enough" prefixes for all role and variable names within a collection
 
@@ -8,10 +15,10 @@ NOTE: Work in Progress...
 ====
 Explanations:: Every role name in a collection should begin with a prefix that is reasonably similar to the collection name and unique.
 If the collection name is short enough, you can of course use it directly.
-For variables, either use the collection name (or a short version of it) _and_ the role name (or a short version of it)  as a prefix.
-Use the _collection name_ (or a short version of it)  only in case the variable are used in more than one of the collection's roles (see xxx for details).
+For variables, either use the collection name (or a short version of it) _and_ the role name (or a short version of it) as a prefix.
+Use the _collection name_ (or a short version of it)  only in case the variable are used in more than one of the collection's roles (see the rule below for details).
 
-Rationale:: This avoids confusion when using more than one collection, and it makes it easier to idetify where a role/variable comes from in projects where they are called without the full collection name.
+Rationale:: This avoids confusion when using more than one collection, and it makes it easier to identify where a role/variable comes from in projects where they are called without the full collection name.
 
 Examples::
 +
@@ -52,3 +59,40 @@ Examples::
 ----
 ====
 
+== Create implicit collection variables and reference them in your roles' defaults variables
+[%collapsible]
+====
+Explanations:: Often, variables will want to be defined on a collection level, but this can cause issues with roles being able to be reused.
+By defining collection wide variables and referencing them in roles' defaults variables, this can be made clear and roles can remain reusable.
+Collection variables are nowhere defined explicitly and are to be documented in the collection's documentation.
+
+Rationale:: Variables that are shared across collections can cause collisions when roles are reused outside of the original collection.
+Role variables should continue to be named according to our <<roles/README.adoc#naming-things,recommendations for naming variables>>
+It still remains possible to overwrite collection variable values for a specific role.
+Each role has it's own set of defaults for the variable.
+
+Examples::
+For a collection "mycollection", two roles exist. "alpha" and "beta".  For this example, there is no default for the controller_username
+and would have to be defined in one's inventory. The no_log variable does have defaults defined, and thus only needs to be defined if the default
+is being overwritten.
++
+.alpha defaults/main.yml
+[source,yaml]
+----
+# specific role variables
+alpha_job_name: 'some text'
+# collection wide variables
+alpha_controller_username: "{{ mycollection_controller_username }}"
+alpha_no_log: "{{ mycollection_no_log | default('true') }}"
+----
++
+.beta defaults/main.yml
+[source,yaml]
+----
+# specific role variables
+beta_job_name: 'some other text'
+# collection wide variables
+beta_controller_username: "{{ mycollection_controller_username }}"
+beta_no_log: "{{ mycollection_no_log | default('false') }}"
+----
+====
