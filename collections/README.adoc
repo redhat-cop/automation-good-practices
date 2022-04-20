@@ -1,20 +1,6 @@
 = Collections good practices
 
 == Collection Structure should be at the type or landscape level
-<<<<<<< HEAD
-=======
-[%collapsible]
-====
-Explanations:: Collections should be comprised of roles collected either at the type or landscape level. See <<structures/README.adoc#_define_which_structure_to_use_for_which_purpose,The Structures Definition>>
-
-Rationale:: Gathering and publishing collections, rather than individual roles, allows for easier distribution and particularly becomes more important when we discuss Execution Environments.
-
-====
-
-== Use "unique-enough" prefixes for all role and variable names within a collection
-
-=== Collection Structure should be at the type or landscape level
->>>>>>> 797faba (fetch latest changes from main branch)
 [%collapsible]
 ====
 Explanations:: Collections should be comprised of roles collected either at the type or landscape level. See <<structures/README.adoc#_define_which_structure_to_use_for_which_purpose,The Structures Definition>>
