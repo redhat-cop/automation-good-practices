@@ -142,31 +142,19 @@ Consider making paths to templates internal variables if you need different temp
 
 === Supporting multiple distributions and versions
 Use Cases::
-* The role developer needs to be able to set role variables to different values
-depending on the OS platform and version.  For example, if the name of a service
-is different between EL8 and EL9, or a config file location is different.
-* The role developer needs to handle the case where the user specifies
-`gather_facts: false` in the playbook.
-* The role developer needs to access the platform specific vars in role
-integration tests without making a copy.
+* The role developer needs to be able to set role variables to different values depending on the OS platform and version.  For example, if the name of a service is different between EL8 and EL9, or a config file location is different.
+* The role developer needs to handle the case where the user specifies `gather_facts: false` in the playbook.
+* The role developer needs to access the platform specific vars in role integration tests without making a copy.
 
-NOTE: The recommended solution below requires at least some `ansible_facts` to
-be defined, and so relies on gathering some facts.  If you just want to ensure
-the user always uses `gather_facts: true`, and do not want to handle this in the
-role, then the role documentation should state that `gather_facts: true` or
-`setup:` is required in order to use the role, and the role should use `fail:`
-with a descriptive error message if the necessary facts are not defined.
+NOTE: The recommended solution below requires at least some `ansible_facts` to be defined, and so relies on gathering some facts.
+If you just want to ensure the user always uses `gather_facts: true`, and do not want to handle this in the role, then the role documentation should state that `gather_facts: true` or `setup:` is required in order to use the role, and the role should use `fail:` with a descriptive error message if the necessary facts are not defined.
 
-If it is desirable to use roles that require facts, but fact gathering is
-expensive, consider using a cache plugin
-https://docs.ansible.com/ansible/latest/collections/index_cache.html[List of Cache Plugins], and also consider running a periodic job on the controller to
-refresh the cache.
+If it is desirable to use roles that require facts, but fact gathering is expensive, consider using a cache plugin https://docs.ansible.com/ansible/latest/collections/index_cache.html[List of Cache Plugins], and also consider running a periodic job on the controller to refresh the cache.
 
 ==== Platform specific variables
 [%collapsible]
 ====
-You normally use `vars/main.yml` (automatically included) to set variables
-used by your role.
+You normally use `vars/main.yml` (automatically included) to set variables used by your role.
 If some variables need to be parameterized according to distribution and version (name of packages, configuration file paths, names of services), do the following:
 
 * Add the following to `vars/main.yml` (create the file if it does not exist):
@@ -181,9 +169,9 @@ __rolename_required_facts:
   - os_family
 ----
 +
-You may need to add more facts, depending on what Ansible facts your role
-requires.  Try to add only the facts required by the role.  If you add more
-facts, you may need to change `gather_subset: min` - see below.
+You may need to add more facts, depending on what Ansible facts your role requires.
+Try to add only the facts required by the role.
+If you add more facts, you may need to change `gather_subset: min` - see below.
 
 * Create a file called `tasks/set_vars.yml` with the following contents:
 +
@@ -233,8 +221,7 @@ In cases where this would lead to duplicate vars files for similar distributions
 
 NOTE: With this setup, files can be loaded twice.
 For example, on Fedora, the `distribution_major_version` is the same as `distribution_version` so the file `vars/Fedora_31.yml` will be loaded twice if you are managing a Fedora 31 host.
-If `distribution` is `RedHat` then `os_family` will also be `RedHat`,
-and `vars/RedHat.yml` will be loaded twice.
+If `distribution` is `RedHat` then `os_family` will also be `RedHat`, and `vars/RedHat.yml` will be loaded twice.
 This is usually not a problem - you will be replacing the variable with the same value, and the performance hit is negligible.
 If this is a problem, construct the file list as a list variable, and filter the variable passed to `loop` using the `unique` filter (which preserves the order):
 
@@ -258,18 +245,15 @@ If this is a problem, construct the file list as a list variable, and filter the
 
 Or define your `__rolename_vars_file_list` in your `vars/main.yml`.
 
-The task `Ensure ansible_facts used by role` handles the case where the user
-specifies `gather_facts: false` in the playbook.  It gathers *only* the facts
-required by the role.  The role developer may need to add additional facts to
-the list, and use a different `gather_subset`.  See
-https://docs.ansible.com/ansible/latest/collections/ansible/builtin/setup_module.html#setup-module[Setup
-Module] for more information.  Gathering facts can be expensive, so gather
-*only* the facts required by the role.
+The task `Ensure ansible_facts used by role` handles the case where the user specifies `gather_facts: false` in the playbook.
+It gathers *only* the facts required by the role.
+The role developer may need to add additional facts to the list, and use a different `gather_subset`.
+See https://docs.ansible.com/ansible/latest/collections/ansible/builtin/setup_module.html#setup-module[Setup
+Module] for more information.
+Gathering facts can be expensive, so gather *only* the facts required by the role.
 
-Using a separate task file for `tasks/set_vars.yml` allows role integration
-tests to access the internal variables.  For example, if the role developer
-wants to pre-populate a VM with the packages used by the role, the following
-tasks can be used:
+Using a separate task file for `tasks/set_vars.yml` allows role integration tests to access the internal variables.
+For example, if the role developer wants to pre-populate a VM with the packages used by the role, the following tasks can be used:
 
 [source,yaml]
 ----
