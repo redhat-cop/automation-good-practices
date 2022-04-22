@@ -248,8 +248,7 @@ Or define your `__rolename_vars_file_list` in your `vars/main.yml`.
 The task `Ensure ansible_facts used by role` handles the case where the user specifies `gather_facts: false` in the playbook.
 It gathers *only* the facts required by the role.
 The role developer may need to add additional facts to the list, and use a different `gather_subset`.
-See https://docs.ansible.com/ansible/latest/collections/ansible/builtin/setup_module.html#setup-module[Setup
-Module] for more information.
+See https://docs.ansible.com/ansible/latest/collections/ansible/builtin/setup_module.html#setup-module[Setup Module] for more information.
 Gathering facts can be expensive, so gather *only* the facts required by the role.
 
 Using a separate task file for `tasks/set_vars.yml` allows role integration tests to access the internal variables.
