@@ -387,6 +387,8 @@ Examples:: In a role with one `tasks/main.yml` task file, including `tasks/sub.y
 ----
 +
 The log output will then look something like `TASK [myrole : sub | some task description] ****`, which makes it very clear where the task is coming from.
++
+TIP: with a verbosity of 2 or more, ansible-playbook will show the full path to the task file, but this generally means that you need to restart the play in a higher verbosity to get the information you could have had readily available.
 ====
 
 == References
