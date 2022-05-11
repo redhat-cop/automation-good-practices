@@ -18,8 +18,7 @@ However, when the underlying implementations become too divergent, for example i
 === Role Structure
 [%collapsible]
 ====
-Explanations:: New roles should be initiated in line, with the skeleton directory, which has standard boilerplate
-code for a Galaxy-compatible Ansible role and some enforcement around these standards
+Explanations:: New roles should be initiated in line, with the skeleton directory, which has standard boilerplate code for a Galaxy-compatible Ansible role and some enforcement around these standards
 
 Rationale:: A consistent file tree structure will help drive consistency and reusability across the entire environment.
 ====
