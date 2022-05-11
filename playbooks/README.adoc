@@ -133,7 +133,7 @@ The same approach is also possible with `include_role` but requires additionally
 ====
 Explanations:: Debug messages should have a verbosity defined as appropriate for the message.
 
-Rationale:: Debug messages are useful during testing and development, and can be useful to retain as playbooks go into production, but can cause concerns as they are shared between teams.
+Rationale:: Debug messages are useful during testing and development, and can be useful to retain as playbooks go into production for future troubleshooting. However, log messages will clutter your output, which can confuse users with non-relevant information.
 
 Examples::
 +
