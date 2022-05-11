@@ -11,6 +11,8 @@ Explanations:: Design roles focused on the functionality provided, not the softw
 Rationale:: Try to design roles focused on the functionality, not on the software implementation behind it. This will help abstracting differences between different providers, and help the user to focus on the functionality, not on technical details.
 
 Examples:: For an example, designing a role to implement an NTP configuration on a server would be a role.  The role internally would have the logic to decide whether to use ntpd, chronyd, and the ntp site configurations.
+However, when the underlying implementations become too divergent, for example implementing an email server with postfix or sendmail, then separate roles are encouraged.
+
 ====
 
 === Role Structure
