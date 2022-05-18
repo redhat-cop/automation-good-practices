@@ -7,3 +7,217 @@ NOTE: Work in Progress...
 * Review Ansible guidelines for https://docs.ansible.com/ansible/latest/dev_guide/developing_modules_best_practices.html[modules] and https://docs.ansible.com/ansible/latest/dev_guide/index.html[development].
 * Use https://pep8.org/[PEP8].
 * File headers and functions should have comments for their intent.
+
+
+== All plugin types should use argspec validation, inbound and outbound
+[%collapsible]
+===
+Explanations::
+
+Rationale::
+
+Examples::
+
+====
+
+== All plugin types should have documentation
+[%collapsible]
+====
+Explanations::
+
+Rationale::
+
+Examples::
+
+====
+
+== A plugin’s argspec should not be incrementally built but instead, be defined as a single object
+[%collapsible]
+====
+Explanations::
+
+Rationale::
+
+Examples::
+
+
+====
+
+== Use sphinx (reST) formatted docstrings
+[%collapsible]
+====
+Explanations::
+All classes, private and public functions should have a sphinx (reST) formatted docstring including all parameters, yields, raises, or returns.
+
+Rationale::
+PEP-257 states that all modules should normally have docstrings, and all functions and classes exported by a module should also have docstrings. Public methods (including the __init__ constructor) should also have docstrings. A package may be documented in the module docstring of the __init__.py file in the package directory.
+
+Examples::
+[source,python]
+----
+"""[Summary]
+
+:param [ParamName]: [ParamDescription], defaults to [DefaultParamVal]
+:type [ParamName]: [ParamType](, optional)
+...
+:raises [ErrorType]: [ErrorDescription]
+...
+:return: [ReturnDescription]
+:rtype: [ReturnType]
+"""
+----
+
+====
+
+== If Python 3 or greater, all code should have type hints and be validated with mypy
+[%collapsible]
+====
+Explanations:: Use Python type hints to document variable types.
+
+Rationale::  Type hints communicate what type a variable can be expected to be in the code. They can be consumed by static analysis tools to ensure that variable usage is consistent within the code base.
+MyPy is a static type checker/
+
+Examples::
+[source,python]
+----
+def greeting(name: str) -> str:
+    return 'Hello ' + name
+----
+
+====
+
+== The use of unittest is discouraged, use pytest instead.
+[%collapsible]
+====
+Explanations:: Use pytest for writing unit tests for plugins
+
+Rationale:: Pytest is the testing framework used by Ansible Engineering and will provide the best experience for plugin developers
+
+Examples::
+[source,python]
+----
+from __future__ import (absolute_import, division, print_function)
+__metaclass__ = type
+
+import pytest
+
+from ansible.modules.copy import AnsibleModuleError, split_pre_existing_dir
+from ansible.module_utils.basic import AnsibleModule
+
+ONE_DIR_DATA = (('dir1',
+                 ('.', ['dir1']),
+                 ('dir1', []),
+                 ),
+                ('dir1/',
+                 ('.', ['dir1']),
+                 ('dir1', []),
+                 ),
+                ) 
+
+@pytest.mark.parametrize('directory, expected', ((d[0], d[2]) for d in ONE_DIR_DATA))
+def test_split_pre_existing_dir_one_level_exists(directory, expected, mocker):
+    mocker.patch('os.path.exists', side_effect=[True, False, False])
+    split_pre_existing_dir(directory) == expected
+
+----
+
+====
+
+== A complex plugin argspec should be derived from its documentation runtime if the plugin’s source is manually maintained.
+[%collapsible]
+====
+Explanations:: A complex plugin argspec should be derived from its documentation runtime if the plugin’s source is manually maintained.  ( >30 keys or depth>2) (action plugins and control node execution modules)
+
+Rationale:: Hand-crafting large and complex argument specifications can be error-prone and difficult to maintain.  Programmatically generating the spec from DOCUMENTATION ensures consistency and accuracy. 
+
+Examples::
+
+
+====
+
+== A plugin’s entry file should not contain more than 500 lines
+[%collapsible]
+====
+Explanations:: A plugin’s entry file should not contain more than 500 lines
+
+Rationale::
+
+Examples::
+
+
+====
+
+== Action plugins should be used when the code runs on the control node.
+[%collapsible]
+====
+Explanations::
+
+Rationale::
+
+Examples::
+
+
+====
+
+== Design decisions accounting for “jump hosts” should be avoided.
+[%collapsible]
+====
+Explanations::
+
+Rationale::
+
+Examples::
+
+
+====
+
+== Plugins should be initially developed using the ansible plugin builder
+[%collapsible]
+====
+Explanations::
+
+Rationale::
+
+Examples::
+
+
+====
+
+== Pylint and type exceptions should have a specific exclusion type
+[%collapsible]
+====
+Explanations::
+Pylint and type exceptions should only be used when required due to bugs or 3rd party package requirements. All should have a specific exclusion type.
+
+Rationale::
+Linting and type exceptions should not be used except where the logic of the code absolutely requires it.
+
+Examples::
+[source,python]
+----
+            if not rule.get('group_desc', '').strip():
+                # retry describing the group once
+                try:
+                    auto_group = get_security_groups_with_backoff(client, Filters=ansible_dict_to_boto3_filter_list(filters)).get('SecurityGroups', [])[0]
+                except (is_boto3_error_code('InvalidGroup.NotFound'), IndexError):
+                    module.fail_json(msg="group %s will be automatically created by rule %s but "
+                                         "no description was provided" % (group_name, rule))
+                except ClientError as e:  # pylint: disable=duplicate-except
+                    module.fail_json_aws(e)
+----
+
+
+====
+
+== Plugins for applicance configuration should follow the Resource Module pattern (see below)
+[%collapsible]
+====
+Explanations:: Resource modules allow the user to manage resources on an appliance (such as a network or security device) without having to write complex Jinja templates.
+
+Rationale:: Resource modules allow the user to manage resources on an appliance (such as a network or security device) without having to write complex Jinja templates.
+
+Examples::
+https://docs.ansible.com/ansible/latest/network/user_guide/network_resource_modules.html
+
+====
+
