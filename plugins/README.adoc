@@ -221,3 +221,23 @@ https://docs.ansible.com/ansible/latest/network/user_guide/network_resource_modu
 
 ====
 
+== Use clear error/info messages
+[%collapsible]
+====
+Explanations:: This will make it easier to troubleshoot failures if they occur
+
+Rationale:: Error messages that communicate specific details of the failure will aid in resolving the problem.
+Unclear error messages such as "Failed!" are unnecessarily obscure.
+
+Examples::
+[source,python]
+----
+    if checksum and checksum_src != checksum:
+        module.fail_json(
+            msg='Copied file does not match the expected checksum. Transfer failed.',
+            checksum=checksum_src,
+            expected_checksum=checksum
+        )
+----
+
+====
