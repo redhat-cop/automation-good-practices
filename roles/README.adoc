@@ -94,6 +94,16 @@ See also <<vars-vs-defaults,Vars vs Defaults>> which mandates "Avoid embedding l
 Since distribution-specific values are kind of "magic values", it applies to them.
 The same logic applies for providers: a role can load a provider-specific variable file, include a provider-specific task file, or both, as needed.
 Consider making paths to templates internal variables if you need different templates for different distributions.
+A role should have a single entry point. Requiring users to use `tasks_from: file.yml` is discouraged as this could cause important pre and post task files executed in `tasks/main.yml` to be skipped.
+The `state` or `action` keyword should be passed to a role when a role has such a capability and be required when calling the role. The `tasks/main.yml` should load the appropriate task file based on the action or state requested by the user, rather than the consumer having to have intimate knowledge of the file structure layout within the role.
+All facts added by a role should fall under a single fact key named as the role.
+All roles should use argspec validation, if multiple states or actions are supported argspec validation should be done with a task.
+All roles should use argspec validation at the egress to confirm facts are correctly set.
+The tasks folder or one of its subdirectories should not contain more than 10 files.
+All intermediate facts set during role execution should be prefaced with the role name.
+All roles should be packaged within an ansible collection
+Configuration management roles should be atomic, idempotent, and rollback when failures are encountered
+When many roles within a collection are similar, consider using a dispatcher role as the single entry point to invoke a specific role within the collection. An example of such may be a collection that does system health checks and contains many roles, each representing an individual health check.
 ====
 
 === Check Mode
@@ -360,7 +370,29 @@ See https://docs.ansible.com/ansible/latest/dev_guide/overview_architecture.html
 * Use fully qualified role names in examples, like: `linux-system-roles.$ROLENAME` (with the Galaxy prefix).
 * Use RFC https://tools.ietf.org/html/rfc5737[5737], https://tools.ietf.org/html/rfc7042#section-2.1.1[7042] and https://tools.ietf.org/html/rfc3849[3849] addresses in examples.
 * Modules should have complete metadata, documentation, example and return blocks as described in the https://docs.ansible.com/ansible/latest/dev_guide/developing_modules_documenting.html[Ansible docs].
+* All roles should have a complete README and meta/main.yml
+* All entries in a defaults/main.yml should be documented with comments
+* The ingress and egress argspec should be programmatically included in the README
 ====
+
+=== README file
+[%collapsible]
+====
+Rationale::
+The documentation is essential for the success of the content.
+A README file should be included in the root directory of the role that introduces the user to the purpose of the role and any important information on how to use it, such as credentials that are required.
+The role’s README should be programmatically maintained and kept up to date.
+
+Should include at least:
+* Example playbooks that allow users to understand how the developed content works are also part of the documentation.
+* The inbound and outbound role argument specifications
+* List of user-facing capabilities within the role
+* The unit of automation the role provided
+* The outcome of the role
+* The roll-back capabilities of the role
+* Designation of the role as idempotent (True/False)
+* Designation of the role as atomic if applicable (True/False)
+=====
 
 === Don't use host group names or at least make them a parameter
 [%collapsible]
@@ -430,6 +462,13 @@ The log output will then look something like `TASK [myrole : sub | some task des
 +
 TIP: with a verbosity of 2 or more, ansible-playbook will show the full path to the task file, but this generally means that you need to restart the play in a higher verbosity to get the information you could have had readily available.
 ====
+
+=== License Documentation
+[%collapsible]
+* The license file should be included in the root directory
+* The license file for the collection should be named LICENSE or COPYING. The contents should be the text of the applicable license, or a link to the canonical reference for the license on the Internet (such as https://opensource.org/licenses/BSD-2-Clause )
+* Any file that is licensed differently from the larger collection it is a part of (such as module utilities) should have that license noted in the header of the file.
+
 
 == References
 [%collapsible]
