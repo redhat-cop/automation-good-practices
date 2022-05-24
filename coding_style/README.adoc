@@ -165,12 +165,10 @@ Rationale:: https://yaml.org/type/bool.html[YAML 1.1] allows all variants wherea
   your task will likely need options such as `changed_when:` and maybe `check_mode:`).
 * Anytime `command` or `shell` modules are used, add a comment in the code with justification to help with future maintenance.
 * Use the `| bool` filter when using bare variables (expressions consisting of just one variable reference without any operator) in `when`.
-* Do not use `meta: end_play`.
 * No single task file should contain more than 30 tasks.  Complex task files should be broken down into discrete parts.
 * The maximum block depth within a single task file should be 2
 * Bracket notation is preferred over dot notation for value retrieval (e.g. `item[‘key’]` vs. `item.key`)
-
-
+* Do not use `meta: end_play`.
 +
 [%collapsible]
 ====
