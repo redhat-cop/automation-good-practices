@@ -12,23 +12,34 @@ NOTE: Work in Progress...
 == All plugin types should use argspec validation, inbound and outbound
 [%collapsible]
 ===
-Explanations::
+Explanations:: A plugin's `argument_spec` (or "argspec") defines the supported arguments for a module, as well as their type, defaults and more.
 
-Rationale::
+Rationale:: Validating the argspec at the time that it enters and exits the code ensures that these inputs and outputs conform to the plugin's documentation and the user's expectations.
 
 Examples::
+From the https://github.com/ansible-collections/ansible.utils/blob/2.6.0/plugins/filter/ipaddr.py[ipaddr] filter plugin.
+[source,python]
+----
+from ansible_collections.ansible.utils.plugins.module_utils.common.argspec_validate import (
+    AnsibleArgSpecValidator,
+)
 
+
+aav = AnsibleArgSpecValidator(
+    data=data, schema=DOCUMENTATION, name="ipaddr"
+)
+valid, errors, updated_data = aav.validate()
+if not valid:
+    raise AnsibleFilterError(errors)
+return ipaddr(**updated_data)
+----
 ====
 
 == All plugin types should have documentation
 [%collapsible]
 ====
 Explanations::
-
-Rationale::
-
-Examples::
-
+All plugins, regardless of type, should have documentation that describes the input parameters, outputs, and practical examples of how to use it.
 ====
 
 == A plugin’s argspec should not be incrementally built but instead, be defined as a single object
@@ -126,36 +137,39 @@ def test_split_pre_existing_dir_one_level_exists(directory, expected, mocker):
 == A complex plugin argspec should be derived from its documentation runtime if the plugin’s source is manually maintained.
 [%collapsible]
 ====
-Explanations:: A complex plugin argspec should be derived from its documentation runtime if the plugin’s source is manually maintained.  ( >30 keys or depth>2) (action plugins and control node execution modules)
+Explanations::
+A complex plugin argspec should be derived from its documentation runtime if the plugin’s source is manually maintained.  ( >30 keys or depth>2) (action plugins and control node execution modules)
 
-Rationale:: Hand-crafting large and complex argument specifications can be error-prone and difficult to maintain.  Programmatically generating the spec from DOCUMENTATION ensures consistency and accuracy. 
-
-Examples::
-
+Rationale::
+Hand-crafting large and complex argument specifications can be error-prone and difficult to maintain.  Programmatically generating the spec from DOCUMENTATION (already a structured data object) ensures consistency and accuracy. 
 
 ====
 
 == A plugin’s entry file should not contain more than 500 lines
 [%collapsible]
 ====
-Explanations:: A plugin’s entry file should not contain more than 500 lines
+Explanations::
+A plugin’s entry file should not contain more than 500 lines
 
 Rationale::
-
-Examples::
-
-
+Long and complex code files can be difficult to maintain.
+Wherever possible, reusable functions and classes, such as those for data validation or manipulation, should be moved to module_utility or plugin_utility files and imported into plugins.
+This keeps the plugin code easier to read and maintain.
+500 lines is a general guideline that should serve most cases.
 ====
 
 == Action plugins should be used when the code runs on the control node.
 [%collapsible]
 ====
 Explanations::
-
+Use an action plugin for code that needs to run on the controller, where the host would be `localhost`.
 Rationale::
+Action plugins let you integrate local processing and local data with module functionality.
+Action plugins act in conjunction with modules to execute the actions required by playbook tasks.
+Using an action plugin will cause Ansible to skip creating a temporary tarball of execution code and runs the code directly on the controller host.
 
 Examples::
-
+See the `ansible.snmp.get` https://github.com/ansible-network/ansible.snmp/blob/main/plugins/action/get.py[action plugin] and associated https://github.com/ansible-network/ansible.snmp/blob/main/plugins/modules/get.py[module].
 
 ====
 
@@ -175,11 +189,7 @@ Examples::
 [%collapsible]
 ====
 Explanations::
-
-Rationale::
-
-Examples::
-
+The https://github.com/ansible-community/ansible.plugin_builder[ansible.plugin_builder] is a tool which helps developers scaffold new plugins.
 
 ====
 
