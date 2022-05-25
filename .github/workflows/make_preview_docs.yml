@@ -2,7 +2,7 @@ name: create preview renders
 
 on:
   push:
-    branches: [ * ]
+    branches: [ "*" ]
 
 jobs:
   build:
