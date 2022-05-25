@@ -30,7 +30,8 @@ Making all names valid identifiers will avoid encountering problems in the futur
 * Avoid numbering roles and playbooks, you'll never know how they'll be used in the future.
 * All tasks should be named and start with a capital letter, this improves readability.
 * All task names should be written in the imperative (e.g. "Ensure service is running"), this communicates the action of the task.
-* Name all plays and task blocks
+* Name all plays and task blocks.
+* Avoid abbreviations in names. or use capital letter for abbreviations where it cannot be avoided.
 
 == YAML and Jinja2 Syntax
 
@@ -168,6 +169,14 @@ Rationale:: https://yaml.org/type/bool.html[YAML 1.1] allows all variants wherea
 * No single task file should contain more than 30 tasks.  Complex task files should be broken down into discrete parts.
 * The maximum block depth within a single task file should be 2
 * Bracket notation is preferred over dot notation for value retrieval (e.g. `item[‘key’]` vs. `item.key`)
++
+[%collapsible]
+====
+Rationale::
+Dot notation will fail in some cases (such as when a variable name includes a hyphen) and it's better to stay consistent than to switch between the two options within a role or playbook.
+For an example, see https://blog.networktocode.com/post/Exploring-Jinja-Variable-Syntax-in-Ansible
+====
+
 * Do not use `meta: end_play`.
 +
 [%collapsible]
