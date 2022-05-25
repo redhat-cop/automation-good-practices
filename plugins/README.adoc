@@ -42,18 +42,6 @@ Explanations::
 All plugins, regardless of type, should have documentation that describes the input parameters, outputs, and practical examples of how to use it.
 ====
 
-== A plugin’s argspec should not be incrementally built but instead, be defined as a single object
-[%collapsible]
-====
-Explanations::
-
-Rationale::
-
-Examples::
-
-
-====
-
 == Use sphinx (reST) formatted docstrings
 [%collapsible]
 ====
@@ -145,6 +133,27 @@ Hand-crafting large and complex argument specifications can be error-prone and d
 
 ====
 
+== Formatting of manually maintained plugin argspecs
+[%collapsible]
+====
+Explanations::
+Ensure a consistent approach to the way commplex argument_specs are formatted within a collection.
+
+Rationale::
+When hand-writing a complex argspec, the author may choose to build up to data structure from multiple dictionaries or vars.
+Other authors may choose to implement a complex, nested argspec as a single dictionary.
+Within a single collection, select one style and use it consistently.
+
+Examples::
+Single dictionary:
+https://github.com/ansible-collections/cisco.nxos/blob/3.0.0/plugins/module_utils/network/nxos/argspec/bgp_global/bgp_global.py
+
+Multiple dictionaries:
+https://github.com/ansible-collections/community.aws/blob/stable-3/plugins/modules/ec2_scaling_policy.py#L355-L370
+https://github.com/ansible-collections/amazon.cloud/blob/0.1.0/plugins/modules/backup_report_plan.py#L182-L234
+====
+
+
 == A plugin’s entry file should not contain more than 500 lines
 [%collapsible]
 ====
@@ -177,11 +186,11 @@ See the `ansible.snmp.get` https://github.com/ansible-network/ansible.snmp/blob/
 [%collapsible]
 ====
 Explanations::
+A plugin should be developed in accordance with Ansible best practices, without accounting for possible environment-specific variables.
 
 Rationale::
-
-Examples::
-
+The plugin author should prioritize development of the plugin's function.
+If an environment that the plugin could possibly run in (such as on a jump host) has some unique property this should be managed by the operator's Ansible configuration, separate from the plugin code.
 
 ====
 
