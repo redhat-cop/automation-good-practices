@@ -30,6 +30,17 @@ Examples::
 TIP: we'll explain later why there might be a case for using `include_role`/`import_role` tasks instead of the role section.
 ====
 
+== Use either the tasks or roles section in playbooks, not both
+
+[%collapsible]
+====
+Explanations:: A playbook can contain `pre_tasks`, `roles`, `tasks` and `post_tasks` sections.
+Avoid using both `roles` and `tasks` sections, the latter possibly containing `import_role` or `include_role` tasks.
+Rationale:: The order of execution between `roles` and `tasks` isn't obvious, and hence mixing them should be avoided.
+Examples:: Either you need only static importing of roles and you can use the `roles` section, or you need dynamic inclusion and you should use _only_ the `tasks` section.
+Of course, for very simple cases, you can just use `tasks` without `roles`.
+====
+
 == Use tags cautiously either for roles or for complete purposes
 [%collapsible]
 ====

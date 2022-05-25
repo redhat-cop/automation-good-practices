@@ -1,0 +1,5 @@
+---
+# tasks file for prefix_show
+- name: do not show where we are
+  debug:
+    msg: we're now in a sub task file but which one?

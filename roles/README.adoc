@@ -5,63 +5,45 @@ NOTE: this section has been imported "as-is" from the https://github.com/oasis-r
 == Background
 [%collapsible]
 ====
-The goal of the Ansible Metateam project (specifically, the https://github.com/linux-system-roles[Linux System Roles
-project]) is to provide a stable and consistent user
-interface to multiple operating systems (multiple versions of RHEL in the downstream RHEL System
-Roles package, additionally CentOS, Fedora at least). Stable and consistent means that the same
-Ansible playbook will be usable to manage the equivalent functionality in the supported versions
-without the administrator (the user of the role) being forced to change anything in the playbook
-(the roles should serve as abstractions to shield the administrator from differences). Of course,
-this means that the interface of the roles should be itself stable (i.e. changing only in a backward
-compatible way). This implies a great responsibility in the design of the interface, because the
-interface, unlike the underlying implementation, can not be easily changed.
+The goal of the Ansible Metateam project (specifically, the https://github.com/linux-system-roles[Linux System Roles project]) is to provide a stable and consistent user interface to multiple operating systems (multiple versions of RHEL in the downstream RHEL System Roles package, additionally CentOS, Fedora at least).
+Stable and consistent means that the same Ansible playbook will be usable to manage the equivalent functionality in the supported versions without the administrator (the user of the role) being forced to change anything in the playbook (the roles should serve as abstractions to shield the administrator from differences).
+Of course, this means that the interface of the roles should be itself stable (i.e. changing only in a backward compatible way).
+This implies a great responsibility in the design of the interface, because the interface, unlike the underlying implementation, can not be easily changed.
 
-The differences in the underlying operating systems that the roles need to compensate for are
-basically of two types:
+The differences in the underlying operating systems that the roles need to compensate for are basically of two types:
 
-* Trivial differences like changed names of packages, services, changed location of configuration
-files. Roles must deals with those by using internal variables based on the OS defaults. This is
-fairly simple, but still it brings value to the user, because they then do not have to worry about
-keeping up with such trivial changes.
-* Change of the underlying implementation of a given functionality. Quite often, there are multiple
-packages/components implementing the same functionality. Classic examples are the various MTAs
-(sendmail, postfix, qmail, exim), FTP daemons, etc. In the context of Linux System Roles, we call
-them "`providers`". The goal of the roles is to abstract even such differences, so that when the OS
-changes to a different component (provider), the role continues to work. An example is time
-synchronization, where RHEL used to use the ntpd package, then chrony was introduced and became
-the default, but both components have been shipped in RHEL 6 and RHEL 7, until finally ntpd was
-dropped from RHEL 8, leaving only chrony. A role covering time synchronization should therefore
-support both components with the same interface, and on systems which ship both components, both
-should be supported. The appropriate supported component should be automatically selected on
-systems that ship only one of them. This covers several related use cases:
- ** Users that want to manage multiple major releases of the system simultaneously with a single playbook.
- ** Users that want to migrate to a new version of the system without changing their automation (playbook).
- ** Users who want to switch to a different provider in the same version of the OS (like switching
-from ntpd to chrony to RHEL 7) and keep the same playbook.
+* Trivial differences like changed names of packages, services, changed location of configuration files.
+  Roles must deals with those by using internal variables based on the OS defaults.
+  This is fairly simple, but still it brings value to the user, because they then do not have to worry about keeping up with such trivial changes.
+* Change of the underlying implementation of a given functionality.
+  Quite often, there are multiple packages/components implementing the same functionality.
+  Classic examples are the various MTAs (sendmail, postfix, qmail, exim), FTP daemons, etc. In the context of Linux System Roles, we call them "`providers`".
+  The goal of the roles is to abstract even such differences, so that when the OS changes to a different component (provider), the role continues to work.
+  An example is time synchronization, where RHEL used to use the ntpd package, then chrony was introduced and became the default, but both components have been shipped in RHEL 6 and RHEL 7, until finally ntpd was dropped from RHEL 8, leaving only chrony.
+  A role covering time synchronization should therefore support both components with the same interface, and on systems which ship both components, both should be supported.
+  The appropriate supported component should be automatically selected on systems that ship only one of them.
+  This covers several related use cases:
+** Users that want to manage multiple major releases of the system simultaneously with a single playbook.
+** Users that want to migrate to a new version of the system without changing their automation (playbook).
+** Users who want to switch to a different provider in the same version of the OS (like switching from ntpd to chrony to RHEL 7) and keep the same playbook.
 
-Designing the interface in the latter case is difficult because it has to be sufficiently abstract
-to cover different providers. We, for example, do not provide an email role in the Linux System
-Roles project, only a postfix role, because the underlying implementations (sendmail, postfix) were
-deemed to be too divergent. Generally, an abstract interface should be something that should be
-always aimed for though, especially if there are multiple providers in use already, and in
-particular when the default provider is changing or is known to be likely to change in the next
-major releases.
+Designing the interface in the latter case is difficult because it has to be sufficiently abstract to cover different providers.
+We, for example, do not provide an email role in the Linux System Roles project, only a postfix role, because the underlying implementations (sendmail, postfix) were deemed to be too divergent.
+Generally, an abstract interface should be something that should be always aimed for though, especially if there are multiple providers in use already, and in
+particular when the default provider is changing or is known to be likely to change in the next major releases.
 ====
 
 == Basics
 [%collapsible]
 ====
-* Every repository in the AGP-roles namespace should be a valid Ansible Galaxy compatible role
-with the exception of any whose names begin with "meta_", such as this one.
-* New roles should be initiated in line with the skeleton directory, which has standard boilerplate
-code for a Galaxy-compatible Ansible role and some enforcement around these standards
-* Use https://semver.org/[semantic versioning] for Git release tags.  Use
-0.y.z before the role is declared stable (interface-wise).  Although it has
-not been a problem so far for linux system roles, since they use strict X.Y.Z
-versioning, you should be aware that there are some
+* Every repository in the AGP-roles namespace should be a valid Ansible Galaxy compatible role with the exception of any whose names begin with "meta_", such as this one.
+* New roles should be initiated in line with the skeleton directory, which has standard boilerplate code for a Galaxy-compatible Ansible role and some enforcement around these standards
+* Use https://semver.org/[semantic versioning] for Git release tags.
+  Use 0.y.z before the role is declared stable (interface-wise).
+  Although it has not been a problem so far for linux system roles, since they use strict X.Y.Z versioning, you should be aware that there are some
 https://github.com/ansible/ansible/issues/67512[restrictions] for Ansible
-Galaxy and Automation Hub.  The versioning must be in strict X.Y.Z[ab][W]
-format, where X, Y, and Z are integers.
+Galaxy and Automation Hub.
+  The versioning must be in strict X.Y.Z[ab][W] format, where X, Y, and Z are integers.
 ====
 
 == Interface design considerations
@@ -71,57 +53,50 @@ What should a role do and how can a user tell it what to do.
 === Basic design
 [%collapsible]
 ====
-Try to design the interface focused on the functionality, not on the software implementation behind
-it. This will help abstracting differences between different providers (see above), and help the
-user to focus on the functionality, not on technical details.
+Try to design the interface focused on the functionality, not on the software implementation behind it.
+This will help abstracting differences between different providers (see above), and help the user to focus on the functionality, not on technical details.
 ====
 
 === Naming things
 [%collapsible]
 ====
-* All defaults and all arguments to a role should have a name that begins with the role name to help
-avoid collision with other names. Avoid names like `packages` in favor of a name like `foo_packages`.
-(Rationale: Ansible has no namespaces, doing so reduces the potential for conflicts and makes
-clear what role a given variable belongs to.)
+* All defaults and all arguments to a role should have a name that begins with the role name to help avoid collision with other names.
+  Avoid names like `packages` in favor of a name like `foo_packages`.
++
+Rationale:: Ansible has no namespaces, doing so reduces the potential for conflicts and makes clear what role a given variable belongs to.)
 * Same argument applies for modules provided in the roles, they also need a `$ROLENAME_` prefix:
-`foo_module`. While they are usually implementation details and not intended for direct use in
-playbooks, the unfortunate fact is that importing a role makes them available to the rest of the
-playbook and therefore creates opportunities for name collisions.
-* Moreover, internal variables (those that are not expected to be set by users) are to be prefixed
-by two underscores: `__foo_variable`. (Rationale: role variables, registered variables, custom
-facts are usually intended to be local to the role, but in reality are not local to the role - as
-such a concept does not exist, and pollute the global namespace. Using the name of the role
-reduces the potential for name conflicts and using the underscores clearly marks the variables as
-internals and not part of the common interface. The two underscores convention has prior art in
-some popular roles like
-https://github.com/geerlingguy/ansible-role-apache/blob/f2b91ac84001db3fd4b43306a8f73f1a54f96f7d/vars/Debian.yml#L8[geerlingguy.ansible-role-apache]). This
-includes variables set by set_fact and register, because they persist in the namespace after the
-role has finished!
+  `foo_module`. While they are usually implementation details and not intended for direct use in playbooks, the unfortunate fact is that importing a role makes them available to the rest of the playbook and therefore creates opportunities for name collisions.
+* Moreover, internal variables (those that are not expected to be set by users) are to be prefixed by two underscores: `__foo_variable`.
++
+Rationale:: role variables, registered variables, custom facts are usually intended to be local to the role, but in reality are not local to the role - as such a concept does not exist, and pollute the global namespace.
+Using the name of the role reduces the potential for name conflicts and using the underscores clearly marks the variables as internals and not part of the common interface.
+The two underscores convention has prior art in some popular roles like
+https://github.com/geerlingguy/ansible-role-apache/blob/f2b91ac84001db3fd4b43306a8f73f1a54f96f7d/vars/Debian.yml#L8[geerlingguy.ansible-role-apache]).
+This includes variables set by set_fact and register, because they persist in the namespace after the role has finished!
 * Prefix all tags within a role with the role name or, alternatively, a "unique enough" but descriptive prefix.
+* Do not use dashes in role names. This will cause issues with collections.
 ====
 
 === Providers
 [%collapsible]
 ====
-When there are multiple implementations of the same functionality, we call them "`providers`". A role
-supporting multiple providers should have an input variable called `$ROLENAME_provider`. If this
-variable is not defined, the role should detect the currently running provider on the system, and
-respect it. (Rationale: users can be surprised if the role changes the provider if they are running
-one already.) If there is no provider currently running, the role should select one according to the
-OS version. (E.g. on RHEL 7, chrony should be selected as the provider of time synchronization,
-unless there is ntpd already running on the system, or user requests it specifically. Chrony should
-be chosen on RHEL 8 as well, because it is the only provider available.) The role should set a
-variable or custom fact called `$ROLENAME_provider_os_default` to the appropriate default value for
-the given OS version. (Rationale: users may want to set all their managed systems to a consistent
-state, regardless of the provider that has been used previously. Setting `$ROLENAME_provider` would
-achieve it, but is suboptimal, because it requires selecting the appropriate value by the user, and
-if the user has multiple system versions managed by a single playbook, a common value supported by
-all of them may not even exist. Moreover, after a major upgrade of their systems, it may force the
-users to change their playbooks to change their `$ROLENAME_provider` setting, if the previous value
-is not supported anymore. Exporting `$ROLENAME_provider_os_default` allows the users to set
-`$ROLENAME_provider: "{{ $ROLENAME_provider_os_default }}"` (thanks to the lazy variable evaluation
-in Ansible) and thus get a consistent setting for all the systems of the given OS version without
-having to decide what the actual value is - the decision is delegated to the role.)
+When there are multiple implementations of the same functionality, we call them "`providers`".
+A role supporting multiple providers should have an input variable called `$ROLENAME_provider`.
+If this variable is not defined, the role should detect the currently running provider on the system, and respect it.
+
+Rationale:: users can be surprised if the role changes the provider if they are running one already.
+If there is no provider currently running, the role should select one according to the OS version.
+
+Example:: on RHEL 7, chrony should be selected as the provider of time synchronization, unless there is ntpd already running on the system, or user requests it specifically.
+Chrony should be chosen on RHEL 8 as well, because it is the only provider available.
+
+The role should set a variable or custom fact called `$ROLENAME_provider_os_default` to the appropriate default value for the given OS version.
+
+Rationale:: users may want to set all their managed systems to a consistent
+state, regardless of the provider that has been used previously.
+Setting `$ROLENAME_provider` would achieve it, but is suboptimal, because it requires selecting the appropriate value by the user, and if the user has multiple system versions managed by a single playbook, a common value supported by all of them may not even exist.
+Moreover, after a major upgrade of their systems, it may force the users to change their playbooks to change their `$ROLENAME_provider` setting, if the previous value is not supported anymore.
+Exporting `$ROLENAME_provider_os_default` allows the users to set `$ROLENAME_provider: "{{ $ROLENAME_provider_os_default }}"` (thanks to the lazy variable evaluation in Ansible) and thus get a consistent setting for all the systems of the given OS version without having to decide what the actual value is - the decision is delegated to the role).
 ====
 
 == Implementation considerations
@@ -129,71 +104,85 @@ having to decide what the actual value is - the decision is delegated to the rol
 === Role Structure
 [%collapsible]
 ====
-Avoid testing for distribution and version in tasks. Rather add a variable file to "vars/"
-for each supported distribution and version with the variables that need to change according
-to the distribution and version. This way it is easy to add support to a new distribution by
+Avoid testing for distribution and version in tasks.
+Rather add a variable file to "vars/" for each supported distribution and version with the variables that need to change according to the distribution and version.
+This way it is easy to add support to a new distribution by
 simply dropping a new file in to "vars/", see below
-<<supporting-multiple-distributions-and-versions,Supporting multiple distributions and versions>>. See also
-<<vars-vs-defaults,Vars vs Defaults>> which mandates "Avoid embedding large lists or 'magic values' directly
-into the playbook." Since distribution-specific values are kind of "magic values", it applies to them. The
-same logic applies for providers: a role can load a provider-specific variable file, include a
-provider-specific task file, or both, as needed. Consider making paths to templates internal variables if you
-need different templates for different distributions.
+<<supporting-multiple-distributions-and-versions,Supporting multiple distributions and versions>>.
+See also <<vars-vs-defaults,Vars vs Defaults>> which mandates "Avoid embedding large lists or 'magic values' directly into the playbook."
+Since distribution-specific values are kind of "magic values", it applies to them.
+The same logic applies for providers: a role can load a provider-specific variable file, include a provider-specific task file, or both, as needed.
+Consider making paths to templates internal variables if you need different templates for different distributions.
 ====
 
 === Check Mode and Idempotency Issues
 [%collapsible]
 ====
-* The role should work in check mode, meaning that first of all, they should not fail check mode, and
-they should also not report changes when there are no changes to be done. If it is not possible
-to support it, please state the fact and provide justification in the documentation.
-This applies to the first run of the role.
-* Reporting changes properly is related to the other requirement: *idempotency*. Roles
-should not perform changes when applied a second time to the same system with the same parameters,
-and it should not report that changes have been done if they have not been done. Due to this,
-using `command:` is problematic, as it always reports changes. Therefore, override the result by
-using `changed_when:`
-* Concerning check mode, one usual obstacle to supporting it are registered variables. If there
-is a task which registers a variable and this task does not get executed (e.g. because it is a
-`command:` or another task which is not properly idempotent), the variable will not get registered
-and further accesses to it will fail (or worse, use the previous value, if the role has been
-applied before in the play, because variables are global and there is no way to unregister them).
-To fix, either use a properly idempotent module to obtain the information (e.g. instead of
-using `command: cat` to read file into a registered variable, use `slurp` and apply `.content|b64decode`
-to the result like
-https://github.com/linux-system-roles/kdump/pull/23/files#diff-d2414d4ec8ba189e1a244b0afc9aa81eL8[here]),
-or apply proper `check_mode:` and `changed_when:` attributes to the task.
-https://github.com/ansible/molecule/issues/128#issue-135906202[more_info].
-* Another problem are commands that you need to execute to make changes. In check mode, you
-need to test for changes without actually applying them. If the command has some kind of "--dry-run"
-flag to enable executing without making actual changes, use it in check_mode (use the variable
-`ansible_check_mode` to determine whether we are in check mode). But you then need to set `changed_when:`
-according to the command status or output to indicate changes. See
-(https://github.com/linux-system-roles/selinux/pull/38/files#diff-2444ad0870f91f17ca6c2a5e96b26823L101) for
-an example.
-* Another problem is using commands that get installed during the install phase, which is
-skipped in check mode. This will make check mode fail if the role has not been executed
-before (and the packages are not there), but does the right thing if check mode is executed after
-normal mode.
-* To view reasoning for supporting why check mode in first execution may not be worthwhile: see
-https://github.com/ansible/molecule/issues/128#issuecomment-245009843[here]. If this is to be supported,
-see hhaniel's proposal
-https://github.com/linux-system-roles/timesync/issues/27#issuecomment-472466223[here], which seems to
-properly guard even against such cases.
+* The role should work in check mode, meaning that first of all, they should not fail check mode, and they should also not report changes when there are no changes to be done.
+  If it is not possible to support it, please state the fact and provide justification in the documentation.
+  This applies to the first run of the role.
+* Reporting changes properly is related to the other requirement: *idempotency*.
+  Roles should not perform changes when applied a second time to the same system with the same parameters, and it should not report that changes have been done if they have not been done.
+  Due to this, using `command:` is problematic, as it always reports changes.
+  Therefore, override the result by using `changed_when:`
+* Concerning check mode, one usual obstacle to supporting it are registered variables.
+  If there is a task which registers a variable and this task does not get executed (e.g. because it is a `command:` or another task which is not properly idempotent), the variable will not get registered and further accesses to it will fail (or worse, use the previous value, if the role has been applied before in the play, because variables are global and there is no way to unregister them).
+  To fix, either use a properly idempotent module to obtain the information (e.g. instead of using `command: cat` to read file into a registered variable, use `slurp` and apply `.content|b64decode` to the result like https://github.com/linux-system-roles/kdump/pull/23/files#diff-d2414d4ec8ba189e1a244b0afc9aa81eL8[here]), or apply proper `check_mode:` and `changed_when:` attributes to the task.
+  https://github.com/ansible/molecule/issues/128#issue-135906202[more_info].
+* Another problem are commands that you need to execute to make changes.
+  In check mode, you need to test for changes without actually applying them.
+  If the command has some kind of "--dry-run" flag to enable executing without making actual changes, use it in check_mode (use the variable `ansible_check_mode` to determine whether we are in check mode).
+  But you then need to set `changed_when:` according to the command status or output to indicate changes.
+  See (https://github.com/linux-system-roles/selinux/pull/38/files#diff-2444ad0870f91f17ca6c2a5e96b26823L101) for an example.
+* Another problem is using commands that get installed during the install phase, which is skipped in check mode.
+  This will make check mode fail if the role has not been executed before (and the packages are not there), but does the right thing if check mode is executed after normal mode.
+* To view reasoning for supporting why check mode in first execution may not be worthwhile: see https://github.com/ansible/molecule/issues/128#issuecomment-245009843[here].
+  If this is to be supported, see https://github.com/linux-system-roles/timesync/issues/27#issuecomment-472466223[hhaniel's proposal], which seems to properly guard even against such cases.
 ====
 
 === Supporting multiple distributions and versions
+Use Cases::
+* The role developer needs to be able to set role variables to different values depending on the OS platform and version.  For example, if the name of a service is different between EL8 and EL9, or a config file location is different.
+* The role developer needs to handle the case where the user specifies `gather_facts: false` in the playbook.
+* The role developer needs to access the platform specific vars in role integration tests without making a copy.
+
+NOTE: The recommended solution below requires at least some `ansible_facts` to be defined, and so relies on gathering some facts.
+If you just want to ensure the user always uses `gather_facts: true`, and do not want to handle this in the role, then the role documentation should state that `gather_facts: true` or `setup:` is required in order to use the role, and the role should use `fail:` with a descriptive error message if the necessary facts are not defined.
+
+If it is desirable to use roles that require facts, but fact gathering is expensive, consider using a cache plugin https://docs.ansible.com/ansible/latest/collections/index_cache.html[List of Cache Plugins], and also consider running a periodic job on the controller to refresh the cache.
 
 ==== Platform specific variables
 [%collapsible]
 ====
-You normally use `vars/main.yml` (automatically included) to set variables
-used by your role.  If some variables need to be parameterized according to
-distribution and version (name of packages, configuration file paths, names of
-services), use this in the beginning of your `tasks/main.yml`:
+You normally use `vars/main.yml` (automatically included) to set variables used by your role.
+If some variables need to be parameterized according to distribution and version (name of packages, configuration file paths, names of services), do the following:
 
+* Add the following to `vars/main.yml` (create the file if it does not exist):
++
 [source,yaml]
 ----
+# ansible_facts required by the role
+__rolename_required_facts:
+  - distribution
+  - distribution_major_version
+  - distribution_version
+  - os_family
+----
++
+You may need to add more facts, depending on what Ansible facts your role requires.
+Try to add only the facts required by the role.
+If you add more facts, you may need to change `gather_subset: min` - see below.
+
+* Create a file called `tasks/set_vars.yml` with the following contents:
++
+[source,yaml]
+----
+- name: Ensure ansible_facts used by role
+  setup:
+    gather_subset: min
+  when: not ansible_facts.keys() | list |
+    intersect(__rolename_required_facts) == __rolename_required_facts
+
 - name: Set platform/version specific variables
   include_vars: "{{ __rolename_vars_file }}"
   loop:
@@ -206,39 +195,35 @@ services), use this in the beginning of your `tasks/main.yml`:
   when: __rolename_vars_file is file
 ----
 
+* Add this as the first task in `tasks/main.yml`:
++
+[source,yaml]
+----
+- name: Set platform/version specific variables
+  include_tasks: tasks/set_vars.yml
+----
+
+* Add files to `vars/` for the required OS platforms and versions.
+
 The files in the `loop` are in order from least specific to most specific:
 
-* `os_family` covers a group of closely related platforms (e.g. `RedHat`
-covers RHEL, CentOS, Fedora)
+* `os_family` covers a group of closely related platforms (e.g. `RedHat` covers RHEL, CentOS, Fedora)
 * `distribution` (e.g. `Fedora`) is more specific than `os_family`
-* ``distribution``_``distribution_major_version`` (e.g. `RedHat_8`) is more
-specific than `distribution`
-* ``distribution``_``distribution_version`` (e.g. `RedHat_8.3`) is the most
-specific
+* ``distribution``_``distribution_major_version`` (e.g. `RedHat_8`) is more specific than `distribution`
+* ``distribution``_``distribution_version`` (e.g. `RedHat_8.3`) is the most specific
 
-See https://docs.ansible.com/ansible/latest/user_guide/playbooks_conditionals.html#ansible-facts-distribution[Commonly Used
-Facts]
-for an explanation of the facts and their common values.
+See https://docs.ansible.com/ansible/latest/user_guide/playbooks_conditionals.html#ansible-facts-distribution[Commonly Used Facts] for an explanation of the facts and their common values.
 
-Each file in the `loop` list will allow you to add or override variables to
-specialize the values for platform and/or version.  Using the `when: item is
-file` test means that you do not have to provide all of the `vars/` files,
-only the ones you need.  For example, if every platform except Fedora uses
-`srv_name` for the service name, you can define `myrole_service: srv_name` in
-`vars/main.yml` then define `myrole_service: srv2_name` in `vars/Fedora.yml`.
-In cases where this would lead to duplicate vars files for similar
-distributions (e.g. CentOS 7 and RHEL 7), use symlinks to avoid the
-duplication.
+Each file in the `loop` list will allow you to add or override variables to specialize the values for platform and/or version.
+Using the `when: item is file` test means that you do not have to provide all of the `vars/` files, only the ones you need.
+For example, if every platform except Fedora uses `srv_name` for the service name, you can define `myrole_service: srv_name` in `vars/main.yml` then define `myrole_service: srv2_name` in `vars/Fedora.yml`.
+In cases where this would lead to duplicate vars files for similar distributions (e.g. CentOS 7 and RHEL 7), use symlinks to avoid the duplication.
 
-*NOTE*: With this setup, files can be loaded twice.  For example, on Fedora,
-the `distribution_major_version` is the same as `distribution_version` so the
-file `vars/Fedora_31.yml` will be loaded twice if you are managing a Fedora 31
-host.  If `distribution` is `RedHat` then `os_family` will also be `RedHat`,
-and `vars/RedHat.yml` will be loaded twice. This is usually not a problem -
-you will be replacing the variable with the same value, and the performance
-hit is negligible.  If this is a problem, construct the file list as a list
-variable, and filter the variable passed to `loop` using the `unique` filter
-(which preserves the order):
+NOTE: With this setup, files can be loaded twice.
+For example, on Fedora, the `distribution_major_version` is the same as `distribution_version` so the file `vars/Fedora_31.yml` will be loaded twice if you are managing a Fedora 31 host.
+If `distribution` is `RedHat` then `os_family` will also be `RedHat`, and `vars/RedHat.yml` will be loaded twice.
+This is usually not a problem - you will be replacing the variable with the same value, and the performance hit is negligible.
+If this is a problem, construct the file list as a list variable, and filter the variable passed to `loop` using the `unique` filter (which preserves the order):
 
 [source,yaml]
 ----
@@ -259,15 +244,42 @@ variable, and filter the variable passed to `loop` using the `unique` filter
 ----
 
 Or define your `__rolename_vars_file_list` in your `vars/main.yml`.
+
+The task `Ensure ansible_facts used by role` handles the case where the user specifies `gather_facts: false` in the playbook.
+It gathers *only* the facts required by the role.
+The role developer may need to add additional facts to the list, and use a different `gather_subset`.
+See https://docs.ansible.com/ansible/latest/collections/ansible/builtin/setup_module.html#setup-module[Setup Module] for more information.
+Gathering facts can be expensive, so gather *only* the facts required by the role.
+
+Using a separate task file for `tasks/set_vars.yml` allows role integration tests to access the internal variables.
+For example, if the role developer wants to pre-populate a VM with the packages used by the role, the following tasks can be used:
+
+[source,yaml]
+----
+- hosts: all
+  tasks:
+    - name: Set platform/version specific variables
+      include_role:
+        name: my.fqcn.rolename
+        tasks_from: set_vars.yml
+        public: true
+
+    - name: Install test packages
+      package:
+        name: "{{ __rolename_packages }}"
+        state: present
+
+----
+
+In this way, the role developer does not have to copy and maintain a separate list of role packages.
 ====
 
 ==== Platform specific tasks
 [%collapsible]
 ====
-Platform specific tasks, however, are different.  You probably want to perform
-platform specific tasks once, for the most specific match.  In that case, use
-`lookup('first_found')` with the file list in order of most specific to least
-specific, including a "default":
+Platform specific tasks, however, are different.
+You probably want to perform platform specific tasks once, for the most specific match.
+In that case, use `lookup('first_found')` with the file list in order of most specific to least specific, including a "default":
 
 [source,yaml]
 ----
@@ -285,13 +297,10 @@ specific, including a "default":
         - "{{ role_path }}/tasks/setup"
 ----
 
-Then you would provide `tasks/setup/default.yml` to do the generic setup, and
-e.g. `tasks/setup/Fedora.yml` to do the Fedora specific setup.  The
-`tasks/setup/default.yml` is required in order to use `lookup('first_found')`,
-which will give an error if no file is found.
+Then you would provide `tasks/setup/default.yml` to do the generic setup, and e.g. `tasks/setup/Fedora.yml` to do the Fedora specific setup.
+The `tasks/setup/default.yml` is required in order to use `lookup('first_found')`, which will give an error if no file is found.
 
-If you want to have the "use first file found" semantics, but do not want to
-have to provide a default file, add `skip: true`:
+If you want to have the "use first file found" semantics, but do not want to have to provide a default file, add `skip: true`:
 
 [source,yaml]
 ----
@@ -309,21 +318,16 @@ have to provide a default file, add `skip: true`:
 
 *NOTE*:
 
-* Use `include_tasks` or `include_vars` with `lookup('first_found')` instead
-of `with_first_found`.  `loop` is not needed - the include forms take a
-string or a list directly.
+* Use `include_tasks` or `include_vars` with `lookup('first_found')` instead of `with_first_found`.
+  `loop` is not needed - the include forms take a string or a list directly.
 * Always specify the explicit, absolute path to the files to be included,
 using `{{ role_path }}/vars` or `{{ role_path }}/tasks`, when using these
-idioms. See below "Ansible Best Practices" for more information.
-* Use the `ansible_facts['name']` bracket notation rather than the
-`ansible_facts.name` or `ansible_name` form.  For example, use
-`ansible_facts['distribution']` instead of `ansible_distribution` or
-`ansible.distribution`.  The `ansible_name` form relies on fact injection,
-which can break if there is already a fact of that name. Also, the bracket
-notation is what is used in Ansible documentation such as https://docs.ansible.com/ansible/latest/user_guide/playbooks_conditionals.html#ansible-facts-distribution[Commonly Used
-Facts]
-and https://docs.ansible.com/ansible/latest/user_guide/playbooks_best_practices.html#operating-system-and-distribution-variance[Operating System and Distribution
-Variance]
+idioms.
+  See below "Ansible Best Practices" for more information.
+* Use the `ansible_facts['name']` bracket notation rather than the `ansible_facts.name` or `ansible_name` form.
+  For example, use `ansible_facts['distribution']` instead of `ansible_distribution` or `ansible.distribution`.
+  The `ansible_name` form relies on fact injection, which can break if there is already a fact of that name.
+  Also, the bracket notation is what is used in Ansible documentation such as https://docs.ansible.com/ansible/latest/user_guide/playbooks_conditionals.html#ansible-facts-distribution[Commonly Used Facts] and https://docs.ansible.com/ansible/latest/user_guide/playbooks_best_practices.html#operating-system-and-distribution-variance[Operating System and Distribution Variance].
 ====
 
 === Supporting multiple providers
@@ -338,27 +342,23 @@ Use a task file per provider and include it from the main task file, like this e
 ----
 
 The same process should be used for variables (not defaults, as defaults can
-not be loaded according to a variable).  You should guarantee that a file
-exists for each provider supported, or use an explicit, absolute path using
-`role_path`.  See below "Ansible Best Practices" for more information.
+not be loaded according to a variable).
+You should guarantee that a file exists for each provider supported, or use an explicit, absolute path using `role_path`.
+See below "Ansible Best Practices" for more information.
 ====
 
 === Generating files from templates
 [%collapsible]
 ====
 * Add ``{{ ansible_managed | comment }}`` at the top of the template file file to indicate that the file is managed by Ansible roles, while making sure that multi-line values are properly commented.
-For more information, see https://docs.ansible.com/ansible/latest/user_guide/playbooks_filters.html#adding-comments-to-files[Adding comments to files].
-* When commenting, don't include anything like "Last modified: {{ date }}". This would change the file at
-every application of the role, even if it doesn't need to be changed for other reasons, and thus break
-proper change reporting.
-* Use standard module parameters for backups, keep it on unconditionally (`backup: true`). (Until there is a
-user request to have it configurable.)
-* Make prominently clear in the HOWTO (at the top) what settings/configuration files are replaced by the role
-instead of just modified.
+  For more information, see https://docs.ansible.com/ansible/latest/user_guide/playbooks_filters.html#adding-comments-to-files[Adding comments to files].
+* When commenting, don't include anything like "Last modified: {{ date }}".
+  This would change the file at every application of the role, even if it doesn't need to be changed for other reasons, and thus break proper change reporting.
+* Use standard module parameters for backups, keep it on unconditionally (`backup: true`), until there is a user request to have it configurable.
+* Make prominently clear in the HOWTO (at the top) what settings/configuration files are replaced by the role instead of just modified.
 +
 * Use `{{ role_path }}/subdir/` as the filename prefix when including files if the name has a variable in it.
 +
-
 Rationale:: your role may be included by another role, and if you specify a relative path, the file could be found in the including role.
 For example, if you have something like `include_vars: "{{ ansible_facts['distribution'] }}.yml"` and you do not provide every possible `vars/{{ ansible_facts['distribution'] }}.yml` in your role, Ansible will look in the including role for this file.
 Instead, to ensure that only your role will be referenced, use `include_vars: "{{role_path}}/vars/{{ ansible_facts['distribution'] }}.yml"`.
@@ -366,37 +366,29 @@ Same with other file based includes such as `include_tasks`.
 See https://docs.ansible.com/ansible/latest/dev_guide/overview_architecture.html#the-ansible-search-path[Ansible Developer Guide » Ansible architecture » The Ansible Search Path] for more information.
 ====
 
-==== Vars vs Defaults
+=== Vars vs Defaults
 [%collapsible]
 ====
-* Avoid embedding large lists or "magic values" directly into the playbook. Such static lists should be
-placed into the `vars/main.yml` file and named appropriately
+* Avoid embedding large lists or "magic values" directly into the playbook.
+  Such static lists should be placed into the `vars/main.yml` file and named appropriately
 * Every argument accepted from outside of the role should be given a default value in `defaults/main.yml`.
-This allows a single place for users to look to see what inputs are expected. Document these variables
-in the role's README.md file copiously
+  This allows a single place for users to look to see what inputs are expected.
+  Document these variables in the role's README.md file copiously
 * Use the `defaults/main.yml` file in order to avoid use of the default Jinja2 filter within a playbook.
-Using the default filter is fine for optional keys on a dictionary, but the variable itself should be
-defined in `defaults/main.yml` so that it can have documentation written about it there and so that all
-arguments can easily be located and identified.
-* Avoid giving default values in `vars/main.yml` as such values are very high in the precedence order and
-are difficult for users and consumers of a role to override.
-* As an example, if a role requires a large number of packages to install, but could also accept a list of
-additional packages, then the required packages should be placed in `vars/main.yml` with a name such as
-`foo_packages`, and the extra packages should be passed in a variable named `foo_extra_packages`,
-which should default to an empty array in `defaults/main.yml` and be documented as such.
+  Using the default filter is fine for optional keys on a dictionary, but the variable itself should be defined in `defaults/main.yml` so that it can have documentation written about it there and so that all arguments can easily be located and identified.
+* Don't define defaults in `defaults/main.yml` if there is no meaningful default.
+  It is better to have the role fail if the variable isn't defined than have it do something dangerously wrong.
+  Still do add the variable to `defaults/main.yml` but _commented out_, so that there is one single source of input variables.
+* Avoid giving default values in `vars/main.yml` as such values are very high in the precedence order and are difficult for users and consumers of a role to override.
+* As an example, if a role requires a large number of packages to install, but could also accept a list of additional packages, then the required packages should be placed in `vars/main.yml` with a name such as `foo_packages`, and the extra packages should be passed in a variable named `foo_extra_packages`, which should default to an empty array in `defaults/main.yml` and be documented as such.
 ====
 
 === Documentation conventions
 [%collapsible]
 ====
-* Use fully qualified role names in examples, like: `linux-system-roles.$ROLENAME` (with
-the Galaxy prefix).
-* Use RFC https://tools.ietf.org/html/rfc5737[5737],
-https://tools.ietf.org/html/rfc7042#section-2.1.1[7042] and
-https://tools.ietf.org/html/rfc3849[3849] addresses in examples.
-* Modules should have complete metadata, documentation, example and return blocks as
-described in the
-https://docs.ansible.com/ansible/latest/dev_guide/developing_modules_documenting.html[Ansible docs].
+* Use fully qualified role names in examples, like: `linux-system-roles.$ROLENAME` (with the Galaxy prefix).
+* Use RFC https://tools.ietf.org/html/rfc5737[5737], https://tools.ietf.org/html/rfc7042#section-2.1.1[7042] and https://tools.ietf.org/html/rfc3849[3849] addresses in examples.
+* Modules should have complete metadata, documentation, example and return blocks as described in the https://docs.ansible.com/ansible/latest/dev_guide/developing_modules_documenting.html[Ansible docs].
 ====
 
 === Don't use host group names or at least make them a parameter
@@ -445,6 +437,28 @@ TIP: the variable `cluster_group_name` could have a default group name value in 
 Overall, it is best to avoid this kind of constructs if the use case permits, as they are clumsy.
 ====
 
+=== Prefix task names in sub-tasks files of roles
+[%collapsible]
+====
+Explanation:: It is a common practice to have `tasks/main.yml` file including other tasks files, which we'll call sub-tasks files.
+Make sure that the tasks' names in these sub-tasks files are prefixed with a shortcut reminding of the sub-tasks file's name.
+
+Rationale:: Especially in a complex role with multiple (sub-)tasks file, it becomes difficult to understand which task belongs to which file.
+Adding a prefix, in combination with the role's name automatically added by Ansible, makes it a lot easier to follow and troubleshoot a role play.
+
+Examples:: In a role with one `tasks/main.yml` task file, including `tasks/sub.yml`, the tasks in this last file would be named as follows:
++
+.A prefixed task in a sub-tasks file
+[source,yaml]
+----
+- name: sub | some task description
+  mytask: [...]
+----
++
+The log output will then look something like `TASK [myrole : sub | some task description] ****`, which makes it very clear where the task is coming from.
++
+TIP: with a verbosity of 2 or more, ansible-playbook will show the full path to the task file, but this generally means that you need to restart the play in a higher verbosity to get the information you could have had readily available.
+====
 
 == References
 [%collapsible]
@@ -452,9 +466,8 @@ Overall, it is best to avoid this kind of constructs if the use case permits, as
 Links that contain additional standardization information that provide context,
 inspiration or contrast to the standards described above.
 
-* https://github.com/debops/debops/blob/v0.7.2/docs/debops-policy/code-standards-policy.rst). For
-inspiration, as the DebOps project has some specific guidance that we do not necessarily
-want to follow.
+* https://github.com/debops/debops/blob/v0.7.2/docs/debops-policy/code-standards-policy.rst).
+  For inspiration, as the DebOps project has some specific guidance that we do not necessarily want to follow.
 * https://docs.adfinis-sygroup.ch/public/ansible-guide/overview.html
 * https://docs.openstack.org/openstack-ansible/latest/contributor/code-rules.html
 

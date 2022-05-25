@@ -664,7 +664,8 @@ pre.rouge {
 <li><a href="#_do_this_and_do_not_do_that_is_the_guideline">3.1. Do this and do not do that is the guideline</a></li>
 </ul>
 </li>
-<li><a href="#_publishing">4. Publishing</a></li>
+<li><a href="#_publish_for_the_website">4. Publish for the website</a></li>
+<li><a href="#_creating_a_pdf">5. Creating a PDF</a></li>
 </ul>
 </div>
 </div>
@@ -853,10 +854,11 @@ For example, "Sentences are written", not "Sentences should be written" or "Sent
 </div>
 </div>
 <div class="sect1">
-<h2 id="_publishing">4. Publishing</h2>
+<h2 id="_publish_for_the_website">4. Publish for the website</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Use for now the following manual command:</p>
+<p>Use for now the following manual command to publish to
+<a href="https://redhat-cop.github.io/automation-good-practices/">the website</a>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -880,10 +882,52 @@ it doesn&#8217;t seem that there is any much better way to keep links to images 
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_creating_a_pdf">5. Creating a PDF</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If you run (a current) Fedora Linux,
+then you can use the <code>Makefile</code>.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>make view</code> generates both PDF files and displays the GPA guide</p>
+</li>
+<li>
+<p><code>make print</code> prints to your default printer</p>
+</li>
+<li>
+<p><code>make spell</code> runs hunspell for spellchecking</p>
+</li>
+<li>
+<p>…</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Alternatively, use the following manual commands to generate the 2 PDFs:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="bash">asciidoctor-pdf <span class="se">\</span>
+  <span class="nt">--attribute</span><span class="o">=</span><span class="nv">gitdate</span><span class="o">=</span><span class="si">$(</span>git log <span class="nt">-1</span> <span class="nt">--date</span><span class="o">=</span>short <span class="nt">--pretty</span><span class="o">=</span>format:%cd<span class="si">)</span> <span class="se">\</span>
+  <span class="nt">--attribute</span><span class="o">=</span><span class="nv">githash</span><span class="o">=</span><span class="si">$(</span>git rev-parse <span class="nt">--verify</span> HEAD<span class="si">)</span> <span class="se">\</span>
+  <span class="nt">--out-file</span> Good_Practices_for_Ansible.pdf <span class="se">\</span>
+  README.adoc
+asciidoctor-pdf <span class="se">\</span>
+  <span class="nt">--attribute</span><span class="o">=</span><span class="nv">gitdate</span><span class="o">=</span><span class="si">$(</span>git log <span class="nt">-1</span> <span class="nt">--date</span><span class="o">=</span>short <span class="nt">--pretty</span><span class="o">=</span>format:%cd<span class="si">)</span> <span class="se">\</span>
+  <span class="nt">--attribute</span><span class="o">=</span><span class="nv">githash</span><span class="o">=</span><span class="si">$(</span>git rev-parse <span class="nt">--verify</span> HEAD<span class="si">)</span> <span class="se">\</span>
+  <span class="nt">--out-file</span> Contributing-to-GPA.pdf <span class="se">\</span>
+  CONTRIBUTE.adoc</code></pre>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-07-26 11:02:21 +0200
+Last updated 2021-11-05 16:19:20 +0100
 </div>
 </div>
 </body>
