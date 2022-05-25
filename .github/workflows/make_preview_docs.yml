@@ -10,10 +10,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     
     - name: Install requirements
       run: sudo apt-get install asciidoctor ruby-asciidoctor-pdf
+
+    - name: Install requirements
+      run: cd $GITHUB_WORKSPACE
     
     - name: render preview
       run: make preview
