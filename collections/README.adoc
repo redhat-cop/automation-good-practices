@@ -49,3 +49,25 @@ beta_no_log: "{{ mycollection_no_log | default('false') }}"
 ----
 ====
 
+=== Collection Documentation
+[%collapsible]
+A collection should include a README file that is in the root of the collection and which contains:
+* Information about the purpose of the collection
+* A link to the collection license file
+* General usage information such as which versions of ansible-core are supported and any libraries or SDKs which are required by the collection
+
+Plugin documentation should be generated from DOCUMENTATION block in the plugin code.
++
+[collapsible]
+Examples::
+Use https://github.com/ansible-network/collection_prep to generate the documentation for the collection
++
+* Supplemental documentation such as user guides may be written in ReStructured Text (rst) and located in the docs/docsite/rst/ directory of the collection.
+
+=== Collection Licensing
+[%collapsible]
+====
+* The license file should be included in the root directory
+* The license file for the collection should be named LICENSE or COPYING.  The contents should be the text of the applicable license, or a link to the canonical reference for the license on the Internet (such as https://opensource.org/licenses/BSD-2-Clause )
+* Any file that is licensed differently from the larger collection it is a part of (such as module utilities) should have that license noted in the header of the file. 
+
