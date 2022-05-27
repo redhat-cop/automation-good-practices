@@ -187,7 +187,34 @@ A fact has a different priority than other variables and not the highest, so in 
   Role variables are exposed to the whole play when the role is applied using `roles:` or `import_role:`. A more restricted scope such as task or block variables is preferred.
 * Beware of `ignore_errors: true`; especially in tests.
   If you set on a block, it will ignore all the asserts in the block ultimately making them pointless.
-* Do not use the `eq` (introduced in Jinja 2.10) or `equalto` Jinja operators.
+* Do not use the `eq`, `equalto`, or `==` Jinja tests introduced in Jinja 2.10, use Ansible built-in `match`, `search`, or `regex` instead.
++
+[%collapsible]
+====
+Rationale:: These tests are not present in older versions of Jinja used on older controller platforms.
+If you want to ensure that your code works on older platforms, use the built-in Ansible tests such as (https://docs.ansible.com/ansible/latest/user_guide/playbooks_tests.html#testing-strings[match]), (https://docs.ansible.com/ansible/latest/user_guide/playbooks_tests.html#testing-strings[search]), or (https://docs.ansible.com/ansible/latest/user_guide/playbooks_tests.html#testing-strings[regex]) instead.
+For example, if you have a `list` of `dict`, and you want to filter out elements that have the key `type` with the value `bad_type`.
+
+.Do this:
+[source,yaml]
+----
+tasks:
+  - name: Do something
+    some.module:
+      param: "{{ list_of_dict | rejectattr('type', 'search', '^bad_type$') | list }}"
+----
+
+.Don't do this:
+[source,yaml]
+----
+tasks:
+  - name: Do something
+    some.module:
+      param: "{{ list_of_dict | rejectattr('type', 'eq', 'bad_type') | list }}"
+----
+When using `match`, `search`, or `regex`, and you want an exact match, you must specify the regex `^STRING$`, otherwise, you will match partial strings.
+====
+
 * Avoid the use of `when: foo_result is changed` whenever possible.
   Use handlers, and, if necessary, handler chains to achieve this same result.
 * Use the various include/import statements in Ansible.
