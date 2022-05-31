@@ -19,6 +19,8 @@ The role internally would have the logic to decide whether to use ntpd, chronyd,
 However, when the underlying implementations become too divergent, for example implementing an email server with postfix or sendmail, then 
 separate roles are encouraged.
 
+Try to design the interface focused on the functionality, not on the software implementation behind it. Roles should accomplish a guaranteed outcome; the scope of a role should be its outcome
+This will help abstracting differences between different providers (see above), and help the user to focus on the functionality, not on technical details.
 ====
 
 === Role Structure
@@ -94,6 +96,8 @@ See also <<vars-vs-defaults,Vars vs Defaults>> which mandates "Avoid embedding l
 Since distribution-specific values are kind of "magic values", it applies to them.
 The same logic applies for providers: a role can load a provider-specific variable file, include a provider-specific task file, or both, as needed.
 Consider making paths to templates internal variables if you need different templates for different distributions.
+Do not use roles as programming interfaces, in the case a common role is necessary to contain common code available to other roles within the same collection, it should not contain user-facing plugins.
+Keep roles loosely coupled with other external roles and variables.
 ====
 
 === Package roles in an Ansible collection to simplify distribution and consumption
