@@ -193,7 +193,8 @@ A fact has a different priority than other variables and not the highest, so in 
 ====
 Rationale:: These tests are not present in older versions of Jinja used on older controller platforms.
 If you want to ensure that your code works on older platforms, use the built-in Ansible tests such as (https://docs.ansible.com/ansible/latest/user_guide/playbooks_tests.html#testing-strings[match]), (https://docs.ansible.com/ansible/latest/user_guide/playbooks_tests.html#testing-strings[search]), or (https://docs.ansible.com/ansible/latest/user_guide/playbooks_tests.html#testing-strings[regex]) instead.
-For example, if you have a `list` of `dict`, and you want to filter out elements that have the key `type` with the value `bad_type`.
+Example::
+You have a `list` of `dict`, and you want to filter out elements that have the key `type` with the value `bad_type`.
 
 .Do this:
 [source,yaml]
