@@ -191,9 +191,19 @@ A fact has a different priority than other variables and not the highest, so in 
 +
 [%collapsible]
 ====
-Rationale:: These tests are not present in older versions of Jinja used on older controller platforms.
+Explanation:: The issue is only with Jinja versions older than 2.10. RPM distributions of Ansible generally use the underlying OS platform python library for Jinja e.g. python-jinja2.
+This is especially problematic on EL7.
+The only supported Ansible RPM on that platform is 2.9, which uses the EL7 platform python-jinja2 library, which is 2.7 (and will likely never be upgraded).
+As of mid-2022, there are many users using EL7 for the control node.
+I believe this means AAP 1.x users will also be affected.
+Users not affected:
+* AAP 2.x users - there should be an option to use EL8 runners, or otherwise, build the EEs in such a way as to use Jinja 2.11 or later
+* Users running Ansible from a pip install
+* Users running Ansible installed via RPM on EL8 or later
+Rationale:: These tests are not present in versions of Jinja older than 2.10, which are used on older controller platforms, such as EL7.
 If you want to ensure that your code works on older platforms, use the built-in Ansible tests such as (https://docs.ansible.com/ansible/latest/user_guide/playbooks_tests.html#testing-strings[match]), (https://docs.ansible.com/ansible/latest/user_guide/playbooks_tests.html#testing-strings[search]), or (https://docs.ansible.com/ansible/latest/user_guide/playbooks_tests.html#testing-strings[regex]) instead.
 Example::
+
 You have a `list` of `dict`, and you want to filter out elements that have the key `type` with the value `bad_type`.
 
 .Do this:
