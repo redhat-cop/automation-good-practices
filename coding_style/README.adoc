@@ -23,15 +23,14 @@ Rationale:: even when Ansible currently allows names that are not valid identifi
 Making all names valid identifiers will avoid encountering problems in the future. Dictionary keys that are not valid identifiers are also less intuitive to use in Jinja2 (a dot in a dictionary key would be particularly confusing).
 ====
 
-* Use human-readable variable names
-* Use mnemonic and descriptive names and do not shorten more than necessary.
+* Use mnemonic and descriptive names that are human-readable and do not shorten more than necessary.
   A pattern `object[_feature]_action` has proven useful as it guarantees a proper sorting in the file system for roles and playbooks.
   Systems support long identifier names, so use them!
 * Avoid numbering roles and playbooks, you'll never know how they'll be used in the future.
-* All tasks should be named and start with a capital letter, this improves readability.
-* All task names should be written in the imperative (e.g. "Ensure service is running"), this communicates the action of the task.
+* Name all tasks and and start names with a capital letter, this improves readability.
+* Write task names in the imperative (e.g. "Ensure service is running"), this communicates the action of the task.
 * Name all plays and task blocks.
-* Avoid abbreviations in names. or use capital letter for abbreviations where it cannot be avoided.
+* Avoid abbreviations in names, or use capital letter for abbreviations where it cannot be avoided.
 
 == YAML and Jinja2 Syntax
 
@@ -166,15 +165,24 @@ Rationale:: https://yaml.org/type/bool.html[YAML 1.1] allows all variants wherea
   your task will likely need options such as `changed_when:` and maybe `check_mode:`).
 * Anytime `command` or `shell` modules are used, add a comment in the code with justification to help with future maintenance.
 * Use the `| bool` filter when using bare variables (expressions consisting of just one variable reference without any operator) in `when`.
-* No single task file should contain more than 30 tasks.  Complex task files should be broken down into discrete parts.
-* The maximum block depth within a single task file should be 2
+* Break complex task files down into discrete parts.
++
+[%collapsible]
+====
+Rationale::
+Task files that are very or and/or contain highly nested blocks are difficult to maintain.
+Breaking a large or complex task file into multiple discrete files makes it easier to read and understand what is being done in each part.
+====
+
 * Bracket notation is preferred over dot notation for value retrieval (e.g. `item[‘key’]` vs. `item.key`)
 +
 [%collapsible]
 ====
 Rationale::
 Dot notation will fail in some cases (such as when a variable name includes a hyphen) and it's better to stay consistent than to switch between the two options within a role or playbook.
-For an example, see https://blog.networktocode.com/post/Exploring-Jinja-Variable-Syntax-in-Ansible
+
+Example::
+This https://blog.networktocode.com/post/Exploring-Jinja-Variable-Syntax-in-Ansible[post] provdes an excellent demonstration of how using dot notation syntax can impact your playbooks.
 ====
 
 * Do not use `meta: end_play`.
@@ -271,4 +279,3 @@ Grouping sets of similar files into a subdirectory of `templates` is allowable, 
 * Using agnostic modules like `package` only makes sense if the features required are very limited.
   In many cases, if the platform is different, the package name is also different so that using `package` doesn't help a lot.
   Prefer then the more specific `yum`, `dnf` or `apt` module if you anyway need to differentiate.
-
