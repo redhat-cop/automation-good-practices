@@ -67,7 +67,7 @@ Use https://github.com/ansible-network/collection_prep to generate the documenta
 === Collection Licensing
 [%collapsible]
 ====
-* The license file should be included in the root directory
-* The license file for the collection should be named LICENSE or COPYING.  The contents should be the text of the applicable license, or a link to the canonical reference for the license on the Internet (such as https://opensource.org/licenses/BSD-2-Clause )
-* Any file that is licensed differently from the larger collection it is a part of (such as module utilities) should have that license noted in the header of the file. 
+* Include a license file in the root directory
+* Name the license file either LICENSE or COPYING.  The contents may be either the text of the applicable license, or a link to the canonical reference for the license on the Internet (such as https://opensource.org/licenses/BSD-2-Clause )
+* If any file in the collection is licensed differently from the larger collection it is a part of (such as module utilities), note the applicable license in the header of the file. 
 
