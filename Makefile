@@ -52,8 +52,6 @@ pull:
 	$(VCS) pull
 
 release:
-	$(ADOCPDF) --out-file docs/$(OUTFILE).pdf $(INFILE)
-	$(ADOCPDF) --out-file docs/$(OUTFILE2).pdf $(INFILE2)
 	$(ADOCHTML) --out-file docs/$(OUTFILE).html $(INFILE)
 	$(ADOCHTML) --out-file docs/$(OUTFILE2).html $(INFILE2)
 	mkdir -p docs/images
