@@ -2,6 +2,8 @@ name: publish document
 
 on:
   push:
+    branch:
+      - '**'
     tags:
       - v*
 
@@ -19,10 +21,11 @@ jobs:
     - name: Install requirements
       run: cd $GITHUB_WORKSPACE
     
-    - name: render preview
+    - name: render HTML
       run: make release
      
     - uses: stefanzweifel/git-auto-commit-action@v4
       with:
         commit_message: publish release
         file_pattern: docs/*
+        branch: main
