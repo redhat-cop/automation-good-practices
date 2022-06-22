@@ -2,8 +2,6 @@ name: publish document
 
 on:
   push:
-    branches:
-      - "**"
     tags:
       - v*
 
