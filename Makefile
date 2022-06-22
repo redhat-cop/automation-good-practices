@@ -6,8 +6,12 @@ OUTFILE = Good_Practices_for_Ansible.pdf
 OUTFILE2 = Contributing-to-GPA.pdf
 
 all:
-	$(ADOCPDF) --out-file $(OUTFILE) $(INFILE)
-	$(ADOCPDF) --out-file $(OUTFILE2) $(INFILE2)
+	$(ADOCPDF) --out-file docs/$(OUTFILE) $(INFILE)
+	$(ADOCPDF) --out-file docs/$(OUTFILE2) $(INFILE2)
+
+preview: 
+	$(ADOCPDF) --out-file docs/preview/$(OUTFILE) $(INFILE)
+        $(ADOCPDF) --out-file docs/preview/$(OUTFILE2) $(INFILE2)
 
 clean:
 	rm -f $(OUTFILE)
