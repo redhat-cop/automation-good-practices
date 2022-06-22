@@ -6,21 +6,26 @@ NOTE: this section has been rewritten, using https://github.com/oasis-roles/meta
 
 === Basic design
 [%collapsible]
+====
 Explanations:: Design roles focused on the functionality provided, not the software implementation.
 
 Rationale::
 Try to design roles focused on the functionality, not on the software implementation behind it.
 This will help abstracting differences between different providers, and help the user to focus on the functionality, not on technical details.
 
-Examples:: For an example, designing a role to implement an NTP configuration on a server would be a role.  The role internally would have the logic to decide whether to use ntpd, chronyd, and the ntp site configurations.
-However, when the underlying implementations become too divergent, for example implementing an email server with postfix or sendmail, then separate roles are encouraged.
+Examples:: 
+For an example, designing a role to implement an NTP configuration on a server would be a role.
+The role internally would have the logic to decide whether to use ntpd, chronyd, and the ntp site configurations.
+However, when the underlying implementations become too divergent, for example implementing an email server with postfix or sendmail, then 
+separate roles are encouraged.
 
 ====
 
 === Role Structure
 [%collapsible]
 ====
-Explanations:: New roles should be initiated in line, with the skeleton directory, which has standard boilerplate code for a Galaxy-compatible Ansible role and some enforcement around these standards
+Explanations:: New roles should be initiated in line, with the skeleton directory, which has standard boilerplate code for a Galaxy-compatible
+Ansible role and some enforcement around these standards
 
 Rationale:: A consistent file tree structure will help drive consistency and reusability across the entire environment.
 ====
@@ -28,9 +33,11 @@ Rationale:: A consistent file tree structure will help drive consistency and reu
 === Role Distribution
 [%collapsible]
 ====
-Explanations:: Use https://semver.org/[semantic versioning] for Git release tags.  Use 0.y.z before the role is declared stable (interface-wise).  
+Explanations:: Use https://semver.org/[semantic versioning] for Git release tags.  
+Use 0.y.z before the role is declared stable (interface-wise).  
 
-Rationale:: There are some https://github.com/ansible/ansible/issues/67512[restrictions] for Ansible Galaxy and Automation Hub.  The versioning must be in strict X.Y.Z[ab][W] format, where X, Y, and Z are integers.
+Rationale:: There are some https://github.com/ansible/ansible/issues/67512[restrictions] for Ansible Galaxy and Automation Hub.
+The versioning must be in strict X.Y.Z[ab][W] format, where X, Y, and Z are integers.
 
 === Naming parameters
 [%collapsible]
@@ -77,9 +84,15 @@ Exporting `$ROLENAME_provider_os_default` allows the users to set `$ROLENAME_pro
 === Distributions and Versions
 [%collapsible]
 ====
-Explanations:: Avoid testing for distribution and version in tasks. Rather add a variable file to "vars/" for each supported distribution and version with the variables that need to change according to the distribution and version. 
+Explanations:: Avoid testing for distribution and version in tasks.
+Rather add a variable file to "vars/" for each supported distribution and version with the variables that need to change according to the distribution and version. 
 
-Rationale:: This way it is easy to add support to a new distribution by simply dropping a new file in to "vars/", see below <<supporting-multiple-distributions-and-versions,Supporting multiple distributions and versions>>. See also <<vars-vs-defaults,Vars vs Defaults>> which mandates "Avoid embedding large lists or 'magic values' directly into the playbook." Since distribution-specific values are kind of "magic values", it applies to them. The same logic applies for providers: a role can load a provider-specific variable file, include a provider-specific task file, or both, as needed. Consider making paths to templates internal variables if you need different templates for different distributions.
+Rationale:: 
+This way it is easy to add support to a new distribution by simply dropping a new file in to "vars/", see below <<supporting-multiple-distributions-and-versions,Supporting multiple distributions and versions>>.
+See also <<vars-vs-defaults,Vars vs Defaults>> which mandates "Avoid embedding large lists or 'magic values' directly into the playbook." 
+Since distribution-specific values are kind of "magic values", it applies to them.
+The same logic applies for providers: a role can load a provider-specific variable file, include a provider-specific task file, or both, as needed.
+Consider making paths to templates internal variables if you need different templates for different distributions.
 ====
 
 === Check Mode
