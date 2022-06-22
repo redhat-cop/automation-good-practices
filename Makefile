@@ -1,11 +1,57 @@
-ADOCHTML = asciidoctor --attribute=gitdate=$(shell git log -1 --date=short --pretty=format:%cd) --attribute=githash=$(shell git rev-parse --verify HEAD)
+# be sure to have the following RPMs installed on Fedora Linux
+#
+# okular
+# asciidoctor-pdf
+# rubygem-rugged
+# hunspell
+# hunspell-en-GB
+# rubygem-ffi ?
+# rubygem-json ?
+
 ADOCPDF = asciidoctor-pdf --attribute=gitdate=$(shell git log -1 --date=short --pretty=format:%cd) --attribute=githash=$(shell git rev-parse --verify HEAD)
+ADOCHTML = asciidoctor --attribute=gitdate=$(shell git log -1 --date=short --pretty=format:%cd) --attribute=githash=$(shell git rev-parse --verify HEAD)
+ACROREAD = okular
+VCS = git
 INFILE = README.adoc
 INFILE2 = CONTRIBUTE.adoc
 OUTFILE = Good_Practices_for_Ansible
 OUTFILE2 = Contributing-to-GPA
+PRINT = lpr
+SPELL = hunspell
+SPELLOPTS = -d en_GB
 
-all:
+all: $(OUTFILE)
+
+$(OUTFILE): $(INFILE) *.adoc */*.adoc _images/* Makefile .git/index
+	$(ADOCPDF) --out-file $(OUTFILE).pdf $(INFILE)
+	$(ADOCPDF) --out-file $(OUTFILE2).pdf $(INFILE2)
+
+view: viewpdf
+
+print: $(OUTFILE)
+	$(PRINT) $(OUTFILE).pdf
+
+viewpdf: $(OUTFILE)
+	$(ACROREAD) $(OUTFILE).pdf
+
+clean:
+	rm -f $(OUTFILE).pdf
+	rm -f $(OUTFILE2).pdf
+	rm -rf .AppleDouble
+
+spell:
+	$(SPELL) $(SPELLOPTS) *.adoc */*.adoc
+
+commit: clean
+	$(VCS) commit .
+
+push: clean
+	$(VCS) push
+
+pull:
+	$(VCS) pull
+
+release:
 	$(ADOCPDF) --out-file docs/$(OUTFILE).pdf $(INFILE)
 	$(ADOCPDF) --out-file docs/$(OUTFILE2).pdf $(INFILE2)
 	$(ADOCHTML) --out-file docs/$(OUTFILE).html $(INFILE)
