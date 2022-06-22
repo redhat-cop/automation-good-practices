@@ -3,7 +3,7 @@ name: create preview renders
 on:
   push:
     branches:
-    - [ "**" ]
+    - "**"
     - '!main'
 
 jobs:
@@ -26,4 +26,9 @@ jobs:
     - uses: actions/upload-artifact@v3
       with:
         name: preview-pdf
-        path: docs/preview/
+        path: docs/preview/*.pdf
+
+    - uses: actions/upload-artifact@v3
+      with:
+        name: preview-html
+        path: docs/preview/*.html
