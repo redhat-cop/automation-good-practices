@@ -1,6 +1,6 @@
 = Roles Good Practices for Ansible
 
-NOTE: this section has been rewritten, using https://github.com/oasis-roles/meta_standards[OASIS metastandards repository] and https://docs.google.com/document/d/1jZUsman8IDSvDt-s6loJ3Y4uZsyse3CB-xzM2DCYaHQ/edit[Ansible Good Practice Recommendations] as a starting place. If you have anything to add or review, please comment.
+NOTE: this section has been rewritten, using https://github.com/oasis-roles/meta_standards[OASIS metastandards repository] as a starting place. If you have anything to add or review, please comment.
 
 == Role design considerations
 
