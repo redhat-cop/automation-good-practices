@@ -19,4 +19,9 @@ jobs:
       run: cd $GITHUB_WORKSPACE
     
     - name: render preview
-      run: make
+      run: make preview
+      
+    - uses: actions/upload-artifact@v3
+      with:
+        name: preview-pdf
+        path: docs/preview/
