@@ -9,7 +9,7 @@
 # rubygem-json ?
 
 ADOCPDF = asciidoctor-pdf --attribute=gitdate=$(shell git log -1 --date=short --pretty=format:%cd) --attribute=githash=$(shell git rev-parse --verify HEAD)
-ADOCHTML = asciidoctor --attribute=gitdate=$(shell git log -1 --date=short --pretty=format:%cd) --attribute=githash=$(shell git rev-parse --verify HEAD)
+ADOCHTML = asciidoctor -a toc=left --attribute=gitdate=$(shell git log -1 --date=short --pretty=format:%cd) --attribute=githash=$(shell git rev-parse --verify HEAD)
 ACROREAD = okular
 VCS = git
 INFILE = README.adoc
@@ -56,9 +56,13 @@ release:
 	$(ADOCPDF) --out-file docs/$(OUTFILE2).pdf $(INFILE2)
 	$(ADOCHTML) --out-file docs/$(OUTFILE).html $(INFILE)
 	$(ADOCHTML) --out-file docs/$(OUTFILE2).html $(INFILE2)
+	mkdir -p docs/images
+	cp -v images/*.svg docs/images
 
 preview: 
 	$(ADOCPDF) --out-file docs/preview/$(OUTFILE).pdf $(INFILE)
 	$(ADOCPDF) --out-file docs/preview/$(OUTFILE2).pdf $(INFILE2)
 	$(ADOCHTML) --out-file docs/preview/$(OUTFILE).html $(INFILE)
 	$(ADOCHTML) --out-file docs/preview/$(OUTFILE2).html $(INFILE2)
+	mkdir -p docs/preview/images
+	cp -v images/*.svg docs/preview/images
