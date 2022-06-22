@@ -1,0 +1,14 @@
+---
+# tasks file for prefix_show
+- name: show where we are
+  debug:
+    msg: we're now in the main task file
+- name: include the sub task file without prefix
+  include_tasks:
+    file: sub_noprefix.yml
+- name: include the sub task file with prefix
+  include_tasks:
+    file: sub_prefix.yml
+- name: show where we are
+  debug:
+    msg: we're back in the main task file

@@ -128,6 +128,15 @@ Rationale:: Additional automation or other integrations, such as with external t
 ====
 
 === Supporting multiple distributions and versions
+Use Cases::
+* The role developer needs to be able to set role variables to different values depending on the OS platform and version.  For example, if the name of a service is different between EL8 and EL9, or a config file location is different.
+* The role developer needs to handle the case where the user specifies `gather_facts: false` in the playbook.
+* The role developer needs to access the platform specific vars in role integration tests without making a copy.
+
+NOTE: The recommended solution below requires at least some `ansible_facts` to be defined, and so relies on gathering some facts.
+If you just want to ensure the user always uses `gather_facts: true`, and do not want to handle this in the role, then the role documentation should state that `gather_facts: true` or `setup:` is required in order to use the role, and the role should use `fail:` with a descriptive error message if the necessary facts are not defined.
+
+If it is desirable to use roles that require facts, but fact gathering is expensive, consider using a cache plugin https://docs.ansible.com/ansible/latest/collections/index_cache.html[List of Cache Plugins], and also consider running a periodic job on the controller to refresh the cache.
 
 ==== Platform specific variables
 [%collapsible]
@@ -135,8 +144,15 @@ Rationale:: Additional automation or other integrations, such as with external t
 Explanations:: You normally use `vars/main.yml` (automatically included) to set variables used by your role.
 If some variables need to be parameterized according to distribution and version (name of packages, configuration file paths, names of services), use this in the beginning of your `tasks/main.yml`:
 Examples:: 
+
 [source,yaml]
 ----
+- name: Ensure ansible_facts used by role
+  setup:
+    gather_subset: min
+  when: not ansible_facts.keys() | list |
+    intersect(__rolename_required_facts) == __rolename_required_facts
+
 - name: Set platform/version specific variables
   include_vars: "{{ __rolename_vars_file }}"
   loop:
@@ -148,6 +164,16 @@ Examples::
     __rolename_vars_file: "{{ role_path }}/vars/{{ item }}"
   when: __rolename_vars_file is file
 ----
+
+* Add this as the first task in `tasks/main.yml`:
++
+[source,yaml]
+----
+- name: Set platform/version specific variables
+  include_tasks: tasks/set_vars.yml
+----
+
+* Add files to `vars/` for the required OS platforms and versions.
 
 The files in the `loop` are in order from least specific to most specific:
 
@@ -165,8 +191,7 @@ In cases where this would lead to duplicate vars files for similar distributions
 
 NOTE: With this setup, files can be loaded twice.
 For example, on Fedora, the `distribution_major_version` is the same as `distribution_version` so the file `vars/Fedora_31.yml` will be loaded twice if you are managing a Fedora 31 host.
-If `distribution` is `RedHat` then `os_family` will also be `RedHat`,
-and `vars/RedHat.yml` will be loaded twice.
+If `distribution` is `RedHat` then `os_family` will also be `RedHat`, and `vars/RedHat.yml` will be loaded twice.
 This is usually not a problem - you will be replacing the variable with the same value, and the performance hit is negligible.
 If this is a problem, construct the file list as a list variable, and filter the variable passed to `loop` using the `unique` filter (which preserves the order):
 
@@ -189,6 +214,34 @@ If this is a problem, construct the file list as a list variable, and filter the
 ----
 
 Or define your `__rolename_vars_file_list` in your `vars/main.yml`.
+
+The task `Ensure ansible_facts used by role` handles the case where the user specifies `gather_facts: false` in the playbook.
+It gathers *only* the facts required by the role.
+The role developer may need to add additional facts to the list, and use a different `gather_subset`.
+See https://docs.ansible.com/ansible/latest/collections/ansible/builtin/setup_module.html#setup-module[Setup Module] for more information.
+Gathering facts can be expensive, so gather *only* the facts required by the role.
+
+Using a separate task file for `tasks/set_vars.yml` allows role integration tests to access the internal variables.
+For example, if the role developer wants to pre-populate a VM with the packages used by the role, the following tasks can be used:
+
+[source,yaml]
+----
+- hosts: all
+  tasks:
+    - name: Set platform/version specific variables
+      include_role:
+        name: my.fqcn.rolename
+        tasks_from: set_vars.yml
+        public: true
+
+    - name: Install test packages
+      package:
+        name: "{{ __rolename_packages }}"
+        state: present
+
+----
+
+In this way, the role developer does not have to copy and maintain a separate list of role packages.
 ====
 
 === Platform specific tasks
@@ -354,6 +407,28 @@ TIP: the variable `cluster_group_name` could have a default group name value in 
 Overall, it is best to avoid this kind of constructs if the use case permits, as they are clumsy.
 ====
 
+=== Prefix task names in sub-tasks files of roles
+[%collapsible]
+====
+Explanation:: It is a common practice to have `tasks/main.yml` file including other tasks files, which we'll call sub-tasks files.
+Make sure that the tasks' names in these sub-tasks files are prefixed with a shortcut reminding of the sub-tasks file's name.
+
+Rationale:: Especially in a complex role with multiple (sub-)tasks file, it becomes difficult to understand which task belongs to which file.
+Adding a prefix, in combination with the role's name automatically added by Ansible, makes it a lot easier to follow and troubleshoot a role play.
+
+Examples:: In a role with one `tasks/main.yml` task file, including `tasks/sub.yml`, the tasks in this last file would be named as follows:
++
+.A prefixed task in a sub-tasks file
+[source,yaml]
+----
+- name: sub | some task description
+  mytask: [...]
+----
++
+The log output will then look something like `TASK [myrole : sub | some task description] ****`, which makes it very clear where the task is coming from.
++
+TIP: with a verbosity of 2 or more, ansible-playbook will show the full path to the task file, but this generally means that you need to restart the play in a higher verbosity to get the information you could have had readily available.
+====
 
 == References
 [%collapsible]

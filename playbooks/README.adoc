@@ -138,3 +138,28 @@ The same approach is also possible with `include_role` but requires additionally
 ----
 
 ====
+
+== Use the verbosity parameter with debug statements
+[%collapsible]
+====
+Explanations:: Debug messages should have a verbosity defined as appropriate for the message.
+
+Rationale::
+Debug messages are useful during testing and development, and can be useful to retain as playbooks go into production for future troubleshooting.
+However, log messages will clutter your output, which can confuse users with non-relevant information.
+
+Examples::
++
+.Adding verbosity to debug messages
+[source, yaml]
+----
+- name: don't make messages always display
+  debug:
+    msg: "This message will clutter your log in production"
+
+- name: this message will only appear when verbosity is 2 or more
+  debug:
+    msg: "Some more debug information if needed"
+    verbosity: 2
+----
+====
