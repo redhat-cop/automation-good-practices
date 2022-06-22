@@ -27,7 +27,7 @@ Making all names valid identifiers will avoid encountering problems in the futur
   A pattern `object[_feature]_action` has proven useful as it guarantees a proper sorting in the file system for roles and playbooks.
   Systems support long identifier names, so use them!
 * Avoid numbering roles and playbooks, you'll never know how they'll be used in the future.
-* Name all tasks, plays, and task blocks, and and start names with a capital letter, to improve readability.
+* Name all tasks, plays, and task blocks to improve readability.
 * Write task names in the imperative (e.g. "Ensure service is running"), this communicates the action of the task.
 * Avoid abbreviations in names, or use capital letter for abbreviations where it cannot be avoided.
 
