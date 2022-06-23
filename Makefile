@@ -52,12 +52,12 @@ pull:
 	$(VCS) pull
 
 release:
-	$(ADOCHTML) --out-file docs/$(OUTFILE).html $(INFILE)
-	$(ADOCHTML) --out-file docs/$(OUTFILE2).html $(INFILE2)
+	$(ADOCHTML) --out-file docs/index.html $(INFILE)
+	$(ADOCHTML) --out-file docs/CONTRIBUTE.html $(INFILE2)
 	mkdir -p docs/images
 	cp -v images/*.svg docs/images
 
-preview: 
+preview:
 	$(ADOCPDF) --out-file docs/preview/$(OUTFILE).pdf $(INFILE)
 	$(ADOCPDF) --out-file docs/preview/$(OUTFILE2).pdf $(INFILE2)
 	$(ADOCHTML) --out-file docs/preview/$(OUTFILE).html $(INFILE)
