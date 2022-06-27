@@ -460,13 +460,6 @@ The log output will then look something like `TASK [myrole : sub | some task des
 TIP: with a verbosity of 2 or more, ansible-playbook will show the full path to the task file, but this generally means that you need to restart the play in a higher verbosity to get the information you could have had readily available.
 ====
 
-=== License Documentation
-[%collapsible]
-* Place the license file in the root directory
-* Name the file LICENSE or COPYING. The contents must be the text of the applicable license, or a link to the canonical reference for the license on the Internet (such as https://opensource.org/licenses/BSD-2-Clause)
-* Any file that is licensed differently from the larger collection it is a part of (such as module utilities) must have that license noted in the header of the file.
-
-
 == References
 [%collapsible]
 ====
