@@ -1,0 +1,29 @@
+name: publish document
+
+on:
+  push:
+    tags:
+      - v*
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Install requirements
+      run: sudo apt-get install asciidoctor ruby-asciidoctor-pdf
+
+    - name: Install requirements
+      run: cd $GITHUB_WORKSPACE
+    
+    - name: render HTML
+      run: make release
+     
+    - uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: publish release
+        file_pattern: docs/*
+        branch: main
