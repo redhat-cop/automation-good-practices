@@ -38,6 +38,7 @@ Use 0.y.z before the role is declared stable (interface-wise).
 
 Rationale:: There are some https://github.com/ansible/ansible/issues/67512[restrictions] for Ansible Galaxy and Automation Hub.
 The versioning must be in strict X.Y.Z[ab][W] format, where X, Y, and Z are integers.
+====
 
 === Naming parameters
 [%collapsible]

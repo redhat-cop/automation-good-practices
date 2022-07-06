@@ -1,0 +1,21 @@
+name: test document generation
+
+on:
+  pull_request:
+
+jobs:
+  test-build-docs:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install requirements
+      run: sudo apt-get install asciidoctor ruby-asciidoctor-pdf
+
+    - name: Install requirements
+      run: cd $GITHUB_WORKSPACE
+
+    - name: render HTML
+      run: make release
