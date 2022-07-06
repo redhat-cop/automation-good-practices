@@ -228,7 +228,6 @@ Users not affected:
 Rationale:: These tests are not present in versions of Jinja older than 2.10, which are used on older controller platforms, such as EL7.
 If you want to ensure that your code works on older platforms, use the built-in Ansible tests such as (https://docs.ansible.com/ansible/latest/user_guide/playbooks_tests.html#testing-strings[match]), (https://docs.ansible.com/ansible/latest/user_guide/playbooks_tests.html#testing-strings[search]), or (https://docs.ansible.com/ansible/latest/user_guide/playbooks_tests.html#testing-strings[regex]) instead.
 Example::
-
 You have a `list` of `dict`, and you want to filter out elements that have the key `type` with the value `bad_type`.
 
 .Do this:

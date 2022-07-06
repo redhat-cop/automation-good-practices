@@ -8,8 +8,8 @@
 # rubygem-ffi ?
 # rubygem-json ?
 
-ADOCPDF = asciidoctor-pdf --attribute=gitdate=$(shell git log -1 --date=short --pretty=format:%cd) --attribute=githash=$(shell git rev-parse --verify HEAD)
-ADOCHTML = asciidoctor -a toc=left --attribute=gitdate=$(shell git log -1 --date=short --pretty=format:%cd) --attribute=githash=$(shell git rev-parse --verify HEAD)
+ADOCPDF = asciidoctor-pdf --attribute=gitdate=$(shell git log -1 --date=short --pretty=format:%cd) --attribute=githash=$(shell git rev-parse --verify HEAD) --failure-level=warn
+ADOCHTML = asciidoctor -a toc=left --attribute=gitdate=$(shell git log -1 --date=short --pretty=format:%cd) --attribute=githash=$(shell git rev-parse --verify HEAD) --failure-level=warn
 ACROREAD = okular
 VCS = git
 INFILE = README.adoc
@@ -52,8 +52,8 @@ pull:
 	$(VCS) pull
 
 release:
-	$(ADOCHTML) --out-file docs/index.html $(INFILE)
-	$(ADOCHTML) --out-file docs/CONTRIBUTE.html $(INFILE2)
+	$(ADOCHTML) -D docs --out-file index.html $(INFILE)
+	$(ADOCHTML) -D docs --out-file CONTRIBUTE.html $(INFILE2)
 	mkdir -p docs/images
 	cp -v images/*.svg docs/images
 

@@ -26,4 +26,8 @@ jobs:
       with:
         commit_message: publish release
         file_pattern: docs/*
-        branch: main
+        branch: docs  # main branch is protected, make sure this one is used for GitHub pages
+        # the following options are necessary to forcefully overwrite each time the branch
+        skip_fetch: true
+        skip_checkout: true
+        push_options: '--force'
