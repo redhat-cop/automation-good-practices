@@ -26,4 +26,4 @@ jobs:
       with:
         commit_message: publish release
         file_pattern: docs/*
-        branch: main
+        branch: docs
