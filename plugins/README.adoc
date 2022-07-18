@@ -139,18 +139,6 @@ The https://github.com/ansible-community/ansible.plugin_builder[ansible.plugin_b
 ====
 
 
-== Plugins for applicance configuration should follow the Resource Module pattern (see below)
-[%collapsible]
-====
-Explanations:: Resource modules allow the user to manage resources on an appliance (such as a network or security device) without having to write complex Jinja templates.
-
-Rationale:: Resource modules allow the user to manage resources on an appliance (such as a network or security device) without having to write complex Jinja templates.
-
-Examples::
-https://docs.ansible.com/ansible/latest/network/user_guide/network_resource_modules.html
-
-====
-
 == Use clear error/info messages
 [%collapsible]
 ====
@@ -159,15 +147,50 @@ Explanations:: This will make it easier to troubleshoot failures if they occur
 Rationale:: Error messages that communicate specific details of the failure will aid in resolving the problem.
 Unclear error messages such as "Failed!" are unnecessarily obscure.
 
+Information can be displayed to the user based on the verbosity the task is being executed at.
+
+The base AnsibleModule class from which all modules should be created provides helper methods for reporting warnings and deprecations, and for exiting the module in the case of a failure.
+
+There is a Display class available which enables the display of information at different verbosity levels in all plugin types.
+
 Examples::
 [source,python]
 ----
+# Causing a module to exit with a failure status
     if checksum and checksum_src != checksum:
         module.fail_json(
             msg='Copied file does not match the expected checksum. Transfer failed.',
             checksum=checksum_src,
             expected_checksum=checksum
         )
+
+
+# Displaying a warning during module execution, without exiting
+try:
+    result = get_kms_metadata_with_backoff(connection, key_id)['KeyMetadata']
+    key_id = result['Arn']
+except is_boto3_error_code('AccessDeniedException'):
+    module.warn('Permission denied fetching key metadata ({0})'.format(key_id))
+    return None
+
+
+# Displaying a notice about a deprecation
+if importer_ssl_client_key is None and module.params['client_key'] is not None:
+      importer_ssl_client_key = module.params['client_key']
+      module.deprecate("In Ansible 2.9.2 `feed_client_key` option was added. Until community.general 3.0.0 the default "
+                       "value will come from client_key option",
+                       version="3.0.0", collection_name='community.general')
+
+
+# Display information only when a user has set an increased level of verbosity
+# ansible-playbook -i inventory -vvvv test-playbook.yml
+from ansible.utils.display import Display
+
+display = Display()
+
+lookupfile = self.find_file_in_search_path(variables, 'files', term)
+display.vvvv(u"File lookup using %s as file" % lookupfile)
+
 ----
 
 ====
