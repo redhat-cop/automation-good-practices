@@ -98,6 +98,7 @@ Consider making paths to templates internal variables if you need different temp
 
 === Package roles in an Ansible collection to simplify distribution and consumption
 [%collapsible]
+====
 Rationale::
 Packaging roles as a collection allows you to distribute many roles in a single cohesive unit of re-usable automation.
 Inside a collection, you can share custom plugins across all roles in the collection instead of duplicating them in each role’s library/` directory.
