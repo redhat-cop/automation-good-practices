@@ -293,7 +293,8 @@ Using these make code cleaner to read and ensure idempotence.
 ====
 
 * Limit use of the `copy` module to copying remote files, static files, and to uploading binary blobs.
-For most file pushes, use the `template` module. Even if there currently is nothing in the file that is being templated, if there is the possibility in the future that it might be added, having the file handled by the `template` module now makes adding that functionality much simpler than if the file is initially handled by the copy and then needs to be moved before it can be edited.
+  For most file pushes, use the `template` module.
+  Even if there currently is nothing in the file that is being templated, if there is the possibility in the future that it might be added, having the file handled by the `template` module now makes adding that functionality much simpler than if the file is initially handled by the `copy` module and then needs to be moved before it can be edited.
 * When using the `template` module, append `.j2` to the template file name.
 +
 [%collapsible]
