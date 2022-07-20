@@ -151,7 +151,7 @@ If you just want to ensure the user always uses `gather_facts: true`, and do not
 
 If it is desirable to use roles that require facts, but fact gathering is expensive, consider using a cache plugin https://docs.ansible.com/ansible/latest/collections/index_cache.html[List of Cache Plugins], and also consider running a periodic job on the controller to refresh the cache.
 
-==== Platform specific variables
+=== Platform specific variables
 [%collapsible]
 ====
 Explanations:: You normally use `vars/main.yml` (automatically included) to set variables used by your role.
@@ -390,7 +390,7 @@ At minimum include:
 * The roll-back capabilities of the role
 * Designation of the role as idempotent (True/False)
 * Designation of the role as atomic if applicable (True/False)
-=====
+====
 
 === Don't use host group names or at least make them a parameter
 [%collapsible]
