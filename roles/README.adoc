@@ -382,6 +382,7 @@ Place the README file in the root directory of the role.
 The README file exists to introduce the user to the purpose of the role and any important information on how to use it, such as credentials that are required.
 
 At minimum include:
+
 * Example playbooks that allow users to understand how the developed content works are also part of the documentation.
 * The inbound and outbound role argument specifications
 * List of user-facing capabilities within the role
