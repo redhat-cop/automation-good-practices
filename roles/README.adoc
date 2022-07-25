@@ -386,7 +386,7 @@ At minimum include:
 * Example playbooks that allow users to understand how the developed content works are also part of the documentation.
 * The inbound and outbound role argument specifications
 * List of user-facing capabilities within the role
-* The unit of automation the role provided
+* The unit of automation the role provides
 * The outcome of the role
 * The roll-back capabilities of the role
 * Designation of the role as idempotent (True/False)
