@@ -373,7 +373,7 @@ See https://docs.ansible.com/ansible/latest/dev_guide/overview_architecture.html
 * Use RFC https://tools.ietf.org/html/rfc5737[5737], https://tools.ietf.org/html/rfc7042#section-2.1.1[7042] and https://tools.ietf.org/html/rfc3849[3849] addresses in examples.
 ====
 
-=== README file
+=== Create a meaningful README file for every role
 [%collapsible]
 ====
 Rationale::
