@@ -67,6 +67,7 @@ def greeting(name: str) -> str:
 Explanations:: Use https://docs.pytest.org/[pytest] for writing unit tests for plugins
 
 Rationale:: Pytest is the testing framework used by Ansible Engineering and will provide the best experience for plugin developers
+The Ansible Developer Guide section on https://docs.ansible.com/ansible/latest/dev_guide/testing_units_modules.html[unit testing] has detailed information on when and how to use unit tests.
 
 Examples::
 [source,python]
@@ -189,7 +190,7 @@ from ansible.utils.display import Display
 display = Display()
 
 lookupfile = self.find_file_in_search_path(variables, 'files', term)
-display.vvvv(u"File lookup using %s as file" % lookupfile)
+display.vvvv("File lookup using {0} as file".format(lookupfile))
 
 ----
 
