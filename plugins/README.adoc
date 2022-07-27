@@ -7,3 +7,191 @@ NOTE: Work in Progress...
 * Review Ansible guidelines for https://docs.ansible.com/ansible/latest/dev_guide/developing_modules_best_practices.html[modules] and https://docs.ansible.com/ansible/latest/dev_guide/index.html[development].
 * Use https://pep8.org/[PEP8].
 * File headers and functions should have comments for their intent.
+
+
+== Write documentation for all plugin types
+[%collapsible]
+====
+Explanations::
+All plugins, regardless of type, need documentation that describes the input parameters, outputs, and practical examples of how to use it.
+
+Examples:: See the Ansible Developer Guide sections on https://docs.ansible.com/ansible/latest/dev_guide/developing_plugins.html#plugin-configuration-documentation-standards[Plugin Configuration and Documentation Standards] and https://docs.ansible.com/ansible/latest/dev_guide/developing_modules_documenting.html#module-documenting[Module Documentating] for more details.
+====
+
+== Use sphinx (reST) formatted docstrings in Python code
+[%collapsible]
+====
+Explanations::
+Sphinx (reST) formatted docstring are preferred for Ansible development. This includes all parameters, yields, raises, or returns for all classes, private and public functions written in Python.
+
+Rationale::
+https://peps.python.org/pep-0257/[PEP-257] states that: "All modules should normally have docstrings, and all functions and classes exported by a module should also have docstrings. Public methods (including the __init__ constructor) should also have docstrings. A package may be documented in the module docstring of the __init__.py file in the package directory."
+
+Examples::
+[source,python]
+----
+"""[Summary]
+
+:param [ParamName]: [ParamDescription], defaults to [DefaultParamVal]
+:type [ParamName]: [ParamType](, optional)
+...
+:raises [ErrorType]: [ErrorDescription]
+...
+:return: [ReturnDescription]
+:rtype: [ReturnType]
+"""
+----
+
+====
+
+== Use Python type hints to document variable types.
+[%collapsible]
+====
+Explanations:: Use Python type hints to document variable types.  Type hints are supported in Python 3.5 and greater.
+
+Rationale::  Type hints communicate what type a variable can be expected to be in the code. They can be consumed by static analysis tools to ensure that variable usage is consistent within the code base.
+
+Examples::
+[source,python]
+MyPy is a static type checker, which could analyze the following snippet:
+----
+def greeting(name: str) -> str:
+    return 'Hello ' + name
+----
+
+====
+
+== The use of unittest is discouraged, use pytest instead.
+[%collapsible]
+====
+Explanations:: Use https://docs.pytest.org/[pytest] for writing unit tests for plugins
+
+Rationale:: Pytest is the testing framework used by Ansible Engineering and will provide the best experience for plugin developers
+The Ansible Developer Guide section on https://docs.ansible.com/ansible/latest/dev_guide/testing_units_modules.html[unit testing] has detailed information on when and how to use unit tests.
+
+Examples::
+[source,python]
+----
+from __future__ import (absolute_import, division, print_function)
+__metaclass__ = type
+
+import pytest
+
+from ansible.modules.copy import AnsibleModuleError, split_pre_existing_dir
+from ansible.module_utils.basic import AnsibleModule
+
+ONE_DIR_DATA = (('dir1',
+                 ('.', ['dir1']),
+                 ('dir1', []),
+                 ),
+                ('dir1/',
+                 ('.', ['dir1']),
+                 ('dir1', []),
+                 ),
+                ) 
+
+@pytest.mark.parametrize('directory, expected', ((d[0], d[2]) for d in ONE_DIR_DATA))
+def test_split_pre_existing_dir_one_level_exists(directory, expected, mocker):
+    mocker.patch('os.path.exists', side_effect=[True, False, False])
+    split_pre_existing_dir(directory) == expected
+
+----
+
+====
+
+
+== Formatting of manually maintained plugin argspecs
+[%collapsible]
+====
+Explanations::
+Ensure a consistent approach to the way commplex argument_specs are formatted within a collection.
+
+Rationale::
+When hand-writing a complex argspec, the author may choose to build up to data structure from multiple dictionaries or vars.
+Other authors may choose to implement a complex, nested argspec as a single dictionary.
+Within a single collection, select one style and use it consistently.
+
+Examples::
+Use of a https://github.com/ansible-collections/cisco.nxos/blob/3.0.0/plugins/module_utils/network/nxos/argspec/bgp_global/bgp_global.py[sngle dictionary]
+
+Two different examples of using https://github.com/ansible-collections/community.aws/blob/stable-3/plugins/modules/ec2_scaling_policy.py#L355-L370[multiple] https://github.com/ansible-collections/amazon.cloud/blob/0.1.0/plugins/modules/backup_report_plan.py#L182-L234[dictionaries].
+====
+
+
+== Keep plugin entry files to a minimal size.
+[%collapsible]
+====
+Explanations::
+Keep the entry file to a plugin to a minimal and easily maintainable size.
+
+Rationale::
+Long and complex code files can be difficult to maintain.
+Move reusable functions and classes, such as those for data validation or manipulation, to a https://docs.ansible.com/ansible/latest/dev_guide/developing_module_utilities.html[module_utils/] (for Ansible modules) or plugin_utils/ (for all other plugin types) file and import them into plugins.
+This keeps the Python code easier to read and maintain.
+====
+
+
+== Plugins should be initially developed using the ansible plugin builder
+[%collapsible]
+====
+Explanations::
+The https://github.com/ansible-community/ansible.plugin_builder[ansible.plugin_builder] is a tool which helps developers scaffold new plugins.
+
+====
+
+
+== Use clear error/info messages
+[%collapsible]
+====
+Explanations:: This will make it easier to troubleshoot failures if they occur
+
+Rationale:: Error messages that communicate specific details of the failure will aid in resolving the problem.
+Unclear error messages such as "Failed!" are unnecessarily obscure.
+
+Information can be displayed to the user based on the verbosity the task is being executed at.
+
+The base AnsibleModule class from which all modules should be created provides helper methods for reporting warnings and deprecations, and for exiting the module in the case of a failure.
+
+There is a Display class available which enables the display of information at different verbosity levels in all plugin types.
+
+Examples::
+[source,python]
+----
+# Causing a module to exit with a failure status
+    if checksum and checksum_src != checksum:
+        module.fail_json(
+            msg='Copied file does not match the expected checksum. Transfer failed.',
+            checksum=checksum_src,
+            expected_checksum=checksum
+        )
+
+
+# Displaying a warning during module execution, without exiting
+try:
+    result = get_kms_metadata_with_backoff(connection, key_id)['KeyMetadata']
+    key_id = result['Arn']
+except is_boto3_error_code('AccessDeniedException'):
+    module.warn('Permission denied fetching key metadata ({0})'.format(key_id))
+    return None
+
+
+# Displaying a notice about a deprecation
+if importer_ssl_client_key is None and module.params['client_key'] is not None:
+      importer_ssl_client_key = module.params['client_key']
+      module.deprecate("In Ansible 2.9.2 `feed_client_key` option was added. Until community.general 3.0.0 the default "
+                       "value will come from client_key option",
+                       version="3.0.0", collection_name='community.general')
+
+
+# Display information only when a user has set an increased level of verbosity
+# ansible-playbook -i inventory -vvvv test-playbook.yml
+from ansible.utils.display import Display
+
+display = Display()
+
+lookupfile = self.find_file_in_search_path(variables, 'files', term)
+display.vvvv("File lookup using {0} as file".format(lookupfile))
+
+----
+
+====
