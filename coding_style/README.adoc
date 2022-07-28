@@ -153,15 +153,21 @@ Rationale:: https://yaml.org/type/bool.html[YAML 1.1] allows all variants wherea
   But do use quotes for user-side strings such as descriptions, names, and messages.
 * Even if JSON is valid YAML and Ansible understands it, do only use JSON syntax if it makes sense (e.g. a variable file automatically generated) or adds to the readability.
   In doubt, nobody expects JSON so stick to YAML.
-* A single jinja template should not exceed 250 lines in length
-* The aggregate number of jinja includes should not exceed 3
-* Jinja templates should not be used to create structured data but instead text and semi-structured data
-* Filter plugins are preferred over the use of data manipulation or transformation in Jinja templates when the necessary data transformation cannot be accomplished with existing and available filter plugins or the transformation of data is unique to the use case.
-+
+* Break up lengthy Jinja templates into multiple templates when there are distinct logical sections.
 +
 [%collapsible]
 ====
-Rationale:: Long and complex Jinja templates can be difficult to maintain and debug. When working with structured data and/or data transformations it is preferable to use a programming language (such as Python) that has better support and tooling to do this kind of work. Additionally, tasks will be much more legible if data is managed and manipulated via plugins than with in-line Jinja.
+Rationale:: Long and complex Jinja templates can be difficult to maintain and debug. By splitting excessively long templates into logical componets that can be included as-needed, each template will be easier to maintain.
+====
+
+* Jinja templates should not be used to create structured data but instead text and semi-structured data.
+* Filter plugins are preferred over Jinja templates for the use of data manipulation or transformation.
++
+[%collapsible]
+====
+Rationale:: When working with structured data or data transformations it is preferable to use a programming language (such as Python) that has better support and tooling to do this kind of work.
+Custom filter plugins can be written to handle complex or unique use-cases.
+Tasks will be much more legible if data is managed and manipulated via plugins than with in-line Jinja.
 ====
 
 == Ansible Guidelines
