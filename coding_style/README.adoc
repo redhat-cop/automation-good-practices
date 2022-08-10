@@ -332,7 +332,7 @@ localhost | FAILED! => {
 
 Rationale:: It is generally not possible to guarantee that all user inputs retain their desired numeric type, and if not, will likely be `str` type.
 If you use numeric variables where the value comes from user input, use the `float`, `int`, and `bool` filters to "cast" the values to the type for numeric operations.
-If you are simply converting the value to a string, you do not have to use the cast - only for numeric operations.
+If you are simply converting the value to a string, you do not have to use the cast.
 Numeric operations include:
 
 * arithmetic: `int_var + 3`, `float_var * 3.14159`
