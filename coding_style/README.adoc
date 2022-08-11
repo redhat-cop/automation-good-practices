@@ -346,7 +346,7 @@ localhost | SUCCESS => {
     "msg": false
 }
 
->ansible -c local -i localhost -e float_val=0.5 localhost -m debug -a "msg='float_val is less than 1.0 {{ float_val | float + 0.1 < 1.0 }}'"
+> ansible -c local -i localhost -e float_val=0.5 localhost -m debug -a "msg='float_val is less than 1.0 {{ float_val | float + 0.1 < 1.0 }}'"
 localhost | SUCCESS => {
     "msg": "float_val is less than 1.0 True"
 }
