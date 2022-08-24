@@ -317,3 +317,39 @@ Grouping sets of similar files into a subdirectory of `templates` is allowable, 
 * Using agnostic modules like `package` only makes sense if the features required are very limited.
   In many cases, if the platform is different, the package name is also different so that using `package` doesn't help a lot.
   Prefer then the more specific `yum`, `dnf` or `apt` module if you anyway need to differentiate.
+
+* Use `float`, `int`, and `bool` filters to "cast" public API variables used in numeric operations in Jinja templates
++
+[%collapsible]
+====
+Example:: Variables set by users in the public API are not guaranteed to be any specific data type, and may be `str` type when some numeric type is expected:
+```
+> ansible -c local -i localhost --extra-vars int_val=1 localhost -m debug -a "msg={{ int_val < 0 }}"
+localhost | FAILED! => {
+    "msg": "Unexpected templating type error occurred on ({{ int_val < 0 }}): '<' not supported between instances of 'str' and 'int'"
+}
+```
+
+Rationale:: It is generally not possible to guarantee that all user inputs retain their desired numeric type, and if not, will likely be `str` type.
+If you use numeric variables where the value comes from user input, use the `float`, `int`, and `bool` filters to "cast" the values to the type for numeric operations.
+If you are simply converting the value to a string, you do not have to use the cast.
+Numeric operations include:
+
+* arithmetic: `int_var + 3`, `float_var * 3.14159`
+* comparison: `int_var == 0`, `float_var >= 2.71828`
+* unary: `-int_var`, `+float_var`
+
+Here are some examples:
+```
+> ansible -c local -i localhost --extra-vars int_val=1 localhost -m debug -a "msg={{ int_val | int < 0 }}"
+localhost | SUCCESS => {
+    "msg": false
+}
+
+> ansible -c local -i localhost -e float_val=0.5 localhost -m debug -a "msg='float_val is less than 1.0 {{ float_val | float + 0.1 < 1.0 }}'"
+localhost | SUCCESS => {
+    "msg": "float_val is less than 1.0 True"
+}
+
+```
+====
