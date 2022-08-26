@@ -80,11 +80,14 @@ Examples::
 ====
 
 * Place content common to multiple roles in a single reusable role, "common" is a typical name for this role when roles are packaged in a collection.
-* Author loosely coupled hierarchical content.
+* Author loosely coupled, hierarchical content.
 +
 [%collapsible]
 ====
 Explanations:: Roles that have hard dependencies on external roles or variables have limited flexibility and increased risk that changes to the dependency will result in unexpected behavior or failures.
+Coupling describes the degree of dependency between roles and variables that need to act in coordination.
+Hierarchical content is an architectural approach to designing your content where individual roles have parent-child relationships in an overall tree structure
+
 ====
 
 === Role Structure
