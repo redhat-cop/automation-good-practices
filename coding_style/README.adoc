@@ -164,6 +164,7 @@ Rationale:: https://yaml.org/type/bool.html[YAML 1.1] allows all variants wherea
   your task will likely need options such as `changed_when:` and maybe `check_mode:`).
 * Anytime `command` or `shell` modules are used, add a comment in the code with justification to help with future maintenance.
 * Use the `| bool` filter when using bare variables (expressions consisting of just one variable reference without any operator) in `when`.
+* Ensure type safety by casting variables using respective filters, such as `my_var | bool` or `my_var | int`.
 * Break complex task files down into discrete parts.
 +
 [%collapsible]
