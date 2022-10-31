@@ -164,7 +164,6 @@ Rationale:: https://yaml.org/type/bool.html[YAML 1.1] allows all variants wherea
   your task will likely need options such as `changed_when:` and maybe `check_mode:`).
 * Anytime `command` or `shell` modules are used, add a comment in the code with justification to help with future maintenance.
 * Use the `| bool` filter when using bare variables (expressions consisting of just one variable reference without any operator) in `when`.
-* Ensure type safety by casting variables using respective filters, such as `my_var | bool` or `my_var | int`.
 * Break complex task files down into discrete parts.
 +
 [%collapsible]
@@ -319,7 +318,7 @@ Grouping sets of similar files into a subdirectory of `templates` is allowable, 
   In many cases, if the platform is different, the package name is also different so that using `package` doesn't help a lot.
   Prefer then the more specific `yum`, `dnf` or `apt` module if you anyway need to differentiate.
 
-* Use `float`, `int`, and `bool` filters to "cast" public API variables used in numeric operations in Jinja templates
+* Use `float`, `int`, and `bool` filters to "cast" public API variables to ensure type safety, especially for numeric operations in Jinja.
 +
 [%collapsible]
 ====
