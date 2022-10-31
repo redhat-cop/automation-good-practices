@@ -89,7 +89,7 @@ TIP: use the sign `>-` if it is important that the last line return code doesn't
 +
 [%collapsible]
 ====
-Rationale:: Ansible will `and` the list elements together (https://docs.ansible.coansible/latest/user_guidplaybooks_conditionalhtml#the-when-statement[Ansible UseGuide » Conditionals]).
+Rationale:: Ansible will `and` the list elements together (https://docs.ansible.com/ansible/latest/user_guide/playbooks_conditionals.html#basic-conditionals-with-when[Ansible UseGuide » Conditionals]).
 Multiple conditions that all need to be true (a logical `and`) can also be specified as a list, but beware of bare variables in `when:`.
 Examples::
 +
