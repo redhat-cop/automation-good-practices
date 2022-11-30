@@ -318,7 +318,7 @@ Grouping sets of similar files into a subdirectory of `templates` is allowable, 
   In many cases, if the platform is different, the package name is also different so that using `package` doesn't help a lot.
   Prefer then the more specific `yum`, `dnf` or `apt` module if you anyway need to differentiate.
 
-* Use `float`, `int`, and `bool` filters to "cast" public API variables used in numeric operations in Jinja templates
+* Use `float`, `int`, and `bool` filters to "cast" public API variables to ensure type safety, especially for numeric operations in Jinja.
 +
 [%collapsible]
 ====
