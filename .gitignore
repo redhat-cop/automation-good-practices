@@ -1,6 +1,8 @@
 # generated files
-*.pdf
 *.html
+*.pdf
+*.png
+*.svg
 docs
 
 # temporary files
