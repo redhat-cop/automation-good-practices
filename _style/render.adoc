@@ -11,6 +11,9 @@
 :listing-caption: Listing
 :imagesdir: images/
 
+:revnumber: {gitdate} (commit: {githash})
+:!last-update-label:
+
 // The following lines could become relevant in the future
 
 ////
