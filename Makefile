@@ -51,7 +51,12 @@ push: clean
 pull:
 	$(VCS) pull
 
-release:
+plantuml:
+	for f in images/*.plantuml; do \
+		plantuml $${f} -tsvg; \
+	done
+
+release: plantuml
 	mkdir -p docs
 	$(ADOCHTML) -D docs --out-file index.html $(INFILE)
 	$(ADOCHTML) -D docs --out-file CONTRIBUTE.html $(INFILE2)

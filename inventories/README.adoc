@@ -289,7 +289,7 @@ NOTE: we didn't explicitly consider https://docs.ansible.com/automation-controll
 The following picture summarizes this list in a simplified and easier to keep in mind way, highlighting which variables are meant to overwrite others:
 
 .Flow of variable precedences
-image::variable_precedences.png[flow of variable precedences in 3 lanes]
+image::variable_precedences.svg[flow of variable precedences in 3 lanes]
 
 CAUTION: even if we write that variables _shouldn't_ overwrite each other, they still all share the same namespace and _can_ potentially overwrite each other.
 It is your responsibility as automation author to make sure they don't.
