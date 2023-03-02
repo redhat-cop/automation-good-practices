@@ -9,17 +9,18 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    container: fedora:latest
 
     steps:
     - uses: actions/checkout@v3
     
     - name: Install requirements
-      run: sudo apt-get install asciidoctor ruby-asciidoctor-pdf plantuml
+      run: sudo dnf install -y git graphviz make plantuml rubygem-asciidoctor rubygem-asciidoctor-pdf rubygem-rouge
 
-    - name: Install requirements
+    - name: Move to the correct folder
       run: cd $GITHUB_WORKSPACE
     
-    - name: render HTML
+    - name: Render HTML
       run: make release
      
     - uses: stefanzweifel/git-auto-commit-action@v4
