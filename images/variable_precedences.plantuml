@@ -7,12 +7,12 @@ split
 		:role vars;
 	split again
 		:scoped vars
-		block→task;
+		block <&arrow-right> task;
 		:runtime vars
 		set_fact+register;
 	end split
 	:scoped params
-	role→include;
+	role <&arrow-right> include;
 split again
 	:host facts;
 end split
