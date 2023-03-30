@@ -63,14 +63,16 @@ example_list:
 +
 [%collapsible]
 ====
-Rationale:: long lines are difficult to read, many teams even ask for a line length limit around 120-150 characters.
-Examples:: there are multiple ways to avoid long lines but the most generic one is to use the YAML folding sign (`>`):
+Rationale:: Long lines are difficult to read, and many teams even ask for a line length limit around 120-150 characters.
+ansible-lint defaults to 82 characters per line - see (https://ansible-lint.readthedocs.io/rules/yaml/[Ansible Lint YAML rules]).
+You don't want to have to skip `yaml[line-length]` in your `.ansible-lint`, or litter your code with `# noqa yaml[line-length]`.
+Examples:: there are multiple ways to avoid long lines but the most generic one is to use the YAML folding sign (`>-`):
 +
 .Usage of the YAML folding sign
 [source,yaml]
 ----
 - name: Call a very long command line
-  ansible.builtin.command: >
+  ansible.builtin.command: >-
     echo Lorem ipsum dolor sit amet, consectetur adipiscing elit.
     Maecenas mollis, ante in cursus congue, mauris orci tincidunt nulla,
     non gravida tortor mi non nunc.
@@ -83,7 +85,10 @@ Examples:: there are multiple ways to avoid long lines but the most generic one 
       Duis a neque fermentum nulla imperdiet blandit.
 ----
 +
-TIP: use the sign `>-` if it is important that the last line return code doesn't become part of the string (e.g. when defining a string variable).
+TIP: Always use the sign `>-` instead of `>` unless you are absolutely sure the trailing newline is not significant.
+The sign `>` adds a newline character to the last line, effectively turning `non nunc.` at the end of the example string above into  `"non nunc.\n"`, and `>-` doesn't add the newline character.
+It is really easy to introduce an error by using `>` and silently add a newline to a variable, like a filename, which leads to strange, hard to decipher errors.
+See section "Wrap longer lines of code" for more information about line wrapping.
 ====
 
 * If the `when:` condition results in a line that is too long, and is an `and` expression, then break it into a list of conditions.
@@ -399,4 +404,92 @@ localhost | SUCCESS => {
 }
 
 ```
+====
+
+== Wrap longer lines of code
+
+ansible-lint has a pretty short line length, which causes problems if you are trying to use good programming practices by having descriptive variable names, which usually end up being quite long.
+Here are some examples of how to deal with line wrapping in common scenarios:
+
+* Jinja expressions can be wrapped
+
+Within the Jinja expression, whitespace and newline characters aren't significant, so take advantage of this to wrap lines into as readable a form as possible.
+Remember, in a `when`, `that`, `failed_when`, or other such keywords, you can just write Jinja code - you do not need the `"{{ ... }}"`
+
+* Start an expression with '{{' followed by newline if the line will otherwise be too long
+
+But what if the code is already indented a lot, and the variable I'm assigning to is already very long, and I can't put anything else on the line?
+Just start the assignment on the next line.
+
+* Use backslash escapes in double quoted strings
+
+But what if I have a very long string that I cannot use `>-` to wrap because I cannot have extra spaces in the value e.g. like a url value?
+Use a backslash escape in a double quoted string.
+YAML will concatenate the values with no spaces.
+
++
+[%collapsible]
+====
+Rationale:: Use of whitespace and multi-line indentation makes expressions easier to read.
+
+.Do this:
+[source,yaml]
+----
+- name: Wrap long Jinja expressions
+  foo: "{{ a_very.long_variable.name |
+    somefilter('with', 'many', 'arguments') |
+    another_filter | list }}"
+  when: a_very.long_variable.name |
+    somefilter('with', 'many', 'arguments') |
+    another_filter | list
+
+                  - name: Wrap when first line is already too long
+                    very_indented_foo: "{{
+                      a_very.long_variable.name |
+                      somefilter('with', 'many', 'arguments') |
+                      another_filter | list }}"
+                    when: \
+                      a_very.long_variable.name |
+                      somefilter('with', 'many', 'arguments') |
+                      another_filter | list | length > 0
+
+- name: Set some test variables
+  set_fact:
+    my_very_long_variable_1: "{{ __pre_digest | filter1 }}"
+    my_very_long_variable_2: "{{ __pre_digest | filter2 }}"
+  vars:
+    __pre_digest: "{{ a_very.long_variable.name | some_filter }}"
+
+- name: Use a very long URL
+  uri:
+    url: "https://{{ my_very_long_value_for_hostname }}:\
+      {{ my_very_long_value_for_port }}\
+      {{ my_very_long_value_for_uri }}?\
+      {{ my_very_long_value_for_query }}"
+
+----
+
+.Don't do this:
+[source,yaml]
+----
+- name: Very long line with Jinja expression
+  foo: "{{ a_very.long_variable.name | somefilter('with', 'many', 'arguments') | another_filter | list }}"
+
+                  - name: First line is already too long
+                    very_indented_foo: "{{ a_very.long_variable.name |
+                      somefilter('with', 'many', 'arguments') |
+                      another_filter | list }}"
+                    when: a_very.long_variable.name |
+                      somefilter('with', 'many', 'arguments') |
+                      another_filter | list | length > 0
+
+- name: Redundancy in expressions
+  set_fact:
+    my_very_long_variable_1: "{{ a_very.long_variable.name | some_filter | filter1 }}"
+    my_very_long_variable_2: "{{ a_very.long_variable.name | some_filter | filter2 }}"
+
+- name: URL string is too long
+  uri:
+    url: "https://{{ my_very_long_value_for_hostname }}:{{ my_very_long_value_for_port }}{{ my_very_long_value_for_uri }}{{ my_very_long_value_for_query }}"
+----
 ====
