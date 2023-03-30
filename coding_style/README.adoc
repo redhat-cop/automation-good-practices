@@ -63,14 +63,16 @@ example_list:
 +
 [%collapsible]
 ====
-Rationale:: long lines are difficult to read, many teams even ask for a line length limit around 120-150 characters.
-Examples:: there are multiple ways to avoid long lines but the most generic one is to use the YAML folding sign (`>`):
+Rationale:: Long lines are difficult to read, and many teams even ask for a line length limit around 120-150 characters.
+ansible-lint defaults to 82 characters per line - see (https://ansible-lint.readthedocs.io/rules/yaml/[Ansible Lint YAML rules]).
+You don't want to have to skip `yaml[line-length]` in your `.ansible-lint`, or litter your code with `# noqa yaml[line-length]`.
+Examples:: there are multiple ways to avoid long lines but the most generic one is to use the YAML folding sign (`>-`):
 +
 .Usage of the YAML folding sign
 [source,yaml]
 ----
 - name: Call a very long command line
-  ansible.builtin.command: >
+  ansible.builtin.command: >-
     echo Lorem ipsum dolor sit amet, consectetur adipiscing elit.
     Maecenas mollis, ante in cursus congue, mauris orci tincidunt nulla,
     non gravida tortor mi non nunc.
@@ -83,7 +85,10 @@ Examples:: there are multiple ways to avoid long lines but the most generic one 
       Duis a neque fermentum nulla imperdiet blandit.
 ----
 +
-TIP: use the sign `>-` if it is important that the last line return code doesn't become part of the string (e.g. when defining a string variable).
+TIP: Always use the sign `>-` instead of `>` unless you are absolutely sure the trailing newline is not significant.
+The sign `>` adds a newline character to the last line, effectively turning `non nunc.` at the end of the example string above into  `"non nunc.\n"`, and `>-` doesn't add the newline character.
+It is really easy to introduce an error by using `>` and silently add a newline to a variable, like a filename, which leads to strange, hard to decipher errors.
+See below for "How To Wrap Lines"
 ====
 
 * If the `when:` condition results in a line that is too long, and is an `and` expression, then break it into a list of conditions.
@@ -399,4 +404,138 @@ localhost | SUCCESS => {
 }
 
 ```
+====
+
+== How To Wrap Lines
+
+ansible-lint has a pretty short line length, which causes problems if you are trying to use good programming practices by having descriptive variable names, which usually end up being quite long.
+Here are some examples of how to deal with line wrapping in common scenarios:
+
+* Jinja expressions can be wrapped
++
+[%collapsible]
+====
+Rationale:: Use of whitespace and multi-line indentation makes Jinja expressions easier to read.
+
+Within the Jinja expression, whitespace and newline characters aren't significant, so take advantage of this to wrap lines into as readable a form as possible:
+
+.Do this:
+[source,yaml]
+----
+  foo: "{{ a_very.long_variable.name |
+    somefilter('with', 'many', 'arguments') |
+    another_filter | list }}"
+----
+
+.Don't do this:
+[source,yaml]
+----
+  foo: "{{ a_very.long_variable.name | somefilter('with', 'many', 'arguments') | another_filter | list }}"
+----
+
+Remember, in a `when`, `that`, `failed_when`, or other such keywords, you can just write Jinja code - you do not need the `"{{ ... }}"`
+
+.Do this:
+[source,yaml]
+----
+  when: a_very.long_variable.name |
+    somefilter('with', 'many', 'arguments') |
+    another_filter | list
+----
+====
+
+* Start an expression with '{{' followed by newline
++
+[%collapsible]
+====
+Rationale:: Best way to wrap initial lines that cannot be otherwise wrapped
+
+But what if the code is already indented a lot, and the variable I'm assigning to is already very long, and I can't put anything else on the line?
+Just start the assignment on the next line:
+
+.Do this:
+[source,yaml]
+----
+                    foo: "{{
+                      a_very.long_variable.name |
+                      somefilter('with', 'many', 'arguments') |
+                      another_filter | list }}"
+----
+
+You can do the same thing in a `when`, `that`, etc., with a backslash:
+
+.Do this:
+[source,yaml]
+----
+                    when: \
+                      a_very.long_variable.name |
+                      somefilter('with', 'many', 'arguments') |
+                      another_filter | list | length > 0
+----
+====
+
+* Use `vars` for locally scoped intermediate values
++
+[%collapsible]
+====
+Rationale:: Set intermediate values in `vars` to simplify Jinja expressions.
+Especially when the value is used multiple times in a task/block.
+
+But what if my variable name is very long, and/or I use it in several places?
+Use a `vars` in the task to assign a locally scoped variable with a short name, or pre-digest some of the work.
+This is very useful in a `block` where you have a value used in several places:
+
+.Do this:
+[source,yaml]
+----
+- name: Set some test variables
+  set_fact:
+    my_very_long_variable_1: "{{ __pre_digest | filter1 }}"
+    my_very_long_variable_2: "{{ __pre_digest | filter2 }}"
+  vars:
+    __pre_digest: "{{ a_very.long_variable.name | some_filter }}"
+----
+
+.Don't do this:
+[source,yaml]
+----
+- name: Set some test variables
+  set_fact:
+    my_very_long_variable_1: "{{ a_very.long_variable.name | some_filter | filter1 }}"
+    my_very_long_variable_2: "{{ a_very.long_variable.name | some_filter | filter2 }}"
+----
+
+Notice that both assignments have `a_very.long_variable.name | some_filter` in common, so we can "pre-digest" that with a local variable.
+You can use a `vars` on *any* task - even `include_role`, `include_tasks`, etc.
+You can also use `vars` in a `block` to create variables used by multiple tasks in the `block` that are locally scoped to the `block`.
+Remember that Ansible uses lazy evaluation for `vars`, so you can define `vars` in a `block` where the ultimate value can depend on values set by subsequent tasks in the `block`.
+====
+
+* Use backslash escapes in double quoted strings
++
+[%collapsible]
+====
+Rationale:: Use backslash for difficult line wrapping cases.
+
+But what if I have a very long string that I cannot use `>-` to wrap because I cannot have extra spaces in the value e.g. like a url value?
+Use a backslash escape in a double quoted string:
+
+.Do this:
+[source,yaml]
+----
+  uri:
+    url: "https://{{ my_very_long_value_for_hostname }}:\
+      {{ my_very_long_value_for_port }}\
+      {{ my_very_long_value_for_uri }}?\
+      {{ my_very_long_value_for_query }}"
+----
+YAML will concatenate the values with no spaces:
+`https://myhost:myport/myuri?myquery`
+
+.Don't do this:
+[source,yaml]
+----
+  uri:
+    url: "https://{{ my_very_long_value_for_hostname }}:{{ my_very_long_value_for_port }}{{ my_very_long_value_for_uri }}{{ my_very_long_value_for_query }}"
+----
 ====
