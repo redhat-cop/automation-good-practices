@@ -453,11 +453,11 @@ Examples:: In a role with one `tasks/main.yml` task file, including `tasks/sub.y
 .A prefixed task in a sub-tasks file
 [source,yaml]
 ----
-- name: sub | some task description
+- name: sub | Some task description
   mytask: [...]
 ----
 +
-The log output will then look something like `TASK [myrole : sub | some task description] ****`, which makes it very clear where the task is coming from.
+The log output will then look something like `TASK [myrole : sub | Some task description] ****`, which makes it very clear where the task is coming from.
 +
 TIP: with a verbosity of 2 or more, ansible-playbook will show the full path to the task file, but this generally means that you need to restart the play in a higher verbosity to get the information you could have had readily available.
 ====
@@ -470,7 +470,7 @@ inspiration or contrast to the standards described above.
 
 * https://github.com/debops/debops/blob/v0.7.2/docs/debops-policy/code-standards-policy.rst).
   For inspiration, as the DebOps project has some specific guidance that we do not necessarily want to follow.
-* https://docs.adfinis-sygroup.ch/public/ansible-guide/overview.html
+* https://adfinis.github.io/ansible-guide/styling_guide.html
 * https://docs.openstack.org/openstack-ansible/latest/contributor/code-rules.html
 
 ====
