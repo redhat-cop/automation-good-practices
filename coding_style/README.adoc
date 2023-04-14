@@ -182,7 +182,7 @@ Dot notation will fail in some cases (such as when a variable name includes a hy
 Additionally, some key names collide with attributes and methods of Python dictionaries such as `count`, `copy`, `title`, and others (refer to the https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#referencing-key-value-dictionary-variables[Ansible User Guide] for an extended list)
 
 Example::
-This https://blog.networktocode.com/post/Exploring-Jinja-Variable-Syntax-in-Ansible[post] provdes an excellent demonstration of how using dot notation syntax can impact your playbooks.
+This https://blog.networktocode.com/post/Exploring-Jinja-Variable-Syntax-in-Ansible[post] provides an excellent demonstration of how using dot notation syntax can impact your playbooks.
 ====
 
 * Do not use `meta: end_play`.
@@ -193,7 +193,38 @@ Rationale:: It aborts the whole play instead of a given host (with multiple host
 If absolutely necessary, consider using `meta: end_host`.
 ====
 
-* Task names can be made dynamic by using variables (wrapped in Jinja2 templates), this helps with reading the logs.
+* Task names can be made dynamic by using variables wrapped in Jinja2 templates at the end of the string
++
+[%collapsible]
+====
+Rationale:: This can help with reading the logs.
+For example, if the task is managing one of several devices, and you want the task name output to show the device being managed.
+However, the template must come at the *end* of the string - see (https://ansible-lint.readthedocs.io/rules/name/[Ansible Lint name template rule]).
+Note that in some cases, it can make it harder for users to correlate the logs to the code.
+For example, if there is a log message like "Manage the disk device /dev/dsk/0001", and the user tries to do something like `grep "Manage the disk device /dev/dsk/0001" rolename/tasks/*.yml` to figure out which task this comes from, they will not find it.
+If the template comes at the end of the string, the user will know to omit the device name from `grep`.
+A better way to debug is to use `ansible-playbook -vv`, which will show the exact file and line number of the task.
+
+Example::
+.Do this:
+[source,yaml]
+----
+tasks:
+  - name: Manage the disk device {{ storage_device_name }}
+    some.module:
+      device: "{{ storage_device_name }}"
+----
+
+.Don't do this:
+[source,yaml]
+----
+tasks:
+  - name: Manage {{ storage_device_name }}, the disk device
+    some.module:
+      device: "{{ storage_device_name }}"
+----
+====
+
 * Do not use variables (wrapped in Jinja2 templates) for play names; variables don't get expanded properly there.
   The same applies to loop variables (by default `item`) in task names within a loop.
   They, too, don't get properly expanded and hence are not to be used there.

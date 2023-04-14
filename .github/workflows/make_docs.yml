@@ -27,11 +27,15 @@ jobs:
     - name: Render HTML
       run: make release
 
-    - uses: stefanzweifel/git-auto-commit-action@v4
+    - name: Git add and force push to docs
+      run: git add -f docs
+
+    - name: Push changes
+      uses: stefanzweifel/git-auto-commit-action@v4
       with:
         commit_message: publish release
         file_pattern: docs/*
-        add_options: '--force'
+        add_options: '-A --force'
         branch: docs  # main branch is protected, make sure this one is used for GitHub pages
         # the following options are necessary to forcefully overwrite each time the branch
         skip_fetch: true
