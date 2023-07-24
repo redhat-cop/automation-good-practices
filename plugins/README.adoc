@@ -15,7 +15,7 @@ NOTE: Work in Progress...
 Explanations::
 All plugins, regardless of type, need documentation that describes the input parameters, outputs, and practical examples of how to use it.
 
-Examples:: See the Ansible Developer Guide sections on https://docs.ansible.com/ansible/latest/dev_guide/developing_plugins.html#plugin-configuration-documentation-standards[Plugin Configuration and Documentation Standards] and https://docs.ansible.com/ansible/latest/dev_guide/developing_modules_documenting.html#module-documenting[Module Documentating] for more details.
+Examples:: See the Ansible Developer Guide sections on https://docs.ansible.com/ansible/latest/dev_guide/developing_plugins.html#plugin-configuration-documentation-standards[Plugin Configuration and Documentation Standards] and https://docs.ansible.com/ansible/latest/dev_guide/developing_modules_documenting.html#module-documenting[Module Documenting] for more details.
 ====
 
 == Use sphinx (reST) formatted docstrings in Python code
@@ -104,7 +104,7 @@ def test_split_pre_existing_dir_one_level_exists(directory, expected, mocker):
 [%collapsible]
 ====
 Explanations::
-Ensure a consistent approach to the way commplex argument_specs are formatted within a collection.
+Ensure a consistent approach to the way complex argument_specs are formatted within a collection.
 
 Rationale::
 When hand-writing a complex argspec, the author may choose to build up to data structure from multiple dictionaries or vars.

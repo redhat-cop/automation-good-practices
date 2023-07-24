@@ -10,10 +10,10 @@ Explanations::
 define for which use case to use roles, playbooks, potentially workflows (in Ansible Controller/Tower/AWX), and how to split the code you write.
 
 Rationale::
-especially when writing automation in a team, it is important to have a certain level of consistence and make sure everybody has the same understanding.
+especially when writing automation in a team, it is important to have a certain level of consistency and make sure everybody has the same understanding.
 By lack of doing so, your automation becomes unreadable and difficult to grasp for new members or even for existing members.
 +
-This structure will also help you to have a consistent level of modelization so that re-usability becomes easier.
+This structure will also help you to have a consistent level of modularization so that re-usability becomes easier.
 If one team member uses roles where another one uses playbooks, they will both struggle to reuse the code of each other.
 Metaphorically speaking, only if stones have been cut at roughly the same size, can they be properly used to build a house.
 
