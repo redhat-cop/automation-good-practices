@@ -141,6 +141,8 @@ Rationale:: Additional automation or other integrations, such as with external t
 ====
 
 === Supporting multiple distributions and versions
+[%collapsible]
+====
 Use Cases::
 * The role developer needs to be able to set role variables to different values depending on the OS platform and version.  For example, if the name of a service is different between EL8 and EL9, or a config file location is different.
 * The role developer needs to handle the case where the user specifies `gather_facts: false` in the playbook.
@@ -150,6 +152,7 @@ NOTE: The recommended solution below requires at least some `ansible_facts` to b
 If you just want to ensure the user always uses `gather_facts: true`, and do not want to handle this in the role, then the role documentation should state that `gather_facts: true` or `setup:` is required in order to use the role, and the role should use `fail:` with a descriptive error message if the necessary facts are not defined.
 
 If it is desirable to use roles that require facts, but fact gathering is expensive, consider using a cache plugin https://docs.ansible.com/ansible/latest/collections/index_cache.html[List of Cache Plugins], and also consider running a periodic job on the controller to refresh the cache.
+====
 
 === Platform specific variables
 [%collapsible]
