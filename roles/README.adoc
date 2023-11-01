@@ -105,7 +105,7 @@ Inside a collection, you can share custom plugins across all roles in the collec
 Collections give your roles a namespace, which removes the potential for naming collisions when developing new roles.
 
 Example::
-See the Ansible documentation on (https://docs.ansible.com/ansible/devel/dev_guide/migrating_roles.html)[migrating roles to collections] for details.
+See the Ansible documentation on https://docs.ansible.com/ansible/devel/dev_guide/migrating_roles.html[migrating roles to collections] for details.
 ====
 
 === Check Mode
