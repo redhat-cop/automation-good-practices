@@ -473,7 +473,7 @@ Rationale:: Argument validation significantly contributes to the stability and r
 It also makes the playbook using the role fail fast instead of failing later when an incorrect variable is utilized.
 By ensuring roles receive accurate input data and mitigating common issues, we can enhance the effectiveness of the Ansible playbooks using the roles.
 
-Examples:: The specification is defined in the meta/argument_specs.yml. For more details on how to write the specification , refer to https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_reuse_roles.html#specification-format.
+Examples:: The specification is defined in the meta/argument_specs.yml. For more details on how to write the specification, refer to https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_reuse_roles.html#specification-format.
 +
 .Argument Specification file that validates the arguments provided to the role.
 [source,yaml]
