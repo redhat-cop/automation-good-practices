@@ -50,7 +50,7 @@ Examples::
 The technical tools typically contain a lot of discovered information, like an IP address or the RAM size of a VM.
 In a typical cloud environment, the IP address isn't part of the desired state, it is assigned on the fly by the cloud management layer, so you can only get it dynamically from the cloud API and you won't manage it.
 In a more traditional environment nevertheless, the IP address will be static, managed more or less manually, so it will become part of your desired state.
-In this case, you shouldn't use the discovered information or you might not realize that there is a discrepancy betweeen As-Is and To-Be.
+In this case, you shouldn't use the discovered information or you might not realize that there is a discrepancy between As-Is and To-Be.
 +
 The RAM size of a VM will be always present in two flavours, e.g. As-Is coming from the technical source and To-Be coming from the CMDB, or your static inventory, and you shouldn't confuse them.
 By lack of doing so, your automation might not correct the size of the VM where it should have aligned the As-Is with the To-Be.
@@ -268,7 +268,7 @@ Explanations::
 
 Rationale::
 There are https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#understanding-variable-precedence[22 levels of variable precedence].
-This is almost impossible to keep in mind for a "normal" human and can lead to all kind of weird behaviours if not under control.
+This is almost impossible to keep in mind for a "normal" human and can lead to all kind of weird behaviors if not under control.
 In addition, the use of play(book) variables is not recommended as it blurs the separation between code and data.
 The same applies to all constructs including specific variable files as part of the play (i.e. `include_vars`).
 By reducing the number of variable types, you end up with a more simple and overseeable list of variables.
