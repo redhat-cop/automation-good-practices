@@ -465,6 +465,48 @@ The log output will then look something like `TASK [myrole : sub | Some task des
 TIP: with a verbosity of 2 or more, ansible-playbook will show the full path to the task file, but this generally means that you need to restart the play in a higher verbosity to get the information you could have had readily available.
 ====
 
+=== Argument Validation
+[%collapsible]
+====
+Explanation:: Starting from ansible version 2.11, an option is available to activate argument validation for roles by utilizing an argument specification.
+When this specification is established, a task is introduced at the onset of role execution to validate the parameters provided for the role according to the defined specification.
+If the parameters do not pass the validation, the role execution will terminate.
+
+Rationale:: Argument validation significantly contributes to the stability and reliability of the automation.
+It also makes the playbook using the role fail fast instead of failing later when an incorrect variable is utilized.
+By ensuring roles receive accurate input data and mitigating common issues, we can enhance the effectiveness of the Ansible playbooks using the roles.
+
+Examples:: The specification is defined in the meta/argument_specs.yml. For more details on how to write the specification, refer to https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_reuse_roles.html#specification-format.
++
+.Argument Specification file that validates the arguments provided to the role.
+[source,yaml]
+----
+argument_specs:
+  main:
+    short_description: Role description.
+    options:
+      string_arg1:
+        description: string argument description.
+        type: "str"
+        default: "x"
+        choices: ["x", "y"]
+      dict_arg1:
+        description: dict argument description.
+        type: dict
+        required: True
+        options:
+          key1:
+            description: key1 description.
+            type: int
+          key2:
+            description: key2 description.
+            type: str
+          key3:
+            description: key3 description.
+            type: dict
+----
+====
+
 == References
 [%collapsible]
 ====
