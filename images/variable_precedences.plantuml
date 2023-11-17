@@ -1,0 +1,21 @@
+@startuml
+start
+split
+	split
+		:role defaults;
+		:inventory vars;
+		:role vars;
+	split again
+		:scoped vars
+		block <&arrow-right> task;
+		:runtime vars
+		set_fact+register;
+	end split
+	:scoped params
+	role <&arrow-right> include;
+split again
+	:host facts;
+end split
+:extra vars;
+stop
+@enduml

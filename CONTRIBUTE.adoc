@@ -62,6 +62,10 @@ NOTE: this contribution file is obviously not meant for inclusion in the overall
 == Contributing
 
 . Just fork the repository, create a Pull Request (PR) and offer your changes.
++
+TIP: limiting each PR to a single recommendation makes it easier to review.
+This furthermore speeds up approval, which is an advantage also for contributors.
+
 . Feel free to review existing PR and give your opinion
 . Also an issue against one of the recommendations is a valid approach
 

@@ -30,6 +30,17 @@ Examples::
 TIP: we'll explain later why there might be a case for using `include_role`/`import_role` tasks instead of the role section.
 ====
 
+== Use either the tasks or roles section in playbooks, not both
+
+[%collapsible]
+====
+Explanations:: A playbook can contain `pre_tasks`, `roles`, `tasks` and `post_tasks` sections.
+Avoid using both `roles` and `tasks` sections, the latter possibly containing `import_role` or `include_role` tasks.
+Rationale:: The order of execution between `roles` and `tasks` isn't obvious, and hence mixing them should be avoided.
+Examples:: Either you need only static importing of roles and you can use the `roles` section, or you need dynamic inclusion and you should use _only_ the `tasks` section.
+Of course, for very simple cases, you can just use `tasks` without `roles`.
+====
+
 == Use tags cautiously either for roles or for complete purposes
 [%collapsible]
 ====
@@ -126,4 +137,29 @@ The same approach is also possible with `include_role` but requires additionally
         - configure
 ----
 
+====
+
+== Use the verbosity parameter with debug statements
+[%collapsible]
+====
+Explanations:: Debug messages should have a verbosity defined as appropriate for the message.
+
+Rationale::
+Debug messages are useful during testing and development, and can be useful to retain as playbooks go into production for future troubleshooting.
+However, log messages will clutter your output, which can confuse users with non-relevant information.
+
+Examples::
++
+.Adding verbosity to debug messages
+[source, yaml]
+----
+- name: don't make messages always display
+  debug:
+    msg: "This message will clutter your log in production"
+
+- name: this message will only appear when verbosity is 2 or more
+  debug:
+    msg: "Some more debug information if needed"
+    verbosity: 2
+----
 ====

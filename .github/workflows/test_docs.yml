@@ -1,0 +1,26 @@
+name: test document generation
+
+on:
+  pull_request:
+
+jobs:
+  test-build-docs:
+
+    runs-on: ubuntu-latest
+    container: fedora:latest
+
+    steps:
+    - name: Install requirements
+      run: sudo dnf install -y git graphviz make plantuml rubygem-asciidoctor rubygem-asciidoctor-pdf rubygem-rouge
+
+    - name: Repository checkout
+      uses: actions/checkout@v3
+
+    - name: Move to the correct folder
+      run: cd $GITHUB_WORKSPACE
+
+    - name: Ensure git folder is considered safe
+      run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+    - name: Render HTML
+      run: make release

@@ -1,3 +1,77 @@
 = Collections good practices
 
-NOTE: Work in Progress...
+Note: Unreviewed work. Please contribute to the discussion in the Automation Red Hat COP
+
+== Collection Structure should be at the type or landscape level
+[%collapsible]
+====
+Explanations:: Collections should be comprised of roles collected either at the type or landscape level. See <<structures/README.adoc#_define_which_structure_to_use_for_which_purpose,The Structures Definition>>
+
+Rationale:: Gathering and publishing collections, rather than individual roles, allows for easier distribution and particularly becomes more important when we discuss Execution Environments.
+
+====
+
+== Create implicit collection variables and reference them in your roles' defaults variables
+[%collapsible]
+====
+Explanations:: Often, variables will want to be defined on a collection level, but this can cause issues with roles being able to be reused.
+By defining collection wide variables and referencing them in roles' defaults variables, this can be made clear and roles can remain reusable.
+Collection variables are nowhere defined explicitly and are to be documented in the collection's documentation.
+
+Rationale:: Variables that are shared across collections can cause collisions when roles are reused outside of the original collection.
+Role variables should continue to be named according to our <<roles/README.adoc#naming-things,recommendations for naming variables>>
+It still remains possible to overwrite collection variable values for a specific role.
+Each role has it's own set of defaults for the variable.
+
+Examples::
+For a collection "mycollection", two roles exist. "alpha" and "beta".  For this example, there is no default for the controller_username
+and would have to be defined in one's inventory. The no_log variable does have defaults defined, and thus only needs to be defined if the default
+is being overwritten.
++
+.Alpha defaults/main.yml
+[source,yaml]
+----
+# specific role variables
+alpha_job_name: 'some text'
+# collection wide variables
+alpha_controller_username: "{{ mycollection_controller_username }}"
+alpha_no_log: "{{ mycollection_no_log | default('true') }}"
+----
++
+.Beta defaults/main.yml
+[source,yaml]
+----
+# specific role variables
+beta_job_name: 'some other text'
+# collection wide variables
+beta_controller_username: "{{ mycollection_controller_username }}"
+beta_no_log: "{{ mycollection_no_log | default('false') }}"
+----
+====
+
+== Include a README file in each collection
+[%collapsible]
+====
+Explanation::
+Include a README file that is in the root of the collection and which contains:
+* Information about the purpose of the collection
+* A link to the collection license file
+* General usage information such as which versions of ansible-core are supported and any libraries or SDKs which are required by the collection
+
++
+Generating the README's plugin documentation from the plugin code helps eliminate documentation errors.
+Supplemental documentation such as user guides may be written in reStructured Text (rst) and located in the docs/docsite/rst/ directory of the collection.
+
+Examples::
+Use https://github.com/ansible-network/collection_prep to generate the documentation for the collection
+====
+
+== Include a license file in a collection root directory
+[%collapsible]
+====
+Explanation::
+Include a license file in the root directory
+Name the license file either LICENSE or COPYING.
+The contents may be either the text of the applicable license, or a link to the canonical reference for the license on the Internet (such as https://opensource.org/licenses/BSD-2-Clause )
+If any file in the collection is licensed differently from the larger collection it is a part of (such as module utilities), note the applicable license in the header of the file. 
+====
