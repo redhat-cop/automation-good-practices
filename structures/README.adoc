@@ -3,6 +3,38 @@
 Before we start to describe roles, playbooks, etc, we need to decide which one we use for what.
 This section is meant for topics which span across multiple structures and don't fit nicely within one.
 
+== Guiding principles for Automation Good Practices
+
+As an overall guiding principle for designing good automation, inspired by the https://peps.python.org/pep-0020/[Zen of Python, by Tim Peters], the Zen of Ansible was created to serve as a guidepost to follow.
+The principles defined in this are very applicable and can give guidance when the specific practice is unclear.
+
+----
+The Zen of Ansible, by Tim Appnel
+
+Ansible is not Python.
+YAML sucks for coding.
+Playbooks are not for programming.
+Ansible users are (most probably) not programmers.
+Clear is better than cluttered.
+Concise is better than verbose.
+Simple is better than complex.
+Readability counts.
+Helping users get things done matters most.
+User experience beats ideological purity.
+“Magic” conquers the manual.
+When giving users options, always use convention over configuration.
+Declarative is always better than imperative - most of the time.
+Focus avoids complexity.
+Complexity kills productivity.
+If the implementation is hard to explain, it's a bad idea.
+Every shell command and UI interaction is an opportunity to automate.
+Just because something works, doesn't mean it can't be improved.
+Friction should be eliminated whenever possible.
+Automation is a continuous journey that never ends.
+
+----
+
+
 == Define which structure to use for which purpose
 [%collapsible]
 ====
