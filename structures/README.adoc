@@ -4,7 +4,8 @@ Before we start to describe roles, playbooks, etc, we need to decide which one w
 This section is meant for topics which span across multiple structures and don't fit nicely within one.
 
 == Guiding principles for Automation Good Practices
-
+[%collapsible]
+====
 As an overall guiding principle for designing good automation, inspired by the https://peps.python.org/pep-0020/[Zen of Python, by Tim Peters], the Zen of Ansible was created to serve as a guidepost to follow.
 The principles defined in this are very applicable and can give guidance when the specific practice is unclear.
 
