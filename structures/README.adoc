@@ -34,7 +34,7 @@ Friction should be eliminated whenever possible.
 Automation is a continuous journey that never ends.
 
 ----
-
+====
 
 == Define which structure to use for which purpose
 [%collapsible]
