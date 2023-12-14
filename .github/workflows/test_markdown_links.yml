@@ -1,6 +1,6 @@
 ---
-# This workflow action will run pre-commit, which will execute ansible and yaml linting
-# See .pre-commit-config.yaml for what hooks are executed
+# This action checks all Markdown files in the repository for broken links. 
+# (Uses https://github.com/tcort/markdown-link-check) 
 name: markdown link check
 
 
