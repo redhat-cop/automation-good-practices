@@ -79,8 +79,7 @@ Examples::
 
 ====
 
-* Place content common to multiple roles in a single reusable role, "common" is a typical name for this role when roles are packaged in a collection.
-* Author loosely coupled, hierarchical content.
+* Place content common to multiple roles in a single reusable role, "common" is a typical name for this role when roles are packaged in a collection. Author loosely coupled, hierarchical content.
 +
 [%collapsible]
 ====

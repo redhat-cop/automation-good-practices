@@ -160,8 +160,7 @@ Rationale:: https://yaml.org/type/bool.html[YAML 1.1] allows all variants wherea
 Rationale:: Long and complex Jinja templates can be difficult to maintain and debug. By splitting excessively long templates into logical componets that can be included as-needed, each template will be easier to maintain.
 ====
 
-* Jinja templates should not be used to create structured data but instead text and semi-structured data.
-* Filter plugins are preferred over Jinja templates for the use of data manipulation or transformation.
+* Jinja templates should not be used to create structured data but instead text and semi-structured data. Filter plugins are preferred over Jinja templates for the use of data manipulation or transformation.
 +
 [%collapsible]
 ====
