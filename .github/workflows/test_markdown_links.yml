@@ -1,0 +1,21 @@
+---
+# This action checks all Markdown files in the repository for broken links. 
+# (Uses https://github.com/tcort/markdown-link-check) 
+name: markdown link check
+
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  markdown-link-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: gaurav-nelson/github-action-markdown-link-check@v1
+        with:
+          use-quiet-mode: 'yes'
+          use-verbose-mode: 'yes'
+          config-file: '.mlc_config.json'
+...

@@ -51,13 +51,20 @@ push: clean
 pull:
 	$(VCS) pull
 
-release:
+plantuml:
+	for f in images/*.plantuml; do \
+		plantuml $${f} -tsvg; \
+	done
+
+release: plantuml
+	mkdir -p docs
 	$(ADOCHTML) -D docs --out-file index.html $(INFILE)
 	$(ADOCHTML) -D docs --out-file CONTRIBUTE.html $(INFILE2)
 	mkdir -p docs/images
 	cp -v images/*.svg docs/images
 
 preview:
+	mkdir -p docs
 	$(ADOCPDF) --out-file docs/preview/$(OUTFILE).pdf $(INFILE)
 	$(ADOCPDF) --out-file docs/preview/$(OUTFILE2).pdf $(INFILE2)
 	$(ADOCHTML) --out-file docs/preview/$(OUTFILE).html $(INFILE)
