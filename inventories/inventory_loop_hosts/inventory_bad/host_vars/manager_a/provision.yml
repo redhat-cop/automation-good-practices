@@ -1,3 +1,4 @@
+---
 provision_list_of_hosts:
   - name: host1
     provision_value: uno
