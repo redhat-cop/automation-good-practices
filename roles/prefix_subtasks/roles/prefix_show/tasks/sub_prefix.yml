@@ -1,5 +1,5 @@
 ---
 # tasks file for prefix_show
-- name: sub_prefix | show where we are
-  debug:
+- name: sub_prefix | Show where we are
+  ansible.builtin.debug:
     msg: we're now in a sub task file but which one?

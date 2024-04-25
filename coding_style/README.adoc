@@ -69,13 +69,14 @@ Examples:: there are multiple ways to avoid long lines but the most generic one 
 .Usage of the YAML folding sign
 [source,yaml]
 ----
-- name: call a very long command line
-  command: >
+- name: Call a very long command line
+  ansible.builtin.command: >
     echo Lorem ipsum dolor sit amet, consectetur adipiscing elit.
     Maecenas mollis, ante in cursus congue, mauris orci tincidunt nulla,
     non gravida tortor mi non nunc.
-- name: set a very long variable
-  set_fact:
+
+- name: Set a very long variable
+  ansible.builtin.set_fact:
     meaningless_variable: >-
       Ut ac neque sit amet turpis ullamcorper auctor.
       Cras placerat dolor non ipsum posuere malesuada at ac ipsum.

@@ -1,25 +1,23 @@
-- name: a playbook can be a list of roles imported with tags
+- name: A playbook can be a list of roles imported with tags
   hosts: localhost
   gather_facts: false
   become: false
-
   tasks:
-
-    - name: import role1
-      import_role:
+    - name: Import role1
+      ansible.builtin.import_role:
         name: role1
-      tags: 
+      tags:
         - role1
         - deploy
-    - name: import role2
-      import_role:
+    - name: Import role2
+      ansible.builtin.import_role:
         name: role2
       tags:
         - role2
         - deploy
         - configure
-    - name: import role3
-      import_role:
+    - name: Import role3
+      ansible.builtin.import_role:
         name: role3
       tags:
         - role3
