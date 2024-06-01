@@ -30,7 +30,7 @@ Each section covers a different aspect of automation using Ansible (and in a bro
 // what we write in there...
 
 Each section is then made of guidelines, one sentence hopefully easy to remember, followed by description, rationale and examples.
-The HTML version of this document makes the content collapsable so that all guidelines can be seen at once in a very overseeable way, for the reader to uncollapse the content of guidelines they is interested in.
+The HTML version of this document makes the content collapsable so that all guidelines can be seen at once in a very overseeable way, for the reader to uncollapse the content of guidelines they are interested in.
 
 A rationale is expected for each good practice, with a reference if applicable.
 It is really helpful to know not only how to do certain things, but why to do them in this way.
