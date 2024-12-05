@@ -1,0 +1,27 @@
+#Check the rendered page for dead links
+name: Broken Links Checker
+on:
+  schedule:
+    - cron:  '12 1 * * 5'
+  workflow_dispatch:
+env:
+  WEBSITE_URL: "https://redhat-cop.github.io/automation-good-practices/"
+  ISSUE_TEMPLATE: ".github/workflows/check-broken-links.md"
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Run Broken Links Checker
+      run: npx broken-link-checker $WEBSITE_URL --ordered --recursive --user-agent "Mozilla/5.0 (X11; Linux x86_64; rv:133.0) Gecko/20100101 Firefox/133.0"
+
+    - uses: actions/checkout@v3
+      if: failure()
+
+    - uses: JasonEtco/create-an-issue@v2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        filename: ".github/workflows/check-broken-links.md"
+      if: failure()
