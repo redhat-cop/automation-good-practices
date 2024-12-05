@@ -1,7 +1,6 @@
 ---
 title: Website Contains Broken Links
-labels: 'bug'
-assignees: ''
+labels: Bug
 ---
 
 ## Broken Links Detected
