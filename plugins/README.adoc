@@ -66,7 +66,7 @@ def greeting(name: str) -> str:
 ====
 Explanations:: Use https://docs.pytest.org/[pytest] for writing unit tests for plugins
 
-Rationale:: Pytest is the testing framework used by Ansible Engineering and will provide the best experience for plugin developers
+Rationale:: Pytest is the testing framework used by Ansible Engineering and will provide the best experience for plugin developers.
 The Ansible Developer Guide section on https://docs.ansible.com/ansible/latest/dev_guide/testing_units_modules.html[unit testing] has detailed information on when and how to use unit tests.
 
 Examples::
