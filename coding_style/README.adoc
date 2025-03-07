@@ -400,3 +400,34 @@ localhost | SUCCESS => {
 
 ```
 ====
+
+* Use symbolic file permissions, `u=rw,g=r,o=-` rather than octal values, `0640`.
++
+[%collapsible]
+====
+Rationale:: Symbolic file permissions are easier to read and understand than octal permissions and are less prone to errors such as accidentally using decimal by omitting the leading zero.
+Various ansible modules such as `ansible.builtin.copy` and `ansible.builtin.file` natively support symbolic file permissions such as are supported by the `chmod` command.
+Additionally, some YAML reformatting tools may automatically convert decimal to octal.
+
+Examples::
++
+.Using symbolic mode
+[source,yaml]
+----
+- name: Create group directory with setgid and sticky bit
+  ansible.builtin.file:
+    path: /share/project
+    state: directory
+    owner: root
+    group: users
+    mode: u=rwx,g=rwxs,o=t
+- name: Copy readme.txt into group directory
+  ansible.builtin.copy:
+    src: readme.txt
+    dest: /share/project/readme.txt
+    owner: root
+    group: root
+    mode: u=rw,g=r,o=-
+----
+```
+====
