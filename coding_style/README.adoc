@@ -429,5 +429,4 @@ Examples::
     group: root
     mode: u=rw,g=r,o=-
 ----
-```
 ====
