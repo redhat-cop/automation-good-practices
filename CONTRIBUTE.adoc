@@ -27,16 +27,15 @@ Examples:: These are examples
 .A mini playbook example
 [source,yaml]
 ----
-- name: a mini example of playbook
+---
+- name: A mini example of playbook
   hosts: all
   gather_facts: false
   become: false
-
   tasks:
-
-  - name: say what we all think
-    debug:
-      msg: asciidoctor is {{ my_private_thoughts }}
+    - name: Say what we all think
+      ansible.builtin.debug:
+        msg: asciidoctor is {{ my_private_thoughts }}
 ----
 +
 Even more examples...

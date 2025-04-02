@@ -11,19 +11,19 @@ Also, if you follow the <<structures/README.adoc#_define_which_structure_to_use_
 This way you can create a playbook for each purpose without having to duplicate a lot of code.
 This, in turn, also helps with the maintainability as there is only a single place where necessary changes need to be implemented, and that is in the role
 
-Examples:: 
+Examples::
 +
 .An example of playbook containing only roles
 [source,yaml]
 ----
-- name: a playbook can solely be a list of roles
+---
+- name: A playbook can solely be a list of roles
   hosts: all
   gather_facts: false
   become: false
-
   roles:
     - role1
-    - role2 
+    - role2
     - role3
 ----
 +
@@ -58,32 +58,34 @@ An acceptable exception is the pattern to use the role name as tag name, which c
 +
 Important is that your users don't need to learn the right sequence of tags necessary to get a meaningful result, one tag should be enough.
 
-Examples:: 
+Examples::
 +
 .An example of playbook importing roles with tags
 [source,yaml]
 ----
-- name: a playbook can be a list of roles imported with tags
+---
+- name: A playbook can be a list of roles imported with tags
   hosts: all
   gather_facts: false
   become: false
-
   tasks:
-    - name: import role1
-      import_role:
+    - name: Import role1
+      ansible.builtin.import_role:
         name: role1
       tags:
         - role1
         - deploy
-    - name: import role2
-      import_role:
+
+    - name: Import role2
+      ansible.builtin.import_role:
         name: role2
       tags:
         - role2
         - deploy
         - configure
-    - name: import role3
-      import_role:
+
+    - name: Import role3
+      ansible.builtin.import_role:
         name: role3
       tags:
         - role3

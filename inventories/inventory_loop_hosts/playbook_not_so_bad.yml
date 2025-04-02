@@ -1,12 +1,14 @@
-- name: provision hosts in a not so bad way
+- name: Provision hosts in a not so bad way
   hosts: managers
   gather_facts: false
   become: false
-
   tasks:
-    - name: create some file to simulate an API call to provision a host
-      copy:
+    - name: Create some file to simulate an API call to provision a host
+      ansible.builtin.copy:
         content: "{{ hostvars[item.name]['provision_value'] }}\n"
         dest: "/tmp/not_so_bad_{{ inventory_hostname }}_{{ item.name }}.txt"
         force: true
+        owner: root
+        group: root
+        mode: "0644"
       loop: "{{ provision_list_of_hosts }}"

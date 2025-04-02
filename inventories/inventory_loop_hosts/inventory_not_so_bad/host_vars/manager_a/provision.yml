@@ -1,3 +1,4 @@
+---
 provision_list_of_hosts:
   - name: host1
   - name: host2
