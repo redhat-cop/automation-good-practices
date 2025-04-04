@@ -284,7 +284,7 @@ Together with some explanations why they have their specific precedence, so that
 . scoped params, at the role or include level this time, are admittedly a bit out of order and should be avoided to limit surprises.
 . and lastly, extra_vars overwrite everything else (even runtime vars, which can be quite surprising)
 
-NOTE: we didn't explicitly consider https://docs.ansible.com/automation-controller/latest/html/userguide/workflow_templates.html#ug-wf-templates-extravars[Workflow and Job Template variables] but they are all extra vars in this consideration.
+NOTE: we didn't explicitly consider https://docs.ansible.com/automation-controller/4.4/html/userguide/workflow_templates.html#ug-wf-templates-extravars[Workflow and Job Template variables] but they are all extra vars in this consideration.
 
 The following picture summarizes this list in a simplified and easier to keep in mind way, highlighting which variables are meant to overwrite others:
 
