@@ -584,6 +584,6 @@ inspiration or contrast to the standards described above.
 * https://github.com/debops/debops/blob/v0.7.2/docs/debops-policy/code-standards-policy.rst).
   For inspiration, as the DebOps project has some specific guidance that we do not necessarily want to follow.
 * https://adfinis.github.io/ansible-guide/styling_guide.html
-* https://docs.openstack.org/openstack-ansible/latest/contributor/code-rules.html
+* https://docs.openstack.org/openstack-ansible/latest/contributors/code-rules.html#general-guidelines-for-submitting-code
 
 ====
