@@ -474,13 +474,13 @@ Rationale:: Use of whitespace and multi-line indentation makes expressions easie
 - name: Very long line with Jinja expression
   foo: "{{ a_very.long_variable.name | somefilter('with', 'many', 'arguments') | another_filter | list }}"
 
-                  - name: First line is already too long
-                    very_indented_foo: "{{ a_very.long_variable.name |
-                      somefilter('with', 'many', 'arguments') |
-                      another_filter | list }}"
-                    when: a_very.long_variable.name |
-                      somefilter('with', 'many', 'arguments') |
-                      another_filter | list | length > 0
+- name: First line is already too long
+  very_indented_foo: "{{ a_very.long_variable.name |
+    somefilter('with', 'many', 'arguments') |
+    another_filter | list }}"
+  when: a_very.long_variable.name |
+    somefilter('with', 'many', 'arguments') |
+    another_filter | list | length > 0
 
 - name: Redundancy in expressions
   set_fact:
