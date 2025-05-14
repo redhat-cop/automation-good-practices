@@ -427,7 +427,6 @@ But what if I have a very long string that I cannot use `>-` to wrap because I c
 Use a backslash escape in a double quoted string.
 YAML will concatenate the values with no spaces.
 
-+
 [%collapsible]
 ====
 Rationale:: Use of whitespace and multi-line indentation makes expressions easier to read.
