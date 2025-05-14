@@ -415,16 +415,14 @@ Here are some examples of how to deal with line wrapping in common scenarios:
   Within the Jinja expression, whitespace and newline characters aren't significant, so take advantage of this to wrap lines into as readable a form as possible.
   Remember, in a `when`, `that`, `failed_when`, or other such keywords, you can just write Jinja code - you do not need the `"{{ ... }}"`
 
-* Start an expression with '{{' followed by newline if the line will otherwise be too long
+* Start an expression with '{{' followed by newline if the line will otherwise be too long.
+  But what if the code is already indented a lot, and the variable I'm assigning to is already very long, and I can't put anything else on the line?
+  Just start the assignment on the next line.
 
-But what if the code is already indented a lot, and the variable I'm assigning to is already very long, and I can't put anything else on the line?
-Just start the assignment on the next line.
-
-* Use backslash escapes in double quoted strings
-
-But what if I have a very long string that I cannot use `>-` to wrap because I cannot have extra spaces in the value e.g. like a url value?
-Use a backslash escape in a double quoted string.
-YAML will concatenate the values with no spaces.
+* Use backslash escapes in double quoted strings.
+  But what if I have a very long string that I cannot use `>-` to wrap because I cannot have extra spaces in the value e.g. like a url value?
+  Use a backslash escape in a double quoted string.
+  YAML will concatenate the values with no spaces.
 
 [%collapsible]
 ====
