@@ -411,10 +411,9 @@ localhost | SUCCESS => {
 ansible-lint has a pretty short line length, which causes problems if you are trying to use good programming practices by having descriptive variable names, which usually end up being quite long.
 Here are some examples of how to deal with line wrapping in common scenarios:
 
-* Jinja expressions can be wrapped
-
-Within the Jinja expression, whitespace and newline characters aren't significant, so take advantage of this to wrap lines into as readable a form as possible.
-Remember, in a `when`, `that`, `failed_when`, or other such keywords, you can just write Jinja code - you do not need the `"{{ ... }}"`
+* Jinja expressions can be wrapped.
+  Within the Jinja expression, whitespace and newline characters aren't significant, so take advantage of this to wrap lines into as readable a form as possible.
+  Remember, in a `when`, `that`, `failed_when`, or other such keywords, you can just write Jinja code - you do not need the `"{{ ... }}"`
 
 * Start an expression with '{{' followed by newline if the line will otherwise be too long
 
