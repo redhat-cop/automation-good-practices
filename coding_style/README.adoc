@@ -442,15 +442,15 @@ Rationale:: Use of whitespace and multi-line indentation makes expressions easie
     somefilter('with', 'many', 'arguments') |
     another_filter | list
 
-                  - name: Wrap when first line is already too long
-                    very_indented_foo: "{{
-                      a_very.long_variable.name |
-                      somefilter('with', 'many', 'arguments') |
-                      another_filter | list }}"
-                    when: \
-                      a_very.long_variable.name |
-                      somefilter('with', 'many', 'arguments') |
-                      another_filter | list | length > 0
+- name: Wrap when first line is already too long
+  very_indented_foo: "{{
+    a_very.long_variable.name |
+    somefilter('with', 'many', 'arguments') |
+    another_filter | list }}"
+  when: \
+    a_very.long_variable.name |
+    somefilter('with', 'many', 'arguments') |
+    another_filter | list | length > 0
 
 - name: Set some test variables
   set_fact:
