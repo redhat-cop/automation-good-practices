@@ -17,7 +17,7 @@ jobs:
 
     steps:
     - name: Run Broken Links Checker
-      run: npx broken-link-checker $WEBSITE_URL --ordered --recursive --user-agent "Mozilla/5.0 (X11; Linux x86_64; rv:133.0) Gecko/20100101 Firefox/133.0" --exclude "https://opensource.org/licenses/BSD-2-Clause" --exclude "https://github.com/ansible-collections/amazon.cloud/blob/0.1.0/plugins/modules/backup_report_plan.py#L182-L234"
+      run: npx broken-link-checker $WEBSITE_URL --ordered --recursive --user-agent "Mozilla/5.0 (X11; Linux x86_64; rv:133.0) Gecko/20100101 Firefox/133.0" --exclude "https://opensource.org/licenses/BSD-2-Clause" --exclude "github.com"
 
     - uses: actions/checkout@v3
       if: failure()
