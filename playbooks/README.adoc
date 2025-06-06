@@ -30,6 +30,68 @@ Examples::
 TIP: we'll explain later why there might be a case for using `include_role`/`import_role` tasks instead of the role section.
 ====
 
+== Use play argspec validation early in plays
+[%collapsible]
+====
+Explanations:: Play arguments should have metadata and type validation, similar to role arguments.
+
+Rationale:: Validating play arguments against an argspec helps catch argument issues quickly. 
+Rather than waiting until a task fails from improperly defined arguments, playbooks should have an initial task checking args for requirements. 
+The argspec file can also add details about usage, authorship, and give examples.
+
+Examples::
++
+.An example of a play argspec file
+[source,yaml]
+----
+---
+short_description: A shorter summary of `description` below
+description: This is a description of a playbook, that may contain multiple plays with multiple play argument specs
+argument_specs:
+  debug_localhost: # Name of the play
+    short_description: Play for printing a debug message
+    description:
+      - Example play within a collection containing an argspec for printing a debug message
+    author:
+      - developer (@developer)
+    options:
+      message:
+        description: Debug message to print
+        type: str
+        required: true
+    examples: |
+      - import_playbook: my_playbook.yml
+        vars:
+          message: 'Custom debug message'
+    return: ~
+----
++
+See that the play argspec file is very similar to a role argspec file. 
++
+.An example of a playbook using a play argspec
+[source,yaml]
+----
+# my_playbook.yml
+---
+- name: Debug_localhost
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Verify with argspec
+      ansible.builtin.validate_argument_spec:
+        argument_spec: "{{ (lookup('ansible.builtin.file', filename) | from_yaml)['argument_specs'][lowercase_play_name]['options'] }}"
+      vars:
+        lowercase_play_name: "{{ ansible_play_name | lower }}"
+        filename: "argspec_validation_plays.meta.yml"
+    - name: Print debug message
+      ansible.builtin.debug:
+        msg: "{{ message }}"
+----
++
+Note that argument validation is the the first task. 
+
+====
+
 == Use either the tasks or roles section in playbooks, not both
 
 [%collapsible]
