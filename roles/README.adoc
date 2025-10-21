@@ -234,8 +234,7 @@ Examples::
 - name: Ensure ansible_facts used by role
   setup:
     gather_subset: min
-  when: not ansible_facts.keys() | list |
-    intersect(__rolename_required_facts) | sort == __rolename_required_facts | sort
+  when: __rolename_required_facts | difference(ansible_facts.keys() | list) | length > 0
 
 - name: Set platform/version specific variables
   include_vars: "{{ __rolename_vars_file }}"
