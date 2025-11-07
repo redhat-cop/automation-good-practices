@@ -3,7 +3,7 @@ include::_style/render.adoc[]
 
 == Introduction
 
-https://ansible.com/[Ansible] is simple, flexible, and powerful. Like any powerful tool, there are many ways to use it, some better than others.
+https://www.redhat.com/en/ansible-collaborative[Ansible] is simple, flexible, and powerful. Like any powerful tool, there are many ways to use it, some better than others.
 
 This document aims to gather good practices from the field of Ansible practitioners at Red Hat, consultants, developers, and others.
 And thus it strives to give any Red Hat employee, partner or customer (or any Ansible user) a guideline from which to start in good conditions their automation journey.
