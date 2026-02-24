@@ -1,0 +1,193 @@
+= Naming conventions
+
+Consistent naming conventions are a cornerstone of maintainable automation.
+This section defines naming standards for repositories, files, AAP resources, and Git artifacts.
+
+NOTE: For naming conventions related to Ansible code (variables, tasks, handlers, templates), see the <<_roles_good_practices_for_ansible>> and <<_coding_style_good_practices_for_ansible>> sections.
+
+== Be descriptive, consistent, and concise in all names
+[%collapsible]
+====
+Explanations::
+Names should clearly communicate purpose without being excessively long.
+Use the same pattern throughout a project: pick one separator convention (underscores for Ansible, hyphens for repos and files), one file extension (`.yml` not mixed `.yml` and `.yaml`), and one casing convention per context.
+
+Rationale::
+Consistent naming reduces cognitive load, makes resources easier to search and discover, and helps new team members navigate the codebase.
+Abbreviations should only be used when they are standard and widely understood (e.g. `aap`, `ee`, `config`, `dev`, `prod`, `qa`).
+
+Examples::
++
+[source]
+----
+# Good - descriptive but concise
+webserver_port
+database_backup_schedule
+
+# Too verbose
+web_server_configuration_file_settings
+
+# Too brief and unclear
+ws_cfg
+db_bkp
+----
+====
+
+== Use standard naming patterns for repositories
+[%collapsible]
+====
+Explanations::
+Repository names should follow the pattern `{purpose}-{type}`, using lowercase with hyphens, and stay under 50 characters.
+
+Rationale::
+A predictable repo naming pattern makes it easy to identify the purpose and type of each repository at a glance, especially when managing many repos within an organization.
+
+Examples::
++
+[source]
+----
+# Good
+automation-playbooks          # Playbook repository
+aap-config-as-code            # AAP Configuration
+my-org-ansible-collection     # Custom collection
+automation-ee-example         # Execution Environment
+
+# Bad
+AutomationPlaybooks           # Wrong case
+my_playbooks                  # Underscores in repo names
+----
+====
+
+== Name playbook files with verb-noun pattern
+[%collapsible]
+====
+Explanations::
+Playbook files should follow the pattern `{verb}-{noun}.yml`, clearly describing the action being performed.
+Group variable files should be named after the category they contain (e.g. `credentials.yml`, `organizations.yml`).
+
+Rationale::
+Verb-noun naming makes the purpose of each playbook immediately obvious when listing files, and avoids ambiguity about what a playbook does.
+
+Examples::
++
+[source]
+----
+# Good - Verb-noun pattern
+deploy-webapp.yml
+configure-webserver.yml
+backup-database.yml
+patch-systems.yml
+
+# Bad - No verb, unclear purpose
+webapp.yml
+webserver.yml
+database.yml
+----
+====
+
+== Use positive boolean variable names
+[%collapsible]
+====
+Explanations::
+Boolean variables should be named positively (e.g. `enabled`, `ssl_verify`) rather than negatively (e.g. `disabled`, `no_ssl`).
+
+Rationale::
+Negative boolean names create double negatives when used in conditions (`when: not webserver_disabled`), which are harder to read and reason about.
+
+Examples::
++
+[source,yaml]
+----
+# Good - positive names
+webserver_enabled: true
+database_ssl_verify: true
+backup_perform: true
+
+# Bad - negative names lead to confusing logic
+webserver_disabled: false
+database_ssl_no_verify: false
+skip_backup: false
+----
+====
+
+== Follow standard Git branch and commit naming conventions
+[%collapsible]
+====
+Explanations::
+Branch names should follow `{type}/{description}` using hyphens (e.g. `feature/add-webserver-role`, `fix/inventory-syntax-error`, `hotfix/security-patch`).
+Commit messages should follow the conventional commits format: `{type}: {description}` (e.g. `feat:`, `fix:`, `docs:`, `chore:`, `test:`, `refactor:`).
+
+Rationale::
+Structured branch and commit naming enables automated tooling (changelog generation, release automation), makes Git history more readable, and helps with code review.
+
+Examples::
++
+[source]
+----
+# Branch names
+feature/add-webserver-role
+fix/correct-inventory-validation
+hotfix/security-patch
+
+# Commit messages
+feat: add webserver role with molecule tests
+fix: correct database connection timeout
+docs: update installation guide
+chore: update dependencies
+
+# Bad branch names
+new-feature
+my-branch
+bug-fix
+
+# Bad commit messages
+added stuff
+fixes
+update
+----
+====
+
+== Name AAP resources using lowercase with underscores and organization prefixes
+[%collapsible]
+====
+Explanations::
+All AAP resource names (organizations, teams, credentials, projects, inventories, job templates, workflow templates, execution environments, schedules) must use *lowercase only* with *underscores* as separators.
+Resource names should include an abbreviated organization prefix (e.g. `eng_`, `plat_`, `ops_`) to ensure uniqueness within the AAP instance.
++
+The specific naming patterns per resource type are:
++
+* *Organizations*: Full descriptive name (e.g. `engineering`, `platform`)
+* *Teams*: `{org}_{purpose}` (e.g. `eng_admins`, `ops_oncall`)
+* *Credentials*: `{org}_{type}_{identity}_{target}` (e.g. `eng_machine_ansible_linux_prod`)
+* *Projects*: `{org}_{domain}_{purpose}_{type}` (e.g. `eng_webapp_deploy_playbooks`)
+* *Inventories*: `{org}_{target}_{scope}` (e.g. `eng_webservers_app`)
+* *Job Templates*: `{org}_{action}_{target}_{scope}` (e.g. `eng_deploy_webapp_canary`)
+* *Workflow Templates*: `{org}_{workflow}_{scope}_{purpose}` (e.g. `eng_workflow_full_deployment`)
+* *Execution Environments*: `{org}_{purpose}_ee_{version}` (e.g. `eng_automation_ee_26.1.6-0`)
+* *Schedules*: `{org}_{freq}_{jt_action}_{jt_target}_{variant}` (e.g. `ops_daily_backup_database_full`)
+
+Rationale::
+AAP instances can contain hundreds of resources from multiple teams.
+Without a consistent naming standard, it becomes impossible to determine ownership, purpose, or scope of resources.
+Organization prefixes provide a namespace that prevents collisions and makes filtering and searching straightforward.
+
+Examples::
++
+[source]
+----
+# Credentials - include identity for uniqueness
+eng_machine_ansible_linux_prod    # ansible user → prod linux servers
+plat_scm_git_github_main          # git user → github main org
+ops_cloud_svc_backup_aws_prod     # svc_backup → AWS prod account
+
+# Job Templates - include action, target, scope
+eng_deploy_webapp_canary           # canary deployment
+ops_backup_database_full_daily     # daily full backup
+sec_scan_compliance_cis_weekly     # weekly CIS scan
+
+# Bad - spaces, mixed case, no org prefix
+Deploy Web Application
+linux-servers
+prod
+----
+====

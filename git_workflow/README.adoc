@@ -1,0 +1,310 @@
+= Git workflow and versioning
+
+A well-defined Git workflow and versioning strategy is essential for managing Ansible automation at scale.
+This section covers branching strategies, versioning approaches, tagging practices, and promotion workflows for automation content.
+
+== Use trunk-based development with a single main branch
+[%collapsible]
+====
+Explanations::
+All development should target a single `main` branch.
+Changes are made through short-lived feature branches that are merged via pull requests after review and CI validation.
+There should be no long-lived environment branches (e.g. `dev`, `qa`, `prod`).
+
+Rationale::
+Long-lived environment branches inevitably diverge, creating merge conflicts and making it unclear what state each environment is in.
+Trunk-based development with a single `main` branch provides a single source of truth, reduces merge conflicts through frequent integration, and keeps the codebase in a consistently releasable state.
++
+Environment promotion is handled through tags and release manifests, not branches.
+
+Examples::
++
+[source,bash]
+----
+# Good - short-lived feature branch from main
+git checkout main && git pull
+git checkout -b feature/add-webserver-role
+
+# Develop, test locally, then push
+git push origin feature/add-webserver-role
+# Create PR, get approval, merge, delete branch
+
+# Bad - long-lived environment branches
+main
+├── dev (branch)     # diverges from main
+├── qa (branch)      # diverges from dev
+└── prod (branch)    # diverges from qa
+----
+====
+
+== Keep feature branches short-lived
+[%collapsible]
+====
+Explanations::
+Feature branches should live for hours to days, not weeks.
+Break large changes into smaller, incremental pull requests that can be merged frequently.
+Use feature flags if a feature is incomplete but the code should still be merged.
+
+Rationale::
+Long-lived branches accumulate merge conflicts, make code review harder (large diffs), and delay integration.
+Short-lived branches reduce risk and provide faster feedback on changes.
+
+Examples::
++
+[source,bash]
+----
+# Good - branch naming conventions
+feature/add-webserver-role       # New feature
+fix/correct-inventory-validation  # Bug fix
+hotfix/security-patch             # Emergency production fix
+
+# Branch lifecycle
+git checkout -b feature/add-monitoring main
+# ... develop for 1-2 days ...
+git push origin feature/add-monitoring
+# Create PR → review → merge → delete branch
+----
+====
+
+== Choose a versioning strategy that fits your release cadence
+[%collapsible]
+====
+Explanations::
+Two common versioning strategies for automation content are:
++
+* *Semantic Versioning (SemVer)*: `MAJOR.MINOR.PATCH` -- best for libraries, collections, and content with API contracts where consumers need compatibility signals.
+* *Calendar Versioning (CalVer)*: `YY.M.D-PATCH` -- best for internal automation platforms with frequent releases where the question "when was this deployed?" matters most.
++
+Pick one strategy and apply it consistently across all components (Git tags, collections, execution environments, AAP project references).
+
+Rationale::
+SemVer communicates API compatibility (major bump = breaking changes) but requires subjective judgment on each release.
+CalVer provides instant date visibility, eliminates version bump debates, and pairs naturally with trunk-based development.
++
+For internal automation platforms, CalVer is often the better choice because operators care more about *when* something was released than whether it has "breaking changes" (which in an internal platform are managed through documentation and team communication).
++
+For public collections or libraries consumed by external users, SemVer is preferred because consumers need compatibility signals.
+
+Examples::
++
+.CalVer examples
+[source]
+----
+26.1.6-0    # January 6, 2026 - Initial release
+26.1.6-1    # January 6, 2026 - Same-day hotfix
+26.1.7-0    # January 7, 2026 - New release
+26.2.15-0   # February 15, 2026 - New release
+----
++
+.SemVer examples
+[source]
+----
+1.0.0       # Initial release
+1.1.0       # New feature, backward compatible
+1.1.1       # Bug fix
+2.0.0       # Breaking change
+----
++
+NOTE: If using CalVer for Ansible collections, ensure your format is PEP 440 compatible (no leading zeros in month or day).
+====
+
+== Use immutable Git tags for releases
+[%collapsible]
+====
+Explanations::
+Release tags must be immutable: once created, they should never be deleted, moved, or force-pushed.
+Use annotated tags with descriptive messages that include a summary of changes, testing status, and rollback instructions.
+
+Rationale::
+Immutable tags provide a reliable audit trail and enable deterministic promotion across environments.
+If tags can be moved, it becomes impossible to know what code was actually deployed to a given environment at a given time.
+
+Examples::
++
+[source,bash]
+----
+# Good - annotated tag with descriptive message
+git tag -a 26.1.5-0 -m "Release January 5, 2026
+
+Features:
+- Add webserver role with HA support
+- Add database backup automation
+
+Testing:
+- All molecule tests pass
+- Integration tests successful
+
+Rollback: Revert to 26.1.4-0"
+
+git push origin 26.1.5-0
+
+# Bad - lightweight tag with no message
+git tag 26.1.5-0
+
+# Never do this - violates immutability
+git tag -d 26.1.5-0
+git tag 26.1.5-0 <different-commit>
+git push --force origin 26.1.5-0
+----
++
+For same-day hotfixes, increment the patch number rather than reusing the tag:
++
+[source,bash]
+----
+26.1.5-0    # Original release
+26.1.5-1    # Hotfix (do NOT delete and recreate 26.1.5-0)
+----
+====
+
+== Promote the same tag across all environments
+[%collapsible]
+====
+Explanations::
+A single release tag (e.g. `26.1.5-0`) should promote unchanged through Dev, QA, and Production.
+The release manifest or deployment tooling tracks which tag is deployed to which environment, rather than creating environment-specific tags.
+
+Rationale::
+If different tags are used per environment, there is no guarantee that the code deployed to production is the same code that was tested in QA.
+Promoting the same immutable tag ensures true atomic promotion -- the exact same artifact is tested and deployed everywhere.
+
+Examples::
++
+[source]
+----
+# Good - same tag promoted through environments
+Dev:  26.1.5-0   ← deployed first
+QA:   26.1.5-0   ← same tag promoted after dev validation
+Prod: 26.1.5-0   ← same tag promoted after QA sign-off
+
+# Bad - different tags per environment
+Dev:  26.1.5-dev
+QA:   26.1.5-qa
+Prod: 26.1.5-prod
+----
+====
+
+== Never use "latest" or branch names in production references
+[%collapsible]
+====
+Explanations::
+Production AAP projects, execution environments, and container images must always reference a specific version tag or image digest, never `latest`, `main`, or any mutable reference.
+
+Rationale::
+Mutable references make deployments non-reproducible.
+If production uses `latest` and someone pushes a new image, production changes without any approval or testing process.
+This violates every principle of controlled change management.
+
+Examples::
++
+[source,yaml]
+----
+# Good - specific version references
+controller_projects:
+  - name: "Prod Automation"
+    scm_branch: "26.1.5-0"
+
+controller_execution_environments:
+  - name: "Prod EE"
+    image: "quay.io/myorg/automation-ee:26.1.5-0"
+
+# Bad - mutable references
+controller_projects:
+  - name: "Prod Automation"
+    scm_branch: "main"
+
+controller_execution_environments:
+  - name: "Prod EE"
+    image: "quay.io/myorg/automation-ee:latest"
+----
+====
+
+== Synchronize versions across all components
+[%collapsible]
+====
+Explanations::
+When releasing, all components (Git tags, collection versions, execution environment image tags, AAP configuration references) should use the same version identifier.
+
+Rationale::
+Version mismatches between components are a common source of production incidents.
+If the playbook expects collection version `26.1.6-0` but the execution environment was built with `26.1.5-0` dependencies, behavior may differ.
+Keeping all versions synchronized simplifies tracking and debugging.
+
+Examples::
++
+[source]
+----
+# Good - all components use the same version
+Release: 26.1.5-0
+  ├── AAP Config tag:     26.1.5-0
+  ├── Collection version: 26.1.5-0
+  └── EE image tag:       26.1.5-0
+
+# Bad - mismatched versions
+Release: 26.1.5-0
+  ├── AAP Config tag:     26.1.5-0
+  ├── Collection version: 26.1.4-0   ← stale
+  └── EE image tag:       26.1.5-1   ← ahead
+----
+====
+
+== Protect the main branch with required reviews and CI checks
+[%collapsible]
+====
+Explanations::
+The `main` branch should be protected with branch protection rules:
++
+* No direct commits (all changes via pull request)
+* At least one approving review required
+* All CI status checks must pass (pre-commit, linting, tests)
+* No force pushes or branch deletion
+
+Rationale::
+Unprotected main branches allow untested, unreviewed code to enter the codebase.
+Branch protection ensures every change goes through quality gates before reaching the shared codebase.
+
+Examples::
++
+[source,yaml]
+----
+# GitHub branch protection settings
+required_pull_request_reviews:
+  required_approving_review_count: 1
+required_status_checks:
+  contexts:
+    - pre-commit
+    - ansible-lint
+    - molecule-test
+allow_force_pushes: false
+allow_deletions: false
+----
+====
+
+== Document breaking changes prominently
+[%collapsible]
+====
+Explanations::
+When a release contains breaking changes (renamed variables, removed features, changed behavior), document them prominently in the Git tag message and in a CHANGELOG file.
+
+Rationale::
+Without CalVer or SemVer major bumps to signal breaking changes, clear documentation becomes the primary mechanism for communicating incompatibilities.
+Operators need to know about breaking changes before promoting a release to production.
+
+Examples::
++
+[source,bash]
+----
+git tag -a 26.2.1-0 -m "WARNING: BREAKING CHANGES
+
+Breaking:
+- Removed deprecated inventory format
+- Changed role variable prefix from 'ws_' to 'webserver_'
+
+Migration:
+- See CHANGELOG.md for migration guide
+- Update all playbooks referencing 'ws_' variables
+
+Features:
+- Add SSL support to webserver role
+- Add monitoring integration"
+----
+====

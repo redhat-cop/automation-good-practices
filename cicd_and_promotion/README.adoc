@@ -1,0 +1,278 @@
+= CI/CD and promotion
+
+Continuous Integration and Continuous Delivery pipelines are the backbone of a reliable automation lifecycle.
+This section covers good practices for CI/CD workflows, pre-commit hooks, quality validation, and environment promotion for Ansible content.
+
+== Use pre-commit hooks to enforce quality before code enters the repository
+[%collapsible]
+====
+Explanations::
+Install and configure https://pre-commit.com/[pre-commit] hooks in every automation repository.
+Hooks should run syntax validation, linting, secret detection, and formatting checks automatically before each commit.
+
+Rationale::
+Pre-commit hooks provide the fastest possible feedback loop -- issues are caught before code even reaches the repository, saving CI time and preventing bad code from entering the shared codebase.
+Without pre-commit hooks, developers rely solely on CI pipelines which are slower and create noisy failure notifications.
+
+Examples::
++
+[source,bash]
+----
+# Install pre-commit in a repository
+pip install pre-commit
+pre-commit install
+
+# Run all hooks manually
+pre-commit run --all-files
+
+# Update hook versions
+pre-commit autoupdate
+----
++
+A typical pre-commit configuration for an Ansible project includes:
++
+[cols="1,2", options="header"]
+|===
+| Hook | Purpose
+| `yamllint` | YAML syntax and formatting
+| `ansible-lint` | Ansible best practices
+| `detect-secrets` | Prevent secrets from being committed
+| `check-yaml` | Basic YAML validity
+| `end-of-file-fixer` | Ensure files end with newline
+| `trailing-whitespace` | Remove trailing whitespace
+|===
+====
+
+== Run the same checks in CI that run in pre-commit
+[%collapsible]
+====
+Explanations::
+CI pipelines should run the same pre-commit hooks as developers run locally, ensuring that even if a developer bypasses local hooks (e.g. `git commit --no-verify`), the checks still run.
+
+Rationale::
+Pre-commit hooks can be bypassed locally, intentionally or accidentally.
+CI pipelines serve as the authoritative quality gate that cannot be bypassed, ensuring that no code enters the main branch without passing all checks.
+
+Examples::
++
+[source,yaml]
+----
+# .github/workflows/pre-commit.yml
+name: Pre-commit Checks
+on: [push, pull_request]
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+      - run: pip install pre-commit
+      - run: pre-commit run --all-files --show-diff-on-failure
+----
+====
+
+== Design CI pipelines for fast feedback
+[%collapsible]
+====
+Explanations::
+PR validation pipelines should complete in under 5 minutes.
+Use caching, parallel job execution, conditional execution (only run relevant tests based on changed files), and matrix strategies to keep pipelines fast.
+
+Rationale::
+Slow CI pipelines discourage frequent commits and pull requests, lead to larger and riskier changes, and reduce developer productivity.
+Fast feedback encourages the short-lived branches and frequent integration that trunk-based development requires.
+
+Examples::
++
+[source,yaml]
+----
+# Cache dependencies for speed
+- name: Cache pre-commit hooks
+  uses: actions/cache@v4
+  with:
+    path: ~/.cache/pre-commit
+    key: pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+
+# Run tests in parallel with matrix strategy
+strategy:
+  matrix:
+    scenario: [default, centos, ubuntu]
+  fail-fast: false
+
+# Only run when relevant files change
+on:
+  push:
+    paths:
+      - 'roles/**'
+      - 'plugins/**'
+----
+====
+
+== Separate testing (CI) from building and releasing (CD)
+[%collapsible]
+====
+Explanations::
+Use CI tools (e.g. GitHub Actions) for testing, linting, and validation -- things that run on every push and PR.
+Use CD tools (e.g. CI/CD pipelines, AAP workflows) for building artifacts, publishing to registries, and deploying to environments.
+
+Rationale::
+Testing and building serve different purposes and have different security requirements.
+Testing needs access to the code but not to production credentials.
+Building and releasing need access to registries and deployment targets but should only run on approved code (merged to main, tagged).
++
+Separating these concerns reduces the attack surface and makes each pipeline simpler.
+
+Examples::
++
+[cols="1,1,1", options="header"]
+|===
+| CI (Testing) | CD (Building/Releasing) | Trigger
+| Pre-commit validation | Build and publish collections | Tag creation
+| Ansible-lint | Build execution environments | Merge to main
+| Unit and Molecule tests | Create release manifests | Manual approval
+| Security scanning | Promote between environments | Pipeline trigger
+|===
+====
+
+== Implement quality gates at each promotion stage
+[%collapsible]
+====
+Explanations::
+Each environment promotion (Dev → QA → Prod) should have explicit quality gates that must pass before promotion proceeds:
++
+* *Dev*: All CI tests pass (lint, syntax, unit, molecule)
+* *QA*: Dev tests pass + code review completed + QA lead approval
+* *Prod*: QA tests pass + QA sign-off + security scan clean + change advisory board (CAB) approval + rollback plan documented
+
+Rationale::
+Quality gates prevent untested or unapproved changes from reaching production.
+Without explicit gates, the promotion process becomes informal and error-prone, leading to incidents that could have been prevented.
+
+Examples::
++
+[source]
+----
+Development:
+  ✓ All CI tests pass
+  ✓ Code review approved
+  → Auto-deploy to Dev
+
+QA Promotion:
+  ✓ Dev validation complete
+  ✓ QA lead approval
+  → Deploy to QA
+
+Production Promotion:
+  ✓ QA testing complete
+  ✓ QA sign-off
+  ✓ Security scan passed
+  ✓ CAB approval received
+  ✓ Change window scheduled
+  ✓ Rollback plan documented
+  → Deploy to Prod
+----
+====
+
+== Validate PR quality with automated checks
+[%collapsible]
+====
+Explanations::
+Pull request validation should include automated checks beyond code linting:
++
+* PR size limits (flag overly large PRs)
+* Semantic PR title validation (for changelog generation)
+* Changed file analysis (flag production config changes for extra review)
+* Documentation update checks (ensure docs are updated with code changes)
+* Merge conflict detection
+
+Rationale::
+Automated PR checks reduce the burden on reviewers by catching mechanical issues before human review begins.
+They also enforce team conventions consistently without relying on reviewer memory.
+
+Examples::
++
+[source,yaml]
+----
+# Example PR validation workflow
+- name: Check PR size
+  run: |
+    CHANGED=$(git diff --stat origin/main...HEAD | tail -1)
+    echo "Changes: $CHANGED"
+
+- name: Validate PR title
+  run: |
+    # Ensure conventional commit format
+    echo "${{ github.event.pull_request.title }}" | \
+      grep -qE "^(feat|fix|docs|chore|test|refactor|ci|perf):"
+----
+====
+
+== Use release manifests to track what is deployed where
+[%collapsible]
+====
+Explanations::
+Create release manifests that record the exact version of every component (Git commit SHAs, collection versions, execution environment image digests) and which environment each version is deployed to.
+
+Rationale::
+Release manifests provide a single source of truth for "what is running in production right now."
+They enable deterministic rollback (deploy exactly the previous manifest), auditability (who approved what, when), and troubleshooting (quickly identify version mismatches).
+
+Examples::
++
+[source,yaml]
+----
+# releases/release-26.1.5-0.yaml
+version: "26.1.5-0"
+created: "2025-01-05T10:00:00Z"
+
+components:
+  aap_configuration:
+    commit: "abc123def456..."
+    tag: "26.1.5-0"
+  collections:
+    version: "26.1.5-0"
+  execution_environment:
+    tag: "26.1.5-0"
+    digest: "sha256:fedcba..."
+
+environments:
+  dev:
+    deployed_at: "2025-01-05T09:00:00Z"
+  qa:
+    deployed_at: "2025-01-05T11:00:00Z"
+    validated: true
+  prod:
+    deployed_at: "2025-01-05T15:00:00Z"
+    approved_by: "CAB"
+----
+====
+
+== Always have a documented rollback plan
+[%collapsible]
+====
+Explanations::
+Before promoting to production, document the rollback procedure: which previous version to revert to, how to trigger the rollback, and what validation to perform after rollback.
+
+Rationale::
+Production incidents happen.
+Having a pre-documented rollback plan reduces the mean time to recovery (MTTR) from hours to minutes.
+Without a rollback plan, teams must figure out the recovery process under pressure during an incident.
+
+Examples::
++
+[source,bash]
+----
+# Rollback by deploying the previous known-good version
+# Current: 26.1.5-1 (has issues)
+# Rollback to: 26.1.5-0 (last known good)
+
+# Create a new tag pointing to the rollback state
+git tag -a 26.1.6-0 -m "Rollback to 26.1.5-0 state
+
+Rolled back from: 26.1.5-1
+Reason: Critical issue in webserver role
+Rollback approved by: CHG0001236"
+----
+====
+
+NOTE: For vulnerability scanning, SBOM generation, and security scanning as part of CI/CD, see the <<_security>> section.
