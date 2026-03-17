@@ -84,6 +84,34 @@ gitleaks detect
 ----
 ====
 
+== Enable push protection on your Git hosting platform
+[%collapsible]
+====
+Explanations::
+Most Git hosting platforms offer server-side push protection that blocks pushes containing detected secrets before they ever reach the repository.
+This is a complementary layer to client-side pre-commit hooks and CI scanning:
++
+* https://docs.github.com/en/code-security/concepts/secret-security/about-push-protection[GitHub push protection] scans pushes for known secret patterns and blocks the push if a match is found.
+* https://docs.gitlab.com/user/application_security/secret_detection/secret_push_protection/[GitLab secret push protection] provides equivalent server-side blocking.
++
+Push protection should be enabled at the organization level so that all repositories are covered by default.
+
+Rationale::
+Pre-commit hooks run client-side and can be bypassed (`git commit --no-verify`).
+CI scanning catches secrets _after_ they have been pushed, meaning the secret is already in the repository history.
+Push protection is the only mechanism that blocks secrets _at the server_ before they enter the repository at all, closing the gap between client-side hooks and post-push CI scanning.
+
+Examples::
++
+[cols="1,1,1", options="header"]
+|===
+| Layer | When it runs | Can be bypassed?
+| Pre-commit hooks | Before local commit | Yes (`--no-verify`)
+| Push protection | During `git push` (server-side) | Only with explicit override and audit trail
+| CI secret scanning | After push, during pipeline | No, but secret is already in history
+|===
+====
+
 == Apply least-privilege access control
 [%collapsible]
 ====

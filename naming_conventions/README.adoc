@@ -10,7 +10,7 @@ NOTE: For naming conventions related to Ansible code (variables, tasks, handlers
 ====
 Explanations::
 Names should clearly communicate purpose without being excessively long.
-Use the same pattern throughout a project: pick one separator convention (underscores for Ansible, hyphens for repos and files), one file extension (`.yml` not mixed `.yml` and `.yaml`), and one casing convention per context.
+Use the same pattern throughout a project: pick one separator convention (hyphens for repos and files, underscores for AAP resources), one file extension (`.yml` not mixed `.yml` and `.yaml`), and one casing convention per context.
 
 Rationale::
 Consistent naming reduces cognitive load, makes resources easier to search and discover, and helps new team members navigate the codebase.
@@ -20,16 +20,16 @@ Examples::
 +
 [source]
 ----
-# Good - descriptive but concise
-webserver_port
-database_backup_schedule
+# Good - descriptive, consistent separators per context
+automation-playbooks               # Repository (hyphens)
+deploy-webapp.yml                  # Playbook file (hyphens)
+eng_deploy_webapp_canary           # AAP Job Template (underscores)
+feature/add-webserver-role         # Git branch (hyphens)
 
-# Too verbose
-web_server_configuration_file_settings
-
-# Too brief and unclear
-ws_cfg
-db_bkp
+# Bad - inconsistent separators and casing
+AutomationPlaybooks                # Mixed case repo name
+deploy_webapp.yml                  # Underscores in filenames
+Eng Deploy Webapp                  # Spaces and mixed case in AAP
 ----
 ====
 
@@ -82,31 +82,6 @@ patch-systems.yml
 webapp.yml
 webserver.yml
 database.yml
-----
-====
-
-== Use positive boolean variable names
-[%collapsible]
-====
-Explanations::
-Boolean variables should be named positively (e.g. `enabled`, `ssl_verify`) rather than negatively (e.g. `disabled`, `no_ssl`).
-
-Rationale::
-Negative boolean names create double negatives when used in conditions (`when: not webserver_disabled`), which are harder to read and reason about.
-
-Examples::
-+
-[source,yaml]
-----
-# Good - positive names
-webserver_enabled: true
-database_ssl_verify: true
-backup_perform: true
-
-# Bad - negative names lead to confusing logic
-webserver_disabled: false
-database_ssl_no_verify: false
-skip_backup: false
 ----
 ====
 
