@@ -44,8 +44,7 @@ This document is published to https://redhat-cop.github.io/automation-good-pract
 
 '''
 
-[discrete]
-== Part I -- Foundations
+= Part I -- Foundations
 
 include::structures/README.adoc[leveloffset=1]
 
@@ -53,8 +52,7 @@ include::naming_conventions/README.adoc[leveloffset=1]
 
 '''
 
-[discrete]
-== Part II -- Developing Ansible Content
+= Part II -- Developing Ansible Content
 
 include::roles/README.adoc[leveloffset=1]
 
@@ -70,15 +68,13 @@ include::coding_style/README.adoc[leveloffset=1]
 
 '''
 
-[discrete]
-== Part III -- AAP and Configuration as Code
+= Part III -- AAP and Configuration as Code
 
 include::aap_configuration/README.adoc[leveloffset=1]
 
 '''
 
-[discrete]
-== Part IV -- Lifecycle and Operations
+= Part IV -- Lifecycle and Operations
 
 include::git_workflow/README.adoc[leveloffset=1]
 

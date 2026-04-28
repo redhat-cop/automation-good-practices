@@ -51,7 +51,8 @@ CI pipelines should run the same pre-commit hooks as developers run locally, ens
 
 Rationale::
 Pre-commit hooks can be bypassed locally, intentionally or accidentally.
-CI pipelines serve as the authoritative quality gate that cannot be bypassed, ensuring that no code enters the main branch without passing all checks.
+Additionally, some development environments may not support installing pre-commit at all (e.g. restricted workstations, certain cloud-based editors).
+CI pipelines serve as the authoritative quality gate that cannot be bypassed, ensuring that no code enters the main branch without passing all checks regardless of the developer's local setup.
 
 Examples::
 +

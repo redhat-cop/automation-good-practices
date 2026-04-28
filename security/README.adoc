@@ -176,7 +176,7 @@ controller_credentials:
 [%collapsible]
 ====
 Explanations::
-Credentials (passwords, tokens, API keys, SSH keys) should be rotated on a regular schedule.
+Credentials used by technical and service accounts (passwords, tokens, API keys, SSH keys) should be rotated on a regular schedule.
 The rotation process should be automated where possible and documented where it cannot be.
 
 Rationale::

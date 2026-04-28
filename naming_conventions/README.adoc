@@ -63,10 +63,12 @@ my_playbooks                  # Underscores in repo names
 ====
 Explanations::
 Playbook files should follow the pattern `{verb}-{noun}.yml`, clearly describing the action being performed.
+Some teams use a `pb_` prefix (e.g. `pb_deploy-webapp.yml`) to distinguish playbooks from other YAML files in the repository, which can simplify automated scanning and testing.
 Group variable files should be named after the category they contain (e.g. `credentials.yml`, `organizations.yml`).
 
 Rationale::
 Verb-noun naming makes the purpose of each playbook immediately obvious when listing files, and avoids ambiguity about what a playbook does.
+A consistent prefix like `pb_` can be useful when a repository contains many YAML files (inventories, variable files, playbooks) and tooling needs to target only playbooks.
 
 Examples::
 +
@@ -77,6 +79,10 @@ deploy-webapp.yml
 configure-webserver.yml
 backup-database.yml
 patch-systems.yml
+
+# Good - With pb_ prefix for easy identification
+pb_deploy-webapp.yml
+pb_configure-webserver.yml
 
 # Bad - No verb, unclear purpose
 webapp.yml

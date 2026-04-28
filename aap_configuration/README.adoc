@@ -11,7 +11,7 @@ All AAP objects -- organizations, teams, credentials, projects, inventories, job
 No manual changes should be made through the AAP UI for anything that can be expressed as code.
 
 Rationale::
-Configuration as Code provides version control (all changes tracked), reproducibility (rebuild environments from scratch), consistency (same config across Dev/QA/Prod), auditability (clear change history), and disaster recovery (restore quickly from Git).
+Configuration as Code provides version control (all changes tracked), reproducibility (rebuild environments from scratch), consistency (same config across Dev/QA/Prod), auditability (clear change history), disaster recovery (restore quickly from Git), and simplified migration between platforms.
 +
 Manual UI changes create configuration drift, are not auditable, and cannot be reproduced reliably.
 
@@ -79,7 +79,7 @@ Shared configuration belongs in `group_vars/all/` while environment-specific set
 
 Rationale::
 This structure leverages Ansible's native variable precedence system, where environment-specific `group_vars` override shared `all` settings.
-It keeps the repository organized and makes it clear which configuration is shared versus environment-specific.
+It keeps the repository organized, makes it clear which configuration is shared versus environment-specific, and makes it easy to use CD pipelines to roll out configuration changes across AAP instances.
 
 Examples::
 +
