@@ -124,6 +124,25 @@ Using the name of the role reduces the potential for name conflicts and using th
 The two underscores convention has prior art in some popular roles like
 https://github.com/geerlingguy/ansible-role-apache/blob/f2b91ac84001db3fd4b43306a8f73f1a54f96f7d/vars/Debian.yml#L8[geerlingguy.ansible-role-apache]).
 This includes variables set by set_fact and register, because they persist in the namespace after the role has finished!
+* In roles, do not use the default Ansible loop variable `item`. Set `loop_control.loop_var` to an internal name prefixed with `__` (and ideally the role name), then reference that name in the task `vars:` block and in `when:` conditions.
++
+Rationale:: `item` is generic and leaks into the play namespace; it is easy to clash with another loop or with a host variable. A dedicated `__rolename_*` loop variable makes intent obvious and matches the internal-variable convention.
++
+Example::
++
+[source,yaml]
+----
+- name: Set platform/version specific variables
+  ansible.builtin.include_vars: "{{ __rolename_vars_file }}"
+  loop:
+    - "{{ ansible_facts['os_family'] }}.yml"
+    - "{{ ansible_facts['distribution'] }}.yml"
+  loop_control:
+    loop_var: __rolename_vars_candidate
+  vars:
+    __rolename_vars_file: "{{ role_path }}/vars/{{ __rolename_vars_candidate }}"
+  when: __rolename_vars_file is file
+----
 * Prefix all tags within a role with the role name or, alternatively, a "unique enough" but descriptive prefix.
 * Do not use dashes in role names. This will cause issues with collections.
 ====
@@ -244,8 +263,10 @@ Examples::
     - "{{ ansible_facts['distribution'] }}.yml"
     - "{{ ansible_facts['distribution'] }}_{{ ansible_facts['distribution_major_version'] }}.yml"
     - "{{ ansible_facts['distribution'] }}_{{ ansible_facts['distribution_version'] }}.yml"
+  loop_control:
+    loop_var: __rolename_vars_candidate
   vars:
-    __rolename_vars_file: "{{ role_path }}/vars/{{ item }}"
+    __rolename_vars_file: "{{ role_path }}/vars/{{ __rolename_vars_candidate }}"
   when: __rolename_vars_file is file
 ----
 
@@ -269,7 +290,7 @@ The files in the `loop` are in order from least specific to most specific:
 See https://docs.ansible.com/ansible/latest/user_guide/playbooks_conditionals.html#ansible-facts-distribution[Commonly Used Facts] for an explanation of the facts and their common values.
 
 Each file in the `loop` list will allow you to add or override variables to specialize the values for platform and/or version.
-Using the `when: item is file` test means that you do not have to provide all of the `vars/` files, only the ones you need.
+Using the `when: __rolename_vars_file is file` test means that you do not have to provide all of the `vars/` files, only the ones you need.
 For example, if every platform except Fedora uses `srv_name` for the service name, you can define `myrole_service: srv_name` in `vars/main.yml` then define `myrole_service: srv2_name` in `vars/Fedora.yml`.
 In cases where this would lead to duplicate vars files for similar distributions (e.g. CentOS 7 and RHEL 7), use symlinks to avoid the duplication.
 
@@ -292,8 +313,10 @@ If this is a problem, construct the file list as a list variable, and filter the
 - name: Set platform/version specific variables
   include_vars: "{{ __rolename_vars_file }}"
   loop: "{{ __rolename_vars_file_list | unique | list }}"
+  loop_control:
+    loop_var: __rolename_vars_candidate
   vars:
-    __rolename_vars_file: "{{ role_path }}/vars/{{ item }}"
+    __rolename_vars_file: "{{ role_path }}/vars/{{ __rolename_vars_candidate }}"
   when: __rolename_vars_file is file
 ----
 
