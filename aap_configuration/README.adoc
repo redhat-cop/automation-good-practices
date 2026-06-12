@@ -1,0 +1,300 @@
+= AAP Configuration as Code
+
+Managing https://www.redhat.com/en/technologies/management/ansible[Ansible Automation Platform] configuration declaratively through Git is a foundational practice for scalable, auditable, and reproducible automation.
+This section covers good practices for using the `infra.aap_configuration` collection and structuring AAP Configuration as Code (CaC) repositories.
+
+== Manage all AAP configuration declaratively using Git and the infra.aap_configuration collection
+[%collapsible]
+====
+Explanations::
+All AAP objects -- organizations, teams, credentials, projects, inventories, job templates, workflow templates, execution environments, schedules, and settings -- should be defined as YAML data in a Git repository and applied using the `infra.aap_configuration` collection.
+No manual changes should be made through the AAP UI for anything that can be expressed as code.
+
+Rationale::
+Configuration as Code provides version control (all changes tracked), reproducibility (rebuild environments from scratch), consistency (same config across Dev/QA/Prod), auditability (clear change history), disaster recovery (restore quickly from Git), and simplified migration between platforms.
++
+Manual UI changes create configuration drift, are not auditable, and cannot be reproduced reliably.
+
+Examples::
++
+[source,yaml]
+----
+# collections/requirements.yml
+collections:
+  - name: infra.aap_configuration
+    version: "2.9.0"  # Always pin to an exact version
+----
++
+[source,yaml]
+----
+# playbook.yml - Use the dispatch role for streamlined configuration
+---
+- name: Configure AAP
+  hosts: aap_dev
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Apply AAP Configuration
+      ansible.builtin.include_role:
+        name: infra.aap_configuration.dispatch
+----
++
+The `dispatch` role automatically reads variables from `group_vars` and `host_vars`, applies configuration in the correct dependency order, handles idempotency, and provides clear output of changes made.
+====
+
+== Use the dispatch role for simplified and ordered configuration application
+[%collapsible]
+====
+Explanations::
+The `infra.aap_configuration.dispatch` role should be used rather than calling individual roles directly.
+It automatically handles the correct order of operations (organizations before credentials, credentials before projects, projects before job templates, etc.).
+
+Rationale::
+Manually ordering role calls is error-prone and creates maintenance burden.
+The dispatch role ensures dependencies are resolved automatically and configuration is applied idempotently.
++
+If you call individual roles in the wrong order, you will get "Object not found" errors (e.g. creating a job template before the project it references exists).
+
+Examples::
++
+The dispatch role applies configuration in this order:
++
+. Organizations
+. Credential Types
+. Credentials
+. Projects
+. Inventories
+. Job Templates
+. Workflows
+. Schedules
+====
+
+== Structure CaC repositories with environment-specific group_vars
+[%collapsible]
+====
+Explanations::
+AAP CaC repositories should use Ansible inventory with group-based variable files to manage environment-specific configuration.
+Shared configuration belongs in `group_vars/all/` while environment-specific settings go in `group_vars/aap_dev/`, `group_vars/aap_qa/`, and `group_vars/aap_prod/`.
+
+Rationale::
+This structure leverages Ansible's native variable precedence system, where environment-specific `group_vars` override shared `all` settings.
+It keeps the repository organized, makes it clear which configuration is shared versus environment-specific, and makes it easy to use CD pipelines to roll out configuration changes across AAP instances.
+
+Examples::
++
+[source]
+----
+aap-config-as-code/
+├── playbook.yml
+├── inventory.yml
+├── collections/
+│   └── requirements.yml
+├── group_vars/
+│   ├── all/                  # Shared across all environments
+│   │   ├── organizations.yml
+│   │   ├── teams.yml
+│   │   ├── credential_types.yml
+│   │   └── labels.yml
+│   ├── aap_dev/              # Dev-specific
+│   │   ├── credentials.yml
+│   │   ├── inventories.yml
+│   │   ├── projects.yml
+│   │   └── job_templates.yml
+│   ├── aap_qa/               # QA-specific
+│   └── aap_prod/             # Prod-specific
+└── README.md
+----
++
+[source,bash]
+----
+# Apply configuration to a specific environment
+ansible-playbook playbook.yml -i inventory.yml -l aap_dev
+
+# Dry-run before applying
+ansible-playbook playbook.yml -i inventory.yml -l aap_prod --check --diff
+----
+====
+
+== Organize AAP variable files by coupling: shared resources in type files, tightly coupled resources in JT bundles
+[%collapsible]
+====
+Explanations::
+AAP resources fall into two categories based on their coupling:
++
+* *Shared resources* (credentials, inventories, schedules, teams, organizations, labels) are reused across multiple job templates and should be defined in *one file per object type* (e.g. `credentials.yml`, `inventories.yml`).
+* *Tightly coupled resources* (execution environments, projects, and job templates) are versioned together and should be defined in *JT bundle files* (e.g. `jt_eng_deploy_webapp.yml`).
+
+Rationale::
+Shared resources would otherwise be duplicated across many files, creating maintenance burden and inconsistency.
+JT bundles keep tightly coupled resources together so that when one changes (e.g. a new EE version), the related project and job template are updated in the same commit.
+
+Examples::
++
+[source]
+----
+group_vars/all/
+├── organizations.yml            # controller_organizations_all
+├── teams.yml                    # controller_teams_all
+├── credentials.yml              # controller_credentials_all (shared)
+├── inventories.yml              # controller_inventories_all (shared)
+├── schedules.yml                # controller_schedules_all
+├── jt_eng_deploy_webapp.yml     # EE + Project + JT bundle
+└── jt_ops_backup_db_daily.yml   # EE + Project + JT bundle
+----
++
+.Shared resource file (credentials.yml)
+[source,yaml]
+----
+controller_credentials_all:
+  - name: "eng_machine_ansible_linux_prod"
+    credential_type: "Machine"
+    organization: "engineering"
+  - name: "eng_scm_git_github_main"
+    credential_type: "Source Control"
+    organization: "engineering"
+----
++
+.JT bundle file (jt_eng_deploy_webapp.yml)
+[source,yaml]
+----
+controller_execution_environments_eng_deploy_webapp:
+  - name: "eng_automation_ee_26.1.6-0"
+    image: "quay.io/company/eng-ee@sha256:abc123..."
+    credential: "eng_registry_svc_builder_quay_io"
+
+controller_projects_eng_deploy_webapp:
+  - name: "eng_webapp_deploy_playbooks"
+    scm_url: "https://github.com/company/eng-webapp-deploy-playbooks.git"
+    credential: "eng_scm_git_github_main"
+    organization: "engineering"
+
+controller_templates_eng_deploy_webapp:
+  - name: "eng_deploy_webapp_canary"
+    project: "eng_webapp_deploy_playbooks"
+    inventory: "eng_webservers_app"
+    playbook: "deploy-webapp.yml"
+    execution_environment: "eng_automation_ee_26.1.6-0"
+    credentials:
+      - "eng_machine_ansible_linux_prod"
+----
+====
+
+== Handle secrets in CaC using vault or environment variable lookups
+[%collapsible]
+====
+Explanations::
+CaC credential definitions must never contain plain-text secrets.
+Use `lookup('env', ...)` to reference environment variables at runtime, or encrypt files with `ansible-vault`.
++
+See the <<_security>> section for the full set of secret management practices.
+
+Rationale::
+CaC repositories are shared across teams and environments.
+A secret committed to a CaC repo is visible to everyone with read access to the repository and persists in Git history permanently.
+
+Examples::
++
+[source,yaml]
+----
+# Good - reference environment variable
+controller_credentials:
+  - name: "Dev SSH Key"
+    credential_type: "Machine"
+    inputs:
+      username: "ansible"
+      ssh_key_data: "{{ lookup('env', 'SSH_PRIVATE_KEY_DEV') }}"
+----
++
+[source,bash]
+----
+# Encrypt sensitive files with vault
+ansible-vault encrypt group_vars/aap_prod/credentials.yml
+----
+====
+
+== Always pin the infra.aap_configuration collection to an exact version
+[%collapsible]
+====
+Explanations::
+The `collections/requirements.yml` file must specify an exact version of `infra.aap_configuration`, never a range or `>=` constraint.
+
+Rationale::
+Collection updates may change behavior, add required parameters, or deprecate features.
+Pinning to an exact version ensures reproducible builds and prevents unexpected breakage when a new collection version is released.
+Version upgrades should be deliberate and tested.
+
+Examples::
++
+[source,yaml]
+----
+# Good - pinned to exact version
+collections:
+  - name: infra.aap_configuration
+    version: "2.9.0"
+
+# Bad - unpinned, will break unexpectedly
+collections:
+  - name: infra.aap_configuration
+
+# Bad - range allows untested versions
+collections:
+  - name: infra.aap_configuration
+    version: ">=2.0.0"
+----
+====
+
+== Test CaC playbooks for idempotency and use check mode before applying to production
+[%collapsible]
+====
+Explanations::
+After applying CaC configuration, run the playbook again.
+The second run should report `changed=0`, confirming that all configuration is already in the desired state.
+Before applying to production, always run with `--check --diff` to preview changes without making modifications.
++
+For general idempotency practices in Ansible, see <<_roles_good_practices_for_ansible>> and <<_testing>>.
+
+Rationale::
+If a CaC playbook is not idempotent, it may create duplicate resources, overwrite unrelated settings, or fail on subsequent runs.
+Production AAP environments serve live automation workflows, so unexpected changes can break running jobs, remove schedules, or modify credentials.
+
+Examples::
++
+[source,bash]
+----
+# Run once - applies changes
+ansible-playbook playbook.yml -i inventory.yml -l aap_dev
+
+# Run again - should show no changes
+ansible-playbook playbook.yml -i inventory.yml -l aap_dev
+# Expected: "ok=X changed=0 unreachable=0 failed=0"
+
+# Preview changes to production without applying
+ansible-playbook playbook.yml -i inventory.yml -l aap_prod --check --diff
+----
+====
+
+== Apply CaC through CI/CD pipelines, not manually
+[%collapsible]
+====
+Explanations::
+CaC playbooks should be triggered by CI/CD pipelines (e.g. GitHub Actions, Tekton, Jenkins) on Git events (push, tag creation), not run manually from developer workstations.
+
+Rationale::
+Manual execution introduces human error, bypasses quality gates, and creates inconsistent application of configuration.
+CI/CD pipelines ensure that every configuration change goes through the same validation, testing, and approval process.
+
+Examples::
++
+[source,yaml]
+----
+# Example CI/CD pipeline step (generic)
+- name: Apply AAP Configuration
+  run: |
+    cd aap-config-as-code
+    ansible-galaxy collection install -r collections/requirements.yml
+    ansible-playbook playbook.yml \
+      -i inventory.yml \
+      -l aap_${{ env.TARGET_ENVIRONMENT }}
+----
+====
