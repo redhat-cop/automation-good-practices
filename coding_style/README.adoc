@@ -146,6 +146,14 @@ Explanation:: Do not use the Ansible-specific `yes` and `no` as boolean values i
 Rationale:: https://yaml.org/type/bool.html[YAML 1.1] allows all variants whereas https://yaml.org/spec/1.2/spec.html#id2803629[YAML 1.2] allows only true/false, and we want to be ready for when it becomes the default, and avoid a massive migration effort.
 ====
 
+* Use positive boolean variable names (e.g. `enabled`, `ssl_verify`) rather than negative ones (e.g. `disabled`, `no_ssl`).
++
+[%collapsible]
+====
+Rationale:: Negative boolean names create double negatives when used in conditions (`when: not webserver_disabled`), which are harder to read and reason about.
+Always prefer `webserver_enabled: true` over `webserver_disabled: false`.
+====
+
 * Avoid comments in playbooks when possible.
   Instead, ensure that the task `name` value is descriptive enough to tell what a task does.
   Variables are commented in the `defaults` and `vars` directories and, therefore, do not need explanation in the playbooks themselves.
