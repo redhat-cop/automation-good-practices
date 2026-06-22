@@ -1,0 +1,324 @@
+= Security
+
+Security is a cross-cutting concern that affects every aspect of Ansible automation.
+This section covers good practices for secret management, access control, security scanning, and maintaining a secure automation lifecycle.
+
+== Never store secrets in Git repositories
+[%collapsible]
+====
+Explanations::
+No passwords, API tokens, private keys, or other sensitive values should ever appear in plain text in any file tracked by Git.
+This includes playbooks, variable files, templates, scripts, and configuration files.
++
+Use one or more of the following approaches:
++
+* `ansible-vault` to encrypt files or individual values
+* `lookup('env', ...)` to reference environment variables at runtime
+* External secret management systems (e.g. HashiCorp Vault, CyberArk) accessed via lookup plugins
+* AAP credential objects that reference secrets stored in the platform's credential store
+
+Rationale::
+Secrets committed to Git persist in the repository history permanently, even if subsequently deleted.
+A single committed secret can compromise entire environments and is nearly impossible to fully remediate (the repository history must be rewritten, all downstream forks and clones are still exposed).
+
+Examples::
++
+[source,yaml]
+----
+# Good - reference environment variable
+- name: Configure API
+  ansible.builtin.template:
+    src: config.j2
+    dest: /etc/app/config.yml
+  vars:
+    api_token: "{{ lookup('env', 'API_TOKEN') }}"
+
+# Good - use ansible-vault encrypted variable
+- name: Configure database
+  ansible.builtin.template:
+    src: db.conf.j2
+    dest: /etc/app/db.conf
+  vars:
+    db_password: "{{ vault_db_password }}"
+
+# Bad - hardcoded secret
+- name: Configure API
+  ansible.builtin.template:
+    src: config.j2
+    dest: /etc/app/config.yml
+  vars:
+    api_token: "sk-1234567890abcdef"
+----
+====
+
+== Enforce secret detection with pre-commit hooks and CI scanning
+[%collapsible]
+====
+Explanations::
+Use automated secret detection tools in both pre-commit hooks and CI pipelines:
++
+* `detect-secrets` for pattern-based detection in code
+* `gitleaks` for scanning Git history for leaked credentials
++
+CI pipelines should fail immediately if a secret is detected, blocking the merge.
+
+Rationale::
+Human review alone is insufficient to catch accidentally committed secrets.
+Automated scanning provides a safety net that catches secrets before they enter the repository, and scanning Git history catches secrets that may have been committed previously.
+
+Examples::
++
+[source,bash]
+----
+# Scan current codebase for secrets
+detect-secrets scan
+
+# Scan Git history for leaked secrets
+gitleaks detect
+
+# CI pipeline step
+- name: Check for secrets
+  run: |
+    detect-secrets scan --all-files
+    gitleaks detect --no-git
+----
+====
+
+== Enable push protection on your Git hosting platform
+[%collapsible]
+====
+Explanations::
+Most Git hosting platforms offer server-side push protection that blocks pushes containing detected secrets before they ever reach the repository.
+This is a complementary layer to client-side pre-commit hooks and CI scanning:
++
+* https://docs.github.com/en/code-security/concepts/secret-security/about-push-protection[GitHub push protection] scans pushes for known secret patterns and blocks the push if a match is found.
+* https://docs.gitlab.com/user/application_security/secret_detection/secret_push_protection/[GitLab secret push protection] provides equivalent server-side blocking.
++
+Push protection should be enabled at the organization level so that all repositories are covered by default.
+
+Rationale::
+Pre-commit hooks run client-side and can be bypassed (`git commit --no-verify`).
+CI scanning catches secrets _after_ they have been pushed, meaning the secret is already in the repository history.
+Push protection is the only mechanism that blocks secrets _at the server_ before they enter the repository at all, closing the gap between client-side hooks and post-push CI scanning.
+
+Examples::
++
+[cols="1,1,1", options="header"]
+|===
+| Layer | When it runs | Can be bypassed?
+| Pre-commit hooks | Before local commit | Yes (`--no-verify`)
+| Push protection | During `git push` (server-side) | Only with explicit override and audit trail
+| CI secret scanning | After push, during pipeline | No, but secret is already in history
+|===
+====
+
+== Apply least-privilege access control
+[%collapsible]
+====
+Explanations::
+Every service account, CI pipeline, and AAP credential should have the minimum permissions required to perform its function.
++
+* CI pipelines that only run tests should not have access to production secrets
+* Deployment pipelines should only have write access to their target environment
+* AAP service accounts should be scoped to specific organizations and resources
+
+Rationale::
+Over-privileged accounts increase the blast radius of security incidents.
+If a CI pipeline with production credentials is compromised, the attacker gains production access.
+If that pipeline only has test credentials, the blast radius is limited to the test environment.
+
+Examples::
++
+[cols="1,1,1", options="header"]
+|===
+| Account / Pipeline | Required Permissions | Not Required
+| PR validation pipeline | Run tests, read code | Deploy, access secrets
+| Dev deployment pipeline | Deploy to dev, read dev secrets | Access to QA or prod
+| Prod deployment pipeline | Deploy to prod, read prod secrets | Write to dev or QA
+|===
+====
+
+== Use AAP credential objects instead of embedding credentials in playbooks
+[%collapsible]
+====
+Explanations::
+AAP provides a credential management system where secrets are stored securely in the platform and injected at runtime.
+Playbooks should reference credential names, never contain credential values.
++
+AAP credentials support multiple types including machine (SSH), source control (Git), cloud provider, container registry, and vault credentials.
+
+Rationale::
+AAP credential objects are stored encrypted at rest, access-controlled via RBAC, and audited.
+Embedding credentials in playbooks or variable files bypasses all of these security controls.
+
+Examples::
++
+[source,yaml]
+----
+# Good - AAP job template references credential by name
+controller_templates:
+  - name: "deploy_webapp_prod"
+    credentials:
+      - "eng_machine_ansible_linux_prod"
+      - "eng_scm_git_github_main"
+
+# Good - CaC credential definition references external secret
+controller_credentials:
+  - name: "eng_machine_ansible_linux_prod"
+    credential_type: "Machine"
+    inputs:
+      username: "ansible"
+      ssh_key_data: "{{ lookup('env', 'SSH_PRIVATE_KEY_PROD') }}"
+----
+====
+
+== Implement regular secret rotation
+[%collapsible]
+====
+Explanations::
+Credentials used by technical and service accounts (passwords, tokens, API keys, SSH keys) should be rotated on a regular schedule.
+The rotation process should be automated where possible and documented where it cannot be.
+
+Rationale::
+Long-lived credentials have a higher probability of being compromised over time.
+Regular rotation limits the window of exposure if a credential is leaked.
+Automated rotation ensures the process is consistent and does not depend on human memory.
+
+Examples::
++
+Recommended rotation intervals:
++
+[cols="1,1", options="header"]
+|===
+| Credential Type | Rotation Interval
+| API tokens | 90 days
+| SSH keys | Annually
+| Service account passwords | 90 days
+| AAP admin credentials | 90 days
+| CI/CD pipeline tokens | 90 days
+|===
+====
+
+== Scan container images and generate SBOMs for every release
+[%collapsible]
+====
+Explanations::
+Every execution environment image should be scanned for known vulnerabilities before it is deployed to any environment.
+Use tools like https://github.com/aquasecurity/trivy[Trivy] or https://github.com/anchore/grype[Grype] in the CI/CD pipeline.
+Additionally, generate a Software Bill of Materials (SBOM) for every release using tools like https://github.com/anchore/syft[Syft].
++
+Define severity thresholds that control whether the pipeline proceeds or fails.
+
+Rationale::
+Container images bundle operating system packages, Python libraries, and Ansible collections.
+Any of these components may have known security vulnerabilities.
+Scanning catches these issues before they are deployed, reducing the attack surface of automation infrastructure.
+SBOMs provide a complete inventory of components, enabling vulnerability tracking and compliance reporting.
+
+Examples::
++
+[source,bash]
+----
+# Generate SBOM
+syft quay.io/myorg/automation-ee:26.1.5-0 -o spdx-json > sbom.json
+
+# Scan with Trivy
+trivy image --severity CRITICAL,HIGH quay.io/myorg/automation-ee:26.1.5-0
+
+# Scan with Grype
+grype quay.io/myorg/automation-ee:26.1.5-0 --fail-on high
+
+# Scan Python dependencies
+pip-audit -r requirements.txt
+safety check -r requirements.txt
+----
++
+Recommended severity thresholds by environment:
++
+[cols="1,1,1", options="header"]
+|===
+| Environment | Fail Threshold | Policy
+| Development | None | Warn only
+| QA | High | Warn and track
+| Production | High/Critical | Block deployment
+|===
+====
+
+== Use Git as the audit trail for all configuration changes
+[%collapsible]
+====
+Explanations::
+When all configuration is managed as code (GitOps), Git automatically provides a complete audit trail: who changed what, when, and why (via commit messages and PR descriptions).
+
+Rationale::
+Compliance and security frameworks (SOC 2, PCI DSS, HIPAA) require auditable change management.
+Git provides this automatically when all changes flow through pull requests with reviews and approvals.
++
+Manual UI changes in AAP bypass this audit trail entirely, which is why Configuration as Code is a security practice, not just a convenience.
+
+Examples::
++
+[source,bash]
+----
+# Who made this change?
+git log --all --oneline -- group_vars/aap_prod/
+
+# What changed in the last 30 days?
+git log --since="30 days ago" --pretty=format:'%h|%an|%ad|%s' --date=iso
+
+# Full audit export for compliance
+git log --all --pretty=format:'%H|%an|%ae|%ad|%s' --date=iso > audit.csv
+----
+====
+
+== Implement network segmentation between environments
+[%collapsible]
+====
+Explanations::
+Development, QA, and production environments should be network-isolated from each other.
+Only explicitly permitted traffic (e.g. CI/CD pipelines deploying to a target environment) should cross environment boundaries.
+
+Rationale::
+Network segmentation limits the blast radius of security incidents.
+If the development environment is compromised, network isolation prevents the attacker from pivoting to production.
+It also prevents accidental cross-environment access (e.g. a dev playbook accidentally targeting production hosts).
+
+Examples::
++
+Network segmentation can be implemented through:
++
+* Network policies (in Kubernetes/OpenShift)
+* Firewall rules (in traditional infrastructure)
+* VPC/subnet separation (in cloud environments)
+* Separate AAP instances or organizations per environment
+====
+
+== Conduct regular security reviews and access audits
+[%collapsible]
+====
+Explanations::
+Perform periodic reviews of:
++
+* Service account permissions (are they still least-privilege?)
+* Active credentials (are any stale or unused?)
+* CI/CD pipeline access (who can trigger production deployments?)
+* AAP RBAC configuration (are team permissions appropriate?)
+
+Rationale::
+Access requirements change over time as team members join, leave, or change roles.
+Without periodic review, permissions accumulate ("permission creep") and the environment becomes over-privileged.
+
+Examples::
++
+Recommended review cadence:
++
+[cols="1,1", options="header"]
+|===
+| Review Type | Cadence
+| Service account permissions | Quarterly
+| Active credential audit | Quarterly
+| CI/CD pipeline access | Semi-annually
+| AAP RBAC review | Quarterly
+| Security scan results | Weekly
+|===
+====

@@ -16,20 +16,18 @@ The reader of this document is expected to have working practice of Ansible.
 If they are new to Ansible, the https://docs.ansible.com/ansible/latest/user_guide/index.html#getting-started[Getting started] section of
 the https://docs.ansible.com/[official Ansible documentation] is a better place to start.
 
-This document is split in six main sections.
-Each section covers a different aspect of automation using Ansible and in a broader term the whole https://www.redhat.com/en/technologies/management/ansible[Red Hat Ansible Automation Platform]:
+This document covers not just coding practices but the full spectrum of Ansible-related good practices, including naming conventions, AAP configuration management, Git workflow and versioning, testing, CI/CD, and security.
+It is organized into four parts:
 
-. structures: we need to know what to use for which purpose before we can delve into the details, this section explains this.
-. roles: as we recommend to use roles to host the most actual Ansible code, this is also where we'll cover the more low level aspects of code (tasks, variables, etc...).
-. collections
-. playbooks
-. inventories
-. plugins
+*Part I -- Foundations* covers the overarching principles, structural decisions, and naming conventions that should be established before writing any code.
 
-// TODO add a few more words about the content of each section once we know
-// what we write in there...
+*Part II -- Developing Ansible Content* covers good practices for writing roles, collections, playbooks, inventories, plugins, and general coding style.
 
-Each section is then made of guidelines, one sentence hopefully easy to remember, followed by description, rationale and examples.
+*Part III -- AAP and Configuration as Code* covers managing Ansible Automation Platform configuration declaratively through Git.
+
+*Part IV -- Lifecycle and Operations* covers the operational aspects of automation: Git workflow, testing, CI/CD, promotion, and security.
+
+Each section is made of guidelines, one sentence hopefully easy to remember, followed by description, rationale and examples.
 The HTML version of this document makes the content collapsable so that all guidelines can be seen at once in a very overseeable way, for the reader to uncollapse the content of guidelines they are interested in.
 
 A rationale is expected for each good practice, with a reference if applicable.
@@ -44,7 +42,17 @@ It also has great educational value for understanding how things actually work (
 
 This document is published to https://redhat-cop.github.io/automation-good-practices/, it is open source and its source code is maintained at https://github.com/redhat-cop/automation-good-practices/.
 
+'''
+
+= Part I -- Foundations
+
 include::structures/README.adoc[leveloffset=1]
+
+include::naming_conventions/README.adoc[leveloffset=1]
+
+'''
+
+= Part II -- Developing Ansible Content
 
 include::roles/README.adoc[leveloffset=1]
 
@@ -57,3 +65,21 @@ include::inventories/README.adoc[leveloffset=1]
 include::plugins/README.adoc[leveloffset=1]
 
 include::coding_style/README.adoc[leveloffset=1]
+
+'''
+
+= Part III -- AAP and Configuration as Code
+
+include::aap_configuration/README.adoc[leveloffset=1]
+
+'''
+
+= Part IV -- Lifecycle and Operations
+
+include::git_workflow/README.adoc[leveloffset=1]
+
+include::testing/README.adoc[leveloffset=1]
+
+include::cicd_and_promotion/README.adoc[leveloffset=1]
+
+include::security/README.adoc[leveloffset=1]

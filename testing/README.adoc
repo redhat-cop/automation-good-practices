@@ -1,0 +1,265 @@
+= Testing
+
+Testing is a critical part of the automation lifecycle.
+This section covers testing philosophy, strategies, and tools for validating Ansible content at every stage of development.
+
+== Test as early as possible in the development cycle (shift-left)
+[%collapsible]
+====
+Explanations::
+Testing should happen at the earliest feasible point: local development first, then pre-commit hooks, then CI, then integration, and finally validation in production-like environments.
+Each stage should be faster than the next, providing rapid feedback to developers.
+
+Rationale::
+Bugs caught early are cheaper and faster to fix.
+A syntax error caught in a pre-commit hook takes seconds to fix; the same error caught in a production deployment takes hours to diagnose and remediate.
+
+Examples::
++
+[source]
+----
+Local Dev → Pre-commit → CI → Integration → Production
+   ↓          ↓           ↓        ↓            ↓
+ <1 sec    <30 sec    <5 min   <15 min      Validated
+----
++
+The test pyramid for Ansible automation should look like this:
++
+* *Base layer (fastest, most tests)*: Syntax validation and linting (`yamllint`, `ansible-lint`, `ansible-playbook --syntax-check`)
+* *Middle layer*: Unit tests (`pytest` for plugins/modules) and Molecule tests for roles
+* *Top layer (slowest, fewest tests)*: Integration tests and end-to-end validation
+====
+
+== Use ansible-lint with the production profile
+[%collapsible]
+====
+Explanations::
+Run `ansible-lint` with the `production` profile to enforce the strictest set of rules.
+This should be part of both pre-commit hooks and CI pipelines.
+
+Rationale::
+The `production` profile catches issues that less strict profiles allow, such as missing FQCNs, unnamed tasks, deprecated modules, and unsafe practices.
+Using the strictest profile ensures consistent quality across the codebase.
+
+Examples::
++
+[source,bash]
+----
+# Run ansible-lint with production profile
+ansible-lint --profile production
+
+# Auto-fix some issues
+ansible-lint --fix
+
+# Generate an ignore file for gradual adoption
+ansible-lint --generate-ignore
+----
+====
+
+== Use Molecule to test roles in isolated container environments
+[%collapsible]
+====
+Explanations::
+Every role should have at least one https://molecule.readthedocs.io/[Molecule] test scenario that validates the role in an isolated container environment.
+The full Molecule test sequence includes create, converge, idempotence, verify, and destroy.
+
+Rationale::
+Molecule provides a reproducible and isolated testing environment for roles.
+It tests the complete lifecycle: that the role can be applied, that it is idempotent (running twice produces no changes), and that the desired state is achieved (verification).
+Without Molecule, role testing requires manual provisioning of test environments.
+
+Examples::
++
+[source,bash]
+----
+# Run the default scenario (full lifecycle)
+cd roles/webserver/
+molecule test
+
+# Run a specific scenario
+molecule test -s centos
+
+# Quick iteration during development (skip destroy)
+molecule converge    # Apply the role
+molecule verify      # Check results
+molecule destroy     # Clean up when done
+----
++
+.Molecule test sequence
+[source]
+----
+ 1. dependency    - Install dependencies
+ 2. cleanup       - Clean up from previous run
+ 3. destroy       - Destroy existing instances
+ 4. syntax        - Check playbook syntax
+ 5. create        - Create test instances
+ 6. prepare       - Prepare instances
+ 7. converge      - Run the role
+ 8. idempotence   - Run again (should not change)
+ 9. verify        - Run verification tests
+10. destroy       - Destroy instances
+----
++
+.Example molecule.yml configuration
+[source,yaml]
+----
+---
+dependency:
+  name: galaxy
+
+driver:
+  name: docker
+
+platforms:
+  - name: test-instance
+    image: docker.io/geerlingguy/docker-rockylinux9-ansible:latest
+    pre_build_image: true
+    privileged: true
+
+provisioner:
+  name: ansible
+  playbooks:
+    converge: converge.yml
+    verify: verify.yml
+
+verifier:
+  name: ansible
+----
+====
+
+== Test on multiple platforms when roles support them
+[%collapsible]
+====
+Explanations::
+If a role is designed to support multiple operating system families (e.g. Red Hat and Debian), create Molecule scenarios for each platform and test them.
+
+Rationale::
+Package names, service names, file paths, and configuration syntax vary between operating system families.
+A role that works on RHEL 9 may fail silently on Ubuntu if platform-specific variables or tasks are incorrect.
+Multi-platform testing catches these issues before they reach production.
+
+Examples::
++
+[source]
+----
+roles/webserver/molecule/
+├── default/       # Rocky Linux 9 (primary target)
+├── centos/        # CentOS / RHEL variants
+└── ubuntu/        # Debian / Ubuntu variants
+----
++
+[source,bash]
+----
+# Test all scenarios
+for scenario in molecule/*/; do
+    molecule test -s $(basename $scenario)
+done
+----
+====
+
+== Write unit tests for custom modules, plugins, and filters
+[%collapsible]
+====
+Explanations::
+Custom Ansible modules, filter plugins, and lookup plugins should have `pytest`-based unit tests with good coverage.
+Unit tests should follow the Arrange-Act-Assert pattern and be independent of each other.
+
+Rationale::
+Custom Python code in Ansible collections has the same quality requirements as any other software.
+Unit tests catch regressions, document expected behavior, and enable confident refactoring.
+
+Examples::
++
+[source,python]
+----
+# tests/unit/test_sample_filter.py
+import pytest
+from ansible_collections.myorg.collection.plugins.filter.sample_filter import FilterModule
+
+class TestSampleFilter:
+    def test_basic_functionality(self):
+        """Test basic filter operation."""
+        fm = FilterModule()
+        filters = fm.filters()
+        result = filters['sample_filter']("test")
+        assert result == "TEST"
+
+    def test_empty_input(self):
+        """Test filter handles empty input correctly."""
+        fm = FilterModule()
+        filters = fm.filters()
+        with pytest.raises(ValueError):
+            filters['sample_filter']("")
+----
++
+[source,bash]
+----
+# Run unit tests with coverage
+pytest tests/unit/ -v --cov=plugins --cov-report=term
+
+# Run a specific test
+pytest tests/unit/test_basic.py::TestClass::test_method -v
+----
+====
+
+== Always verify idempotency during testing
+[%collapsible]
+====
+Explanations::
+Every role and playbook must be tested for idempotency: running it twice in a row should produce `changed=0` on the second run.
+Molecule's default test sequence includes an idempotence step.
+For complex playbooks outside of Molecule, verify idempotency manually.
++
+For guidance on _writing_ idempotent code (e.g. using `changed_when` and `creates`), see <<_roles_good_practices_for_ansible>> and <<_coding_style_good_practices_for_ansible>>.
+
+Rationale::
+Non-idempotent automation causes unpredictable behavior, unnecessary restarts, and makes it impossible to use check mode reliably.
+Testing for idempotency is distinct from writing idempotent code -- both are necessary.
+
+Examples::
++
+[source,bash]
+----
+# Manual idempotency test
+ansible-playbook deploy.yml -i inventory.yml
+
+# Run again - should show zero changes
+ansible-playbook deploy.yml -i inventory.yml
+# Expected: "changed=0"
+----
+====
+
+== Use descriptive test names that explain the expected behavior
+[%collapsible]
+====
+Explanations::
+Test function and class names should describe what behavior is being tested and what the expected outcome is.
+
+Rationale::
+When tests fail, the test name is the first thing developers see.
+A descriptive name like `test_filter_handles_empty_input` immediately communicates what broke, while `test1` requires reading the test code to understand the failure.
+
+Examples::
++
+[source,python]
+----
+# Good - descriptive names
+def test_module_returns_correct_value():
+    pass
+
+def test_filter_handles_empty_input():
+    pass
+
+def test_role_creates_config_directory():
+    pass
+
+# Bad - uninformative names
+def test1():
+    pass
+
+def test_stuff():
+    pass
+----
+====
+
+NOTE: For security-related testing practices (secret detection, vulnerability scanning, image scanning), see the <<_security>> section.
