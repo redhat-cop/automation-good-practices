@@ -6,13 +6,17 @@
   tasks:
     - name: The loop happens for each host, might be too much
       ansible.builtin.debug:
-        msg: do something with {{ item }}
+        msg: do something with {{ __cluster_member }}
       loop: "{{ groups[cluster_group_name] }}"
+      loop_control:
+        loop_var: __cluster_member
 
     - name: The loop happens only for the first host in each group
       ansible.builtin.debug:
-        msg: do something with {{ item }}
+        msg: do something with {{ __cluster_member }}
       loop: "{{ groups[cluster_group_name] }}"
+      loop_control:
+        loop_var: __cluster_member
       when: inventory_hostname == groups[cluster_group_name][0]
 
     - name: Make the first host of each group fail to simulate non-availability
@@ -21,8 +25,10 @@
 
     - name: The loop happens only for the first _available_ host in each group
       ansible.builtin.debug:
-        msg: do something with {{ item }}
+        msg: do something with {{ __cluster_member }}
       loop: "{{ groups[cluster_group_name] }}"
+      loop_control:
+        loop_var: __cluster_member
       when: >-
         inventory_hostname == (groups[cluster_group_name]
         | intersect(ansible_play_hosts))[0]

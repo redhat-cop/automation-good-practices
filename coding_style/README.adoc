@@ -202,7 +202,7 @@ Task files that are very or and/or contain highly nested blocks are difficult to
 Breaking a large or complex task file into multiple discrete files makes it easier to read and understand what is being done in each part.
 ====
 
-* Use bracket notation instead of dot notation for value retrieval (e.g. `item['key']` vs. `item.key`)
+* Use bracket notation instead of dot notation for value retrieval (e.g. `__rolename_entry['key']` vs. `__rolename_entry.key`)
 +
 [%collapsible]
 ====
@@ -255,7 +255,7 @@ tasks:
 ====
 
 * Do not use variables (wrapped in Jinja2 templates) for play names; variables don't get expanded properly there.
-  The same applies to loop variables (by default `item`) in task names within a loop.
+  The same applies to loop variables (do not use bare `item`; use `loop_control.loop_var` with a `__` prefixed name) in task names within a loop.
   They, too, don't get properly expanded and hence are not to be used there.
 * Do not override role defaults or vars or input parameters using `set_fact`.
   Use a different name instead.
@@ -324,7 +324,7 @@ Some examples of good times to do so are
 * When a single large role is doing many complicated tasks and cannot easily be broken into multiple roles, but the process proceeds in multiple related stages
 ====
 
-* Avoid calling the `package` module iteratively with the `{{ item }}` argument, as this is impressively more slow than calling it with the line `name: "{{ foo_packages }}"`.
+* Avoid calling the `package` module iteratively in a loop (with the `{{ item }}` argument), as this is impressively more slow than calling it with the line `name: "{{ foo_packages }}"`.
 The same can go for many other modules that can be given an entire list of items all at once.
 * Use meta modules when possible.
 +
