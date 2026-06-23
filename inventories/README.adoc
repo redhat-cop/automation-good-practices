@@ -24,6 +24,21 @@ Ansible provides a lot of https://docs.ansible.com/ansible/latest/plugins/invent
 This gives you a complete model of the environment to be automated, with limited effort to maintain it, and no confusion about where to modify it to get the result you need.
 ====
 
+== An inventory should use a single machine credential
+[%collapsible]
+====
+Explanations::
+An inventory should use a single machine (connection) credential. Inventories should not be mixed with hosts that use different credentials.
+
+Rationale::
+When running a playbook, only a single machine credential can be specified within AWX/Ansible Automation Platform.  Additionally, a single password or SSH key can be provided if operating from the command line.
+
+Examples::
+A typical enterprise implementation may have hosts of the same type, for instance, Linux hosts, with different credentials for different environments, such as in a DMZ or a development environment.
+Since a job template or CLI playbook run can only use a single machine (connection) credential without introducing substantial complexity, keeping inventories restricted to a single machine credential keeps execution clean.
+To workaround this restriction and run a job against all hosts, when using AWX/AAP is to define multiple job templates, one inventory/one machine credential per template, and combine them together in a workflow template.
+Similarly, when using the command line, wrapping the commands into a script will allow the user to provide unique credentials for each playbook run.
+====
 
 [[differentiate]]
 == Differentiate clearly between "As-Is" and "To-Be" information
