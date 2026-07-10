@@ -185,6 +185,44 @@ Tasks will be much more legible if data is managed and manipulated via plugins t
 
 == Ansible Guidelines
 
+* Always use Fully Qualified Collection Names (FQCN) for all Ansible modules and plugins.
++
+[%collapsible]
+====
+Explanation:: FQCN uses the format `namespace.collection.module`, for example `ansible.builtin.debug` instead of just `debug`.
+Since Ansible 2.10, collection-provided modules must be referenced by their FQCN to avoid ambiguity when multiple collections define modules with the same short name.
+
+Rationale:: Using short module names can lead to name collisions when working with multiple collections, and may break playbooks as modules move between collections.
+FQCN usage is also enforced by ansible-lint's `production` profile (see the Testing section).
+It makes it explicit which collection provides the module and improves readability by documenting the module's origin directly in the task.
+
+.Do this:
+[source,yaml]
+----
+- name: Print a message
+  ansible.builtin.debug:
+    msg: "Using FQCN ensures there is no ambiguity."
+
+- name: Ensure a package is installed
+  ansible.builtin.package:
+    name: vim
+    state: present
+----
+
+.Don't do this:
+[source,yaml]
+----
+- name: Print a message
+  debug:
+    msg: "Short name is ambiguous and may cause conflicts when multiple collections are in use."
+
+- name: Ensure a package is installed
+  package:
+    name: vim
+    state: present
+----
+====
+
 * Ensure that all tasks are idempotent.
 * https://github.com/ansible/ansible/issues/10374[Ansible variables use lazy evaluation.]
 * Prefer the command module over the shell module unless you explicitly need shell functionality such as, e.g., piping.
