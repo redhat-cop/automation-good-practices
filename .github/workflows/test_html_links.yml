@@ -17,14 +17,47 @@ jobs:
 
     steps:
     - name: Run Broken Links Checker
+      id: linkcheck
       run: npx broken-link-checker $WEBSITE_URL --ordered --recursive --user-agent "Mozilla/5.0 (X11; Linux x86_64; rv:133.0) Gecko/20100101 Firefox/133.0" --exclude "https://opensource.org/licenses/BSD-2-Clause" --exclude "github.com"
 
     - uses: actions/checkout@v3
-      if: failure()
+      if: steps.linkcheck.outcome == 'failure'
+
+    - name: Find existing broken links issue
+      id: find_issue
+      if: steps.linkcheck.outcome == 'failure'
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        ISSUE_NUMBER=$(gh issue list \
+          --repo "${{ github.repository }}" \
+          --state open \
+          --search '"Website Contains Broken Links" in:title' \
+          --json number \
+          --jq '.[0].number // empty')
+        echo "number=${ISSUE_NUMBER}" >> "$GITHUB_OUTPUT"
+
+    - name: Comment on existing broken links issue
+      if: steps.linkcheck.outcome == 'failure' && steps.find_issue.outputs.number != ''
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        gh issue comment "${{ steps.find_issue.outputs.number }}" \
+          --repo "${{ github.repository }}" \
+          --body "$(printf '%s\n' \
+            '## Broken links detected again' \
+            '' \
+            "Broken Link Checker found broken links on ${WEBSITE_URL}." \
+            '' \
+            "[View Results](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" \
+            '' \
+            '_Use search filter `─BROKEN─` to highlight failures_' \
+            '' \
+            '@redhat-cop/automation-cop-mgrs — please take a look when you have a chance.')"
 
     - uses: JasonEtco/create-an-issue@v2
+      if: steps.linkcheck.outcome == 'failure' && steps.find_issue.outputs.number == ''
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         filename: ${{ env.ISSUE_TEMPLATE }}
-      if: failure()
