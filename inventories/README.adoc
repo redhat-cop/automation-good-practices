@@ -254,7 +254,7 @@ Saturday 23 October 2021  13:11:56 +0200 (0:00:00.569)       0:00:00.610 ******
 create some file to simulate an API call to provision a host ------------ 0.57s
 ----
 +
-TIP: if for some reason, you can't follow the recommendation, you can at least avoid duplicating too much information by indirectly referencing the hosts' variables as in `"{{ hostvars[item.name]['provision_value'] }}"`. Not so bad...
+TIP: if for some reason, you can't follow the recommendation, you can at least avoid duplicating too much information by indirectly referencing the hosts' variables as in `"{{ hostvars[__provision_host.name]['provision_value'] }}"` (with `loop_control.loop_var: __provision_host`). Not so bad...
 ====
 
 == Restrict your usage of variable types

@@ -5,10 +5,12 @@
   tasks:
     - name: Create some file to simulate an API call to provision a host
       ansible.builtin.copy:
-        content: "{{ hostvars[item.name]['provision_value'] }}\n"
-        dest: "/tmp/not_so_bad_{{ inventory_hostname }}_{{ item.name }}.txt"
+        content: "{{ hostvars[__provision_host.name]['provision_value'] }}\n"
+        dest: "/tmp/not_so_bad_{{ inventory_hostname }}_{{ __provision_host.name }}.txt"
         force: true
         owner: root
         group: root
         mode: "0644"
       loop: "{{ provision_list_of_hosts }}"
+      loop_control:
+        loop_var: __provision_host
