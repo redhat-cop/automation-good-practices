@@ -1,0 +1,589 @@
+= Execution Environments
+
+https://www.redhat.com/en/technologies/management/ansible[Ansible Automation Platform] 2.x uses execution environments (EEs) as portable, container-based Ansible runtimes.
+They replace the traditional Python virtual environments and decouple the control plane from the execution plane, allowing automation to run consistently regardless of where it is executed -- locally with `ansible-navigator`, in CI/CD pipelines, or through Automation Controller.
+
+EEs are built using https://ansible.readthedocs.io/projects/builder/en/latest/[`ansible-builder`], which reads an `execution-environment.yml` definition file and produces a container image.
+This section covers good practices for defining, building, and maintaining execution environments.
+
+For good practices on declaring EEs as objects in Automation Controller configuration, see <<aap_configuration/README.adoc#_aap_configuration_as_code,AAP Configuration as Code>>.
+For good practices on immutable references to EE images in production, see <<git_workflow/README.adoc#_never_use_latest_or_branch_names_in_production_references,Git Workflow: Never use "latest" or branch names in production references>>.
+For vulnerability scanning of built EE images, see <<security/README.adoc#_scan_container_images_and_generate_sboms_for_every_release,Security: Scan container images and generate SBOMs for every release>>.
+
+== Declare the schema version explicitly
+[%collapsible]
+====
+Explanations::
+Always declare the `version` key in your `execution-environment.yml`.
+Without it, `ansible-builder` falls back to a default schema version that may not match the syntax your file uses, producing either an immediate build failure or a deprecated build.
++
+Declaring the version explicitly documents the intended schema and makes the definition portable across environments -- CI systems, other contributors, and future maintainers all see at a glance which schema the file targets.
++
+NOTE: The current schema version supported by `ansible-builder` 3.x is `version: 3`.
+See the https://ansible.readthedocs.io/projects/builder/en/latest/definition/[ansible-builder definition file documentation] for the supported versions and schema reference.
+
+Rationale::
+Omitting the version declaration causes one of two outcomes: if the file uses syntax exclusive to a newer schema, the build fails immediately with a `DefinitionError`; if it uses only legacy syntax, the build succeeds with a deprecation warning and produces an image that lacks the capabilities of the current schema.
+Both outcomes are unintended and preventable.
+Specifying the version explicitly also ensures the definition will behave predictably regardless of the `ansible-builder` version installed on the build host.
+
+.Do this:
+[source,yaml]
+----
+# execution-environment.yml
+version: 3   # <1>
+
+images:
+  base_image:
+    name: registry.redhat.io/ansible-automation-platform/ee-minimal-rhel9:2.16
+
+dependencies:
+  galaxy:
+    collections:
+      - name: redhat.rhel_system_roles
+        version: "1.23.0"
+----
+<1> Current schema version for `ansible-builder` 3.x. See https://ansible.readthedocs.io/projects/builder/en/latest/definition/[upstream docs] for the authoritative list of supported versions.
+
+.Don't do this:
+[source,yaml]
+----
+# Missing version declaration -- ansible-builder falls back to the default schema.
+# If any key in this file is exclusive to a newer schema (e.g. images:, options:,
+# additional_build_files:), the build fails with:
+#   DefinitionError: Additional properties are not allowed
+
+images:
+  base_image:
+    name: registry.redhat.io/ansible-automation-platform/ee-minimal-rhel9:2.16
+
+dependencies:
+  galaxy:
+    collections:
+      - name: redhat.rhel_system_roles
+        version: "1.23.0"
+----
+====
+
+== Build from a minimal base -- do not inherit collections you did not declare
+[%collapsible]
+====
+Explanations::
+Start from a base image that contains only the Ansible runtime -- no pre-installed collections, no transitive dependencies you did not choose.
+Install only the collections, Python packages, and system dependencies that the specific automation being built actually requires.
++
+When `ansible-builder` is used with Ansible Automation Platform on RHEL, Red Hat provides two categories of supported base images:
++
+* `ee-minimal` -- contains only `ansible-core` and `ansible-runner`.
+It is the recommended starting point for custom EEs.
+* `ee-supported` -- includes a curated set of pre-installed certified collections.
+It is designed to be used as-is in environments where its bundled content is sufficient.
+Using it as a base for a custom image and then adding different versions of the same collections often creates conflicts that are difficult to diagnose.
++
+The same principle applies to any other base image, regardless of origin: start minimal and add only what is needed.
+
+Rationale::
+Inheriting a base image that already contains collections creates a gap between what the definition declares and what the image actually contains.
+Dependencies introduced by the base but not listed in the definition are invisible to the build process, unversioned in the definition file, and unverifiable through code review.
++
+An EE built from a minimal base is smaller, faster to pull, easier to audit, and carries no transitive dependencies that were not explicitly chosen.
+Every dependency is declared, every version is reviewable, and the image contents match exactly what the definition says.
+
+.Do this:
+[source,yaml]
+----
+version: 3
+
+images:
+  base_image:
+    name: registry.redhat.io/ansible-automation-platform/ee-minimal-rhel9:2.16
+
+dependencies:
+  galaxy:
+    collections:
+      - name: redhat.rhel_system_roles
+        version: "1.23.0"
+      - name: ansible.posix
+        version: "1.5.4"
+----
+
+.Don't do this:
+[source,yaml]
+----
+version: 3
+
+# ee-supported already bundles a fixed version of amazon.aws (and many others).
+# Adding a different version here creates a conflict: two copies of the same
+# collection at different versions may be present in the image, leading to
+# unpredictable behavior at runtime.
+images:
+  base_image:
+    name: registry.redhat.io/ansible-automation-platform/ee-supported-rhel9:2.16
+
+dependencies:
+  galaxy:
+    collections:
+      - name: amazon.aws
+        version: "8.0.0"
+----
+====
+
+== Always pin the base image to a specific version -- never use `:latest`
+[%collapsible]
+====
+Explanations::
+The base image tag in the `images.base_image.name` field must always reference a specific, immutable tag.
+Using `:latest`, a branch name, or any other moving reference is non-reproducible: two builds from the same `execution-environment.yml` at different points in time can pull different base images, introducing changes that are invisible in the definition file and Git history.
++
+Red Hat distributes EE base images under two naming schemes, both requiring an explicit version:
++
+[cols="1,2,2"]
+|===
+| Type | Example | Use case
+
+| *Stream-locked to an AAP release*
+| `registry.redhat.io/ansible-automation-platform-27/ee-minimal-rhel9:2.16`
+| Receives updates only within the AAP 2.7 release lifecycle. Use when you need strict alignment to a specific AAP version.
+
+| *Multi-stream (tracks `ansible-core`)*
+| `registry.redhat.io/ansible-automation-platform/ee-minimal-rhel9:2.16`
+| Not locked to a specific AAP release; follows `ansible-core` 2.16.x across releases. Suitable for most environments.
+|===
++
+For maximum reproducibility in regulated or production environments, use the image digest (SHA) instead of a tag:
++
+[source,yaml]
+----
+images:
+  base_image:
+    name: registry.redhat.io/ansible-automation-platform/ee-minimal-rhel9@sha256:<digest>
+----
++
+The digest is immutable: it always refers to the exact same image layer tree, even if the tag is updated.
+
+Rationale::
+A moving tag like `:latest` makes two builds from the same definition non-deterministic.
+A security patch, a library upgrade, or a behavioral change in the base image becomes invisible in the definition file and Git history -- there is no signal that anything changed, yet the produced image may behave differently.
++
+Pinning to a specific tag or digest ensures every build is deterministic and every change to the base image is deliberate, reviewable, and auditable in version control.
+
+.Do this:
+[source,yaml]
+----
+version: 3
+
+# Option A -- versioned tag (tied to AAP 2.7)
+images:
+  base_image:
+    name: registry.redhat.io/ansible-automation-platform-27/ee-minimal-rhel9:2.16
+----
+
+[source,yaml]
+----
+version: 3
+
+# Option B -- version-less tag (tracks ansible-core 2.16.x)
+images:
+  base_image:
+    name: registry.redhat.io/ansible-automation-platform/ee-minimal-rhel9:2.16
+----
+
+[source,yaml]
+----
+version: 3
+
+# Option C -- SHA digest for maximum reproducibility
+# Obtain the digest with:
+#   skopeo inspect docker://registry.redhat.io/ansible-automation-platform/ee-minimal-rhel9:2.16 | jq -r .Digest
+images:
+  base_image:
+    name: registry.redhat.io/ansible-automation-platform/ee-minimal-rhel9@sha256:<digest>
+----
+
+.Don't do this:
+[source,yaml]
+----
+version: 3
+
+# Moving tag -- two builds from this definition at different times
+# may produce images with different base contents
+images:
+  base_image:
+    name: registry.redhat.io/ansible-automation-platform/ee-minimal-rhel9:latest
+----
+====
+
+== Do not create monolithic execution environments -- group by automation domain
+[%collapsible]
+====
+Explanations::
+Each EE should contain only the dependencies required by a specific domain of automation.
+Common domain groupings include:
++
+* Linux / RHEL system management
+* Windows management
+* Networking (Cisco, Juniper, Arista, etc.)
+* Cloud (AWS, Azure, GCP)
+* Virtualization (VMware, OpenShift Virt)
++
+A separate, lightweight EE should be created for each domain rather than a single large image containing all collections and dependencies.
+
+Rationale::
+Combining unrelated automation workloads into a single EE creates several problems:
++
+* *Dependency conflicts* -- networking collections may require specific Python library versions that conflict with those required by cloud collections.
+* *Image bloat* -- unused collections increase image size, slowing pulls and increasing storage costs in the registry.
+* *Maintenance burden* -- a change in any dependency forces a rebuild and revalidation of the entire image, even for unrelated automation.
+* *Blast radius* -- a broken dependency in the monolith disrupts all automation domains at once.
+
+.Do this:
+[source,yaml]
+----
+# ee-linux.yml -- for Linux/RHEL system management
+version: 3
+images:
+  base_image:
+    name: registry.redhat.io/ansible-automation-platform/ee-minimal-rhel9:2.16
+options:
+  package_manager_path: /usr/bin/microdnf
+dependencies:
+  galaxy:
+    collections:
+      - name: redhat.rhel_system_roles
+        version: "1.23.0"
+      - name: ansible.posix
+        version: "1.5.4"
+----
+
+[source,yaml]
+----
+# ee-network.yml -- for network device management
+version: 3
+images:
+  base_image:
+    name: registry.redhat.io/ansible-automation-platform/ee-minimal-rhel9:2.16
+options:
+  package_manager_path: /usr/bin/microdnf
+dependencies:
+  galaxy:
+    collections:
+      - name: cisco.ios
+        version: "10.1.1"
+      - name: ansible.netcommon
+        version: "7.1.0"
+  python:
+    - netaddr==1.3.0
+----
+
+.Don't do this:
+[source,yaml]
+----
+# ee-everything.yml -- single monolithic EE with unrelated domains
+version: 3
+images:
+  base_image:
+    name: registry.redhat.io/ansible-automation-platform/ee-minimal-rhel9:2.16
+dependencies:
+  galaxy:
+    collections:
+      - name: redhat.rhel_system_roles    # Linux
+        version: "1.23.0"
+      - name: cisco.ios                   # Networking
+        version: "10.1.1"
+      - name: amazon.aws                  # Cloud
+        version: "8.0.0"
+      - name: community.windows           # Windows
+        version: "2.3.0"
+----
+====
+
+== Pin all dependency versions explicitly
+[%collapsible]
+====
+Explanations::
+Every dependency referenced in an EE definition must be pinned to an exact version:
++
+* Collections in `dependencies.galaxy`: use the `version:` key with an exact version string (e.g., `"1.23.0"`).
+* Python packages in `dependencies.python`: use `==` pinning (e.g., `jmespath==1.0.1`).
+* System packages in `dependencies.system`: use the specific package name; avoid wildcards.
+* `ansible-core` and `ansible-runner` in `dependencies.ansible_core` / `dependencies.ansible_runner`: pin with `package_pip: ansible-core==<version>`.
++
+An external `requirements.yml` or `requirements.txt` file is equally valid, but the same pinning requirement applies to those files.
+
+Rationale::
+Ansible Galaxy, PyPI, and system package repositories release new versions continuously and independently of each other.
+Without explicit pins, two builds from the same `execution-environment.yml` file at different points in time can produce functionally different images.
+This breaks the reproducibility guarantee that makes EEs valuable.
++
+Pinning also makes dependency upgrades deliberate and reviewable: a version bump appears as a Git diff in the definition file, making it easy to understand what changed and why.
+
+.Do this:
+[source,yaml]
+----
+version: 3
+
+images:
+  base_image:
+    name: registry.redhat.io/ansible-automation-platform/ee-minimal-rhel9:2.16
+
+options:
+  package_manager_path: /usr/bin/microdnf
+
+dependencies:
+  ansible_core:
+    package_pip: ansible-core==2.16.4
+  ansible_runner:
+    package_pip: ansible-runner==2.4.0
+  galaxy:
+    collections:
+      - name: redhat.rhel_system_roles
+        version: "1.23.0"   # exact version pin
+      - name: ansible.posix
+        version: "1.5.4"    # exact version pin
+  python:
+    - jmespath==1.0.1       # exact version pin
+  system:
+    - git-core [platform:rpm]
+----
+
+.Don't do this:
+[source,yaml]
+----
+version: 3
+
+images:
+  base_image:
+    name: registry.redhat.io/ansible-automation-platform/ee-minimal-rhel9:2.16
+
+dependencies:
+  galaxy:
+    collections:
+      - name: redhat.rhel_system_roles  # no version pin
+      - name: ansible.posix
+        version: ">=1.0"               # range allows untested versions
+  python:
+    - jmespath                          # no pin -- installs latest
+----
+====
+
+== Set `package_manager_path` to match the base image's package manager
+[%collapsible]
+====
+Explanations::
+When an EE definition includes system-level dependencies (`dependencies.system`) or custom build steps that invoke a package manager, set `options.package_manager_path` to the path of the package manager available in your base image.
+Without this setting, `ansible-builder` defaults to a path that may not exist in the actual base image, causing the build to fail at the system package installation stage.
++
+NOTE: For RHEL-based `ee-minimal` images, the correct path is `/usr/bin/microdnf`.
+Check the base image you are using to confirm which package manager is available before setting this option.
+
+Rationale::
+The error produced by a wrong or missing `package_manager_path` is not always obvious -- the build fails inside the generated `Containerfile` at the `RUN $PKGMGR` step, which can be difficult to trace back to the definition file without knowing the root cause.
+Setting this option explicitly makes the intent clear, prevents build failures on different hosts, and documents the dependency between the definition and the base image for readers and CI systems.
+
+.Do this:
+[source,yaml]
+----
+version: 3
+
+images:
+  base_image:
+    name: registry.redhat.io/ansible-automation-platform/ee-minimal-rhel9:2.16
+
+options:
+  package_manager_path: /usr/bin/microdnf   # <1>
+
+dependencies:
+  galaxy:
+    collections:
+      - name: redhat.rhel_system_roles
+        version: "1.23.0"
+  system:
+    - git-core [platform:rpm]
+    - python3-devel [platform:rpm]
+----
+<1> `/usr/bin/microdnf` is the package manager in RHEL-based `ee-minimal` images. Adjust to match the package manager available in your chosen base image.
+
+.Don't do this:
+[source,yaml]
+----
+version: 3
+
+images:
+  base_image:
+    name: registry.redhat.io/ansible-automation-platform/ee-minimal-rhel9:2.16
+
+# Missing options.package_manager_path -- build will fail when processing
+# system dependencies because the default path does not exist in this image
+
+dependencies:
+  galaxy:
+    collections:
+      - name: redhat.rhel_system_roles
+        version: "1.23.0"
+  system:
+    - git-core [platform:rpm]
+----
+====
+
+== Store EE definitions in Git and automate builds through a CI/CD pipeline
+[%collapsible]
+====
+Explanations::
+Every `execution-environment.yml` file, along with any supporting `requirements.yml`, `requirements.txt`, and `bindep.txt` files, must be stored in a Git repository.
++
+Builds must be triggered automatically by CI/CD pipelines on relevant Git events (push to a watched branch, pull requests, or a scheduled trigger for regular security updates).
+They must not be run manually from developer workstations.
++
+The `infra.ee_utilities` collection from https://github.com/redhat-cop/ee_utilities[redhat-cop/ee_utilities] provides Ansible roles that integrate the build and push workflow directly into Automation Controller, allowing EE lifecycle management to be part of the broader Configuration as Code strategy.
++
+A typical repository structure for a team managing multiple EEs:
++
+[source]
+----
+ee-definitions/
+├── ee-linux/
+│   └── execution-environment.yml
+├── ee-network/
+│   └── execution-environment.yml
+├── ee-windows/
+│   └── execution-environment.yml
+└── ee-cloud/
+    ├── execution-environment.yml
+    └── requirements.txt
+----
+
+Rationale::
+Storing EE definitions in Git provides the same benefits as any other Configuration as Code practice: version control, auditability, peer review through pull requests, and the ability to roll back to a known-good state.
++
+A Git diff on a dependency bump (e.g., bumping a collection from `1.23.0` to `1.24.0`) is far more reviewable than a manually rebuilt image with no documented change history.
++
+Automated builds ensure that security patches in base images are applied regularly without relying on manual intervention, and that every change to an EE definition is validated before it reaches production.
+
+Examples::
++
+Minimal GitHub Actions workflow that builds and pushes an EE on every push to `main`.
+The example uses the Red Hat https://catalog.redhat.com/en/software/containers/ansible-automation-platform-27/ansible-builder-rhel9/69fb1e2545f6af701dad8723[`ansible-builder-rhel9`] container image and a two-step approach: `ansible-builder create` generates the build context (Containerfile + requirements), then the runner's native container engine builds the image from that context.
++
+[source,yaml]
+----
+# .github/workflows/build-ee.yml
+name: Build Execution Environment
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'ee-linux/execution-environment.yml'
+  schedule:
+    - cron: '0 6 * * 1'  # weekly rebuild for security updates
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to Red Hat registry  # <1>
+        run: |
+          echo "${{ secrets.RH_REGISTRY_TOKEN }}" | \
+            docker login registry.redhat.io -u "${{ secrets.RH_REGISTRY_USER }}" --password-stdin
+
+      - name: Generate build context  # <2>
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/work:Z" \
+            -w /work \
+            registry.redhat.io/ansible-automation-platform-27/ansible-builder-rhel9:latest \
+            ansible-builder create \
+              --file ee-linux/execution-environment.yml
+
+      - name: Build EE image  # <3>
+        run: |
+          docker build \
+            -f context/Containerfile \
+            -t quay.io/myorg/ee-linux:$(date +%Y-%m-%d) \
+            context
+
+      - name: Push to registry
+        run: |
+          echo "${{ secrets.REGISTRY_TOKEN }}" | \
+            docker login quay.io -u "${{ secrets.REGISTRY_USER }}" --password-stdin
+          docker push quay.io/myorg/ee-linux:$(date +%Y-%m-%d)
+----
+<1> Authentication for `registry.redhat.io` is required to pull the `ansible-builder-rhel9` image and any `ee-minimal` base image referenced by the definition. See https://access.redhat.com/RegistryAuthentication[Registry Authentication].
+<2> `ansible-builder create` generates a `Containerfile` and build context without requiring a container runtime inside the image. Pin the image tag (or use a digest) as you would any other build dependency. See the https://catalog.redhat.com/en/software/containers/ansible-automation-platform-27/ansible-builder-rhel9/69fb1e2545f6af701dad8723[Red Hat Ecosystem Catalog] for available tags.
+<3> The actual image build runs natively on the CI runner using the generated `Containerfile`.
+====
+
+== Never persist build-time credentials in the shipped image
+[%collapsible]
+====
+Explanations::
+When pulling collections from authenticated sources -- such as Red Hat Automation Hub or a private Galaxy server -- credentials must be passed as build-time arguments and must not appear in the final image.
++
+The durable principle is: *a build-time secret must never persist in the shipped image.*
+Keep it to the step that needs it, and verify it is gone before pushing.
++
+`ansible-builder` generates a multi-stage `Containerfile` where the galaxy install runs in an intermediate build stage that is discarded.
+Only the installed collections are copied forward to the final image.
+This stage boundary is what makes `ARG` safe for the token: the value is consumed by the intermediate stage and is never written into the final image layers.
++
+For non-secret configuration (server URL, auth URL, server list), `ENV` is the correct directive -- these values are not sensitive and must be present in the final image for Ansible to reach the server at runtime.
++
+CAUTION: `ARG` alone is not universally secret-safe.
+In a single-stage build, an `ARG` value is recorded in the layer's build history and is visible via `docker history`.
+The safety here comes from the *discarded stage*, not the keyword.
+Always verify with `docker history` or `skopeo inspect` that the credential is absent before pushing the image.
+
+Rationale::
+Credentials embedded in image layers are exposed to anyone with pull access to the registry.
+A token baked into a layer via `ENV` persists in the image metadata indefinitely and cannot be revoked by rotating the credential -- the old value remains in the layer history.
++
+Passing the token as an `ARG` into a discarded build stage ensures that the credential is used during the build and never reaches the final image.
+
+.Do this:
+[source,yaml]
+----
+# execution-environment.yml
+version: 3
+
+images:
+  base_image:
+    name: registry.redhat.io/ansible-automation-platform/ee-minimal-rhel9:2.16
+
+additional_build_steps:
+  prepend_galaxy:
+    - ENV ANSIBLE_GALAXY_SERVER_LIST=automation_hub                                                              # <1>
+    - ENV ANSIBLE_GALAXY_SERVER_AUTOMATION_HUB_URL=https://console.redhat.com/api/automation-hub/content/<synclist>/
+    - ENV ANSIBLE_GALAXY_SERVER_AUTOMATION_HUB_AUTH_URL=https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token
+    - ARG ANSIBLE_GALAXY_SERVER_AUTOMATION_HUB_TOKEN                                                            # <2>
+
+dependencies:
+  galaxy:
+    collections:
+      - name: redhat.rhel_system_roles
+        version: "1.23.0"
+----
+<1> `ENV` is appropriate for non-secret values: the server list and URLs are configuration, not credentials.
+<2> `ARG` passes the token into the galaxy install stage. Because `ansible-builder` generates a multi-stage build, this stage is discarded and the token never reaches the final image.
++
+Pass the token at build time:
++
+[source,shell]
+----
+ansible-builder build \
+  --build-arg ANSIBLE_GALAXY_SERVER_AUTOMATION_HUB_TOKEN=<token> \
+  --file execution-environment.yml \
+  --tag myorg/ee-linux:latest
+----
+
+.Don't do this:
+[source,yaml]
+----
+# Using ENV for the token persists it in the final image as a layer metadata entry.
+# Anyone with pull access to the image can retrieve it via `docker history`.
+additional_build_steps:
+  prepend_galaxy:
+    - ENV ANSIBLE_GALAXY_SERVER_AUTOMATION_HUB_TOKEN=<token>   # credential visible in image history
+----
+====

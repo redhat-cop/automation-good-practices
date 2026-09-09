@@ -72,6 +72,8 @@ include::coding_style/README.adoc[leveloffset=1]
 
 include::aap_configuration/README.adoc[leveloffset=1]
 
+include::execution_environments/README.adoc[leveloffset=1]
+
 '''
 
 = Part IV -- Lifecycle and Operations
