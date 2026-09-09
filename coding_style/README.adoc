@@ -183,6 +183,43 @@ Custom filter plugins can be written to handle complex or unique use-cases.
 Tasks will be much more legible if data is managed and manipulated via plugins than with in-line Jinja.
 ====
 
+* Use `!unsafe` to prevent Jinja2 from evaluating strings that contain template-like characters.
++
+[%collapsible]
+====
+Explanation:: The `!unsafe` YAML tag marks a string value so that Ansible's Jinja2 templating engine skips evaluation entirely.
+This is necessary when variable values contain `{` or `}` characters — such as regex patterns, configuration snippets from other tools, or any string that uses Jinja2 syntax but must be passed through verbatim.
+
+Rationale:: Without `!unsafe`, Ansible will attempt to evaluate any string containing `{{` as a Jinja2 template expression.
+This causes failures or unexpected substitutions when the string is intentionally literal.
++
+For simple single-expression cases, Jinja2 quoting (`{{ '{{ value }}' }}`) is a valid alternative.
+Prefer `!unsafe` when the string contains multiple brace sequences — such as regex patterns or configuration snippets from third-party tools — where Jinja2 quoting would require escaping each `{{` individually.
+
+.Do this:
+[source,yaml]
+----
+vars:
+  # !unsafe is the clearest option for complex patterns with multiple braces
+  prometheus_query: !unsafe "rate(http_requests_total{job='api'}[5m])"
+
+  # both approaches work for simple single-expression cases
+  grafana_template: !unsafe "{{ server }}"
+  grafana_template_alt: "{{ '{{ server }}' }}"
+----
+
+.Don't do this:
+[source,yaml]
+----
+vars:
+  # Jinja2 will try to evaluate {job='api'} and fail
+  prometheus_query: "rate(http_requests_total{job='api'}[5m])"
+
+  # resolves the 'server' variable instead of passing the literal string {{ server }}
+  grafana_template: "{{ server }}"
+----
+====
+
 == Ansible Guidelines
 
 * Always use Fully Qualified Collection Names (FQCN) for all Ansible modules and plugins.
