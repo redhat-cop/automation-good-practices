@@ -1,0 +1,5 @@
+# specific role variables
+alpha_job_name: 'some text'
+# collection wide variables
+alpha_controller_username: "{{ mycollection_controller_username }}"
+alpha_no_log: "{{ mycollection_no_log | default('true') }}"

@@ -1,0 +1,7 @@
+controller_projects:
+  - name: "Prod Automation"
+    scm_branch: "26.1.5-0"
+
+controller_execution_environments:
+  - name: "Prod EE"
+    image: "quay.io/myorg/automation-ee:26.1.5-0"

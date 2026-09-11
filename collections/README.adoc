@@ -31,21 +31,13 @@ is being overwritten.
 .Alpha defaults/main.yml
 [source,yaml]
 ----
-# specific role variables
-alpha_job_name: 'some text'
-# collection wide variables
-alpha_controller_username: "{{ mycollection_controller_username }}"
-alpha_no_log: "{{ mycollection_no_log | default('true') }}"
+include::../examples/collections/do/alpha_defaults_main_yml/defaults/main.yml[]
 ----
 +
 .Beta defaults/main.yml
 [source,yaml]
 ----
-# specific role variables
-beta_job_name: 'some other text'
-# collection wide variables
-beta_controller_username: "{{ mycollection_controller_username }}"
-beta_no_log: "{{ mycollection_no_log | default('false') }}"
+include::../examples/collections/do/beta_defaults_main_yml/defaults/main.yml[]
 ----
 ====
 
@@ -73,5 +65,5 @@ Explanation::
 Include a license file in the root directory
 Name the license file either LICENSE or COPYING.
 The contents may be either the text of the applicable license, or a link to the canonical reference for the license on the Internet (such as https://opensource.org/licenses/BSD-2-Clause )
-If any file in the collection is licensed differently from the larger collection it is a part of (such as module utilities), note the applicable license in the header of the file. 
+If any file in the collection is licensed differently from the larger collection it is a part of (such as module utilities), note the applicable license in the header of the file.
 ====

@@ -1,0 +1,2 @@
+- name: Set platform/version specific variables
+  ansible.builtin.include_tasks: tasks/set_vars.yml

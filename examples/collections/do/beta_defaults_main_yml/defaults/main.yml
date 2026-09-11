@@ -1,0 +1,5 @@
+# specific role variables
+beta_job_name: 'some other text'
+# collection wide variables
+beta_controller_username: "{{ mycollection_controller_username }}"
+beta_no_log: "{{ mycollection_no_log | default('false') }}"

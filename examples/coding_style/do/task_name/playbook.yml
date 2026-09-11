@@ -1,0 +1,8 @@
+---
+- name: Task name example
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Manage the disk device {{ storage_device_name }}
+      ansible.builtin.debug:
+        msg: "{{ storage_device_name }}"

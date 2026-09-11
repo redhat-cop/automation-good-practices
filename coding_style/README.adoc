@@ -41,21 +41,13 @@ Making all names valid identifiers will avoid encountering problems in the futur
 .Do this:
 [source,yaml]
 ----
-example_list:
-  - example_element_1
-  - example_element_2
-  - example_element_3
-  - example_element_4
+include::../examples/coding_style/do/list_indentation.yml[]
 ----
 
 .Don't do this:
 [source,yaml]
 ----
-example_list:
-- example_element_1
-- example_element_2
-- example_element_3
-- example_element_4
+include::../examples/coding_style/bad/list_indentation.yml[]
 ----
 ====
 
@@ -71,18 +63,7 @@ Examples:: there are multiple ways to avoid long lines but the most generic one 
 .Usage of the YAML folding sign
 [source,yaml]
 ----
-- name: Call a very long command line
-  ansible.builtin.command: >-
-    echo Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-    Maecenas mollis, ante in cursus congue, mauris orci tincidunt nulla,
-    non gravida tortor mi non nunc.
-
-- name: Set a very long variable
-  ansible.builtin.set_fact:
-    meaningless_variable: >-
-      Ut ac neque sit amet turpis ullamcorper auctor.
-      Cras placerat dolor non ipsum posuere malesuada at ac ipsum.
-      Duis a neque fermentum nulla imperdiet blandit.
+include::../examples/coding_style/do/usage_of_the_yaml_folding_sign/tasks/main.yml[]
 ----
 +
 TIP: Always use the sign `>-` instead of `>` unless you are absolutely sure the trailing newline is not significant.
@@ -102,15 +83,13 @@ Examples::
 .Do this
 [source,yaml]
 ----
-when:
-  - myvar is defined
-  - myvar | bool
+include::../examples/coding_style/do/when_list.yml[]
 ----
 +
 .instead of this
 [source,yaml]
 ----
-when: myvar is defined and myvar | bool
+include::../examples/coding_style/bad/when_one_liner.yml[]
 ----
 ====
 
@@ -122,18 +101,13 @@ when: myvar is defined and myvar | bool
 .Do this:
 [source,yaml]
 ----
-tasks:
-  - name: Print a message
-    ansible.builtin.debug:
-      msg: This is how it's done.
+include::../examples/coding_style/do/task_args/playbook.yml[]
 ----
 
 .Don't do this:
 [source,yaml]
 ----
-tasks:
-  - name: Print a message
-    ansible.builtin.debug: msg="This is the exact opposite of how it's done."
+include::../examples/coding_style/bad/task_args/playbook.yml[]
 ----
 ====
 
@@ -199,24 +173,13 @@ Prefer `!unsafe` when the string contains multiple brace sequences — such as r
 .Do this:
 [source,yaml]
 ----
-vars:
-  # !unsafe is the clearest option for complex patterns with multiple braces
-  prometheus_query: !unsafe "rate(http_requests_total{job='api'}[5m])"
-
-  # both approaches work for simple single-expression cases
-  grafana_template: !unsafe "{{ server }}"
-  grafana_template_alt: "{{ '{{ server }}' }}"
+include::../examples/coding_style/do/unsafe/vars/example.yml[]
 ----
 
 .Don't do this:
 [source,yaml]
 ----
-vars:
-  # Jinja2 will try to evaluate {job='api'} and fail
-  prometheus_query: "rate(http_requests_total{job='api'}[5m])"
-
-  # resolves the 'server' variable instead of passing the literal string {{ server }}
-  grafana_template: "{{ server }}"
+include::../examples/coding_style/bad/unsafe/vars/example.yml[]
 ----
 ====
 
@@ -236,27 +199,13 @@ It makes it explicit which collection provides the module and improves readabili
 .Do this:
 [source,yaml]
 ----
-- name: Print a message
-  ansible.builtin.debug:
-    msg: "Using FQCN ensures there is no ambiguity."
-
-- name: Ensure a package is installed
-  ansible.builtin.package:
-    name: vim
-    state: present
+include::../examples/coding_style/do/fqcn/tasks/main.yml[]
 ----
 
 .Don't do this:
 [source,yaml]
 ----
-- name: Print a message
-  debug:
-    msg: "Short name is ambiguous and may cause conflicts when multiple collections are in use."
-
-- name: Ensure a package is installed
-  package:
-    name: vim
-    state: present
+include::../examples/coding_style/bad/fqcn/tasks/main.yml[]
 ----
 ====
 
@@ -313,19 +262,13 @@ Example::
 .Do this:
 [source,yaml]
 ----
-tasks:
-  - name: Manage the disk device {{ storage_device_name }}
-    some.module:
-      device: "{{ storage_device_name }}"
+include::../examples/coding_style/do/task_name/playbook.yml[]
 ----
 
 .Don't do this:
 [source,yaml]
 ----
-tasks:
-  - name: Manage {{ storage_device_name }}, the disk device
-    some.module:
-      device: "{{ storage_device_name }}"
+include::../examples/coding_style/bad/task_name/playbook.yml[]
 ----
 ====
 
@@ -368,19 +311,13 @@ You have a `list` of `dict`, and you want to filter out elements that have the k
 .Do this:
 [source,yaml]
 ----
-tasks:
-  - name: Do something
-    some.module:
-      param: "{{ list_of_dict | rejectattr('type', 'search', '^bad_type$') | list }}"
+include::../examples/coding_style/do/rejectattr/playbook.yml[]
 ----
 
 .Don't do this:
 [source,yaml]
 ----
-tasks:
-  - name: Do something
-    some.module:
-      param: "{{ list_of_dict | rejectattr('type', 'eq', 'bad_type') | list }}"
+include::../examples/coding_style/bad/rejectattr/playbook.yml[]
 ----
 When using `match`, `search`, or `regex`, and you want an exact match, you must specify the regex `^STRING$`, otherwise, you will match partial strings.
 ====
@@ -514,61 +451,12 @@ Rationale:: Use of whitespace and multi-line indentation makes expressions easie
 .Do this:
 [source,yaml]
 ----
-- name: Wrap long Jinja expressions
-  foo: "{{ a_very.long_variable.name |
-    somefilter('with', 'many', 'arguments') |
-    another_filter | list }}"
-  when: a_very.long_variable.name |
-    somefilter('with', 'many', 'arguments') |
-    another_filter | list
-
-- name: Wrap when first line is already too long
-  very_indented_foo: "{{
-    a_very.long_variable.name |
-    somefilter('with', 'many', 'arguments') |
-    another_filter | list }}"
-  when: \
-    a_very.long_variable.name |
-    somefilter('with', 'many', 'arguments') |
-    another_filter | list | length > 0
-
-- name: Set some test variables
-  set_fact:
-    my_very_long_variable_1: "{{ __pre_digest | filter1 }}"
-    my_very_long_variable_2: "{{ __pre_digest | filter2 }}"
-  vars:
-    __pre_digest: "{{ a_very.long_variable.name | some_filter }}"
-
-- name: Use a very long URL
-  uri:
-    url: "https://{{ my_very_long_value_for_hostname }}:\
-      {{ my_very_long_value_for_port }}\
-      {{ my_very_long_value_for_uri }}?\
-      {{ my_very_long_value_for_query }}"
-
+include::../examples/coding_style/do/jinja_wrapping/tasks/main.yml[]
 ----
 
 .Don't do this:
 [source,yaml]
 ----
-- name: Very long line with Jinja expression
-  foo: "{{ a_very.long_variable.name | somefilter('with', 'many', 'arguments') | another_filter | list }}"
-
-- name: First line is already too long
-  very_indented_foo: "{{ a_very.long_variable.name |
-    somefilter('with', 'many', 'arguments') |
-    another_filter | list }}"
-  when: a_very.long_variable.name |
-    somefilter('with', 'many', 'arguments') |
-    another_filter | list | length > 0
-
-- name: Redundancy in expressions
-  set_fact:
-    my_very_long_variable_1: "{{ a_very.long_variable.name | some_filter | filter1 }}"
-    my_very_long_variable_2: "{{ a_very.long_variable.name | some_filter | filter2 }}"
-
-- name: URL string is too long
-  uri:
-    url: "https://{{ my_very_long_value_for_hostname }}:{{ my_very_long_value_for_port }}{{ my_very_long_value_for_uri }}{{ my_very_long_value_for_query }}"
+include::../examples/coding_style/bad/jinja_wrapping/tasks/main.yml[]
 ----
 ====

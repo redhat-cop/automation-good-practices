@@ -1,0 +1,13 @@
+- name: Call a very long command line
+  ansible.builtin.command: >-
+    echo Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+    Maecenas mollis, ante in cursus congue, mauris orci tincidunt nulla,
+    non gravida tortor mi non nunc.
+  changed_when: false
+
+- name: Set a very long variable
+  ansible.builtin.set_fact:
+    meaningless_variable: >-
+      Ut ac neque sit amet turpis ullamcorper auctor.
+      Cras placerat dolor non ipsum posuere malesuada at ac ipsum.
+      Duis a neque fermentum nulla imperdiet blandit.

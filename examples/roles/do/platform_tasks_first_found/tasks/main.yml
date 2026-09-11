@@ -1,0 +1,17 @@
+- name: Perform platform/version specific tasks
+  ansible.builtin.include_tasks: >-
+    {{ lookup('first_found', __rolename_ff_params) }}
+  vars:
+    __rolename_ff_params:
+      files:
+        - >-
+          {{ ansible_facts['distribution'] }}_{{
+          ansible_facts['distribution_version'] }}.yml
+        - >-
+          {{ ansible_facts['distribution'] }}_{{
+          ansible_facts['distribution_major_version'] }}.yml
+        - "{{ ansible_facts['distribution'] }}.yml"
+        - "{{ ansible_facts['os_family'] }}.yml"
+        - "default.yml"
+      paths:
+        - "{{ role_path }}/tasks/setup"

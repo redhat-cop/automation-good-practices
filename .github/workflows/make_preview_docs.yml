@@ -12,16 +12,16 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    
+
     - name: Install requirements
       run: sudo apt-get install asciidoctor ruby-asciidoctor-pdf
 
     - name: Install requirements
       run: cd $GITHUB_WORKSPACE
-    
+
     - name: render preview
       run: make preview
-      
+
     - uses: actions/upload-artifact@v3
       with:
         name: preview-pdf

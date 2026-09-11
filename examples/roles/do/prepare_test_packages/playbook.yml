@@ -1,0 +1,14 @@
+---
+- name: Prepare test packages
+  hosts: all
+  tasks:
+    - name: Set platform/version specific variables
+      ansible.builtin.include_role:
+        name: my.fqcn.rolename
+        tasks_from: set_vars.yml
+        public: true
+
+    - name: Install test packages
+      ansible.builtin.package:
+        name: "{{ __rolename_packages }}"
+        state: present

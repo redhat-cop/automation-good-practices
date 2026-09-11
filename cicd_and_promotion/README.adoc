@@ -56,7 +56,7 @@ CI pipelines serve as the authoritative quality gate that cannot be bypassed, en
 
 Examples::
 +
-[source,yaml]
+[source,yaml,lint=skip]
 ----
 # .github/workflows/pre-commit.yml
 name: Pre-commit Checks
@@ -85,27 +85,30 @@ Fast feedback encourages the short-lived branches and frequent integration that 
 
 Examples::
 +
-[source,yaml]
+[source,yaml,lint=skip]
 ----
-# Cache dependencies for speed
-- name: Cache pre-commit hooks
-  uses: actions/cache@v4
-  with:
-    path: ~/.cache/pre-commit
-    key: pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
-
-# Run tests in parallel with matrix strategy
-strategy:
-  matrix:
-    scenario: [default, centos, ubuntu]
-  fail-fast: false
-
-# Only run when relevant files change
+name: Fast CI Example
 on:
   push:
     paths:
       - 'roles/**'
       - 'plugins/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        scenario: [default, centos, ubuntu]
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cache pre-commit hooks
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+      - run: molecule test -s ${{ matrix.scenario }}
 ----
 ====
 
@@ -192,7 +195,7 @@ They also enforce team conventions consistently without relying on reviewer memo
 
 Examples::
 +
-[source,yaml]
+[source,yaml,lint=skip]
 ----
 # Example PR validation workflow
 - name: Check PR size
@@ -220,7 +223,7 @@ They enable deterministic rollback (deploy exactly the previous manifest), audit
 
 Examples::
 +
-[source,yaml]
+[source,yaml,lint=skip]
 ----
 # releases/release-26.1.5-0.yaml
 version: "26.1.5-0"

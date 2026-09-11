@@ -13,10 +13,10 @@ Rationale::
 Try to design roles focused on the functionality, not on the software implementation behind it.
 This will help abstracting differences between different providers, and help the user to focus on the functionality, not on technical details.
 
-Examples:: 
+Examples::
 For an example, designing a role to implement an NTP configuration on a server would be a role.
 The role internally would have the logic to decide whether to use ntpd, chronyd, and the ntp site configurations.
-However, when the underlying implementations become too divergent, for example implementing an email server with postfix or sendmail, then 
+However, when the underlying implementations become too divergent, for example implementing an email server with postfix or sendmail, then
 separate roles are encouraged.
 
 Design roles to accomplish a specific, guaranteed outcome and limit the scope of the role to that outcome.
@@ -25,7 +25,7 @@ This will help abstracting differences between different providers (see above), 
 
 * Design the interface focused on the functionality, not on the software implementation behind it.
 +
-[%collapsible]                                                                                                        
+[%collapsible]
 ====
 Explanations:: Limit the consumer's need to understand specific implementation details about a collection, the role names within, and the file names. Presenting the collection as a low-code/no-code "automation application" provides the developer flexibility as the content grows and matures, and limits change the consumer may have to make in a later version.
 
@@ -35,46 +35,14 @@ Examples::
 .Do this:
 [source,yaml]
 ----
-
-- hosts: all
-  gather_facts: false
-  tasks:
-  - name: Perform several actions
-    include_role: mycollection.run
-    vars:
-      actions:
-      - name: thing_1
-        vars:
-          thing_1_var_1: 1
-          thing_1_var_2: 2
-      - name: thing_2
-        vars:
-          thing_2_var_1: 1
-          thing_2_var_2: 2
-
+include::../examples/roles/do/do_this/playbook.yml[]
 ----
 
 * In this example, the user must maintain awareness of the structure of the `thing_1` and `thing_2` roles, and the order of operations necessary for these roles to be used together. If the implementation of these roles is changed, the user will need to modify their playbook.
 .Don't do this:
 [source,yaml]
 ----
-- hosts: all
-  gather_facts: false
-  tasks:
-  - name: Do thing_1
-    include_role: 
-      name: mycollection.thing_1
-      tasks_from: thing_1.yaml
-      vars:
-        thing_1_var_1: 1
-        thing_1_var_2: 2
-  - name: Do thing_2
-    include_role: 
-      name: mycollection.thing_2
-      tasks_from: thing_2.yaml
-      vars:
-        thing_2_var_1: 1
-        thing_2_var_2: 2
+include::../examples/roles/bad/don_t_do_this.yml[]
 ----
 
 ====
@@ -101,8 +69,8 @@ Rationale:: A consistent file tree structure will help drive consistency and reu
 === Role Distribution
 [%collapsible]
 ====
-Explanations:: Use https://semver.org/[semantic versioning] for Git release tags.  
-Use 0.y.z before the role is declared stable (interface-wise).  
+Explanations:: Use https://semver.org/[semantic versioning] for Git release tags.
+Use 0.y.z before the role is declared stable (interface-wise).
 
 Rationale:: There are some https://github.com/ansible/ansible/issues/67512[restrictions] for Ansible Galaxy and Automation Hub.
 The versioning must be in strict X.Y.Z[ab][W] format, where X, Y, and Z are integers.
@@ -154,11 +122,11 @@ Exporting `$ROLENAME_provider_os_default` allows the users to set `$ROLENAME_pro
 [%collapsible]
 ====
 Explanations:: Avoid testing for distribution and version in tasks.
-Rather add a variable file to "vars/" for each supported distribution and version with the variables that need to change according to the distribution and version. 
+Rather add a variable file to "vars/" for each supported distribution and version with the variables that need to change according to the distribution and version.
 
-Rationale:: 
+Rationale::
 This way it is easy to add support to a new distribution by simply dropping a new file in to "vars/", see below <<supporting-multiple-distributions-and-versions,Supporting multiple distributions and versions>>.
-See also <<vars-vs-defaults,Vars vs Defaults>> which mandates "Avoid embedding large lists or 'magic values' directly into the playbook." 
+See also <<vars-vs-defaults,Vars vs Defaults>> which mandates "Avoid embedding large lists or 'magic values' directly into the playbook."
 Since distribution-specific values are kind of "magic values", it applies to them.
 The same logic applies for providers: a role can load a provider-specific variable file, include a provider-specific task file, or both, as needed.
 Consider making paths to templates internal variables if you need different templates for different distributions.
@@ -227,33 +195,18 @@ If it is desirable to use roles that require facts, but fact gathering is expens
 ====
 Explanations:: You normally use `vars/main.yml` (automatically included) to set variables used by your role.
 If some variables need to be parameterized according to distribution and version (name of packages, configuration file paths, names of services), use this in the beginning of your `tasks/main.yml`:
-Examples:: 
+Examples::
 
 [source,yaml]
 ----
-- name: Ensure ansible_facts used by role
-  setup:
-    gather_subset: min
-  when: __rolename_required_facts | difference(ansible_facts.keys() | list) | length > 0
-
-- name: Set platform/version specific variables
-  include_vars: "{{ __rolename_vars_file }}"
-  loop:
-    - "{{ ansible_facts['os_family'] }}.yml"
-    - "{{ ansible_facts['distribution'] }}.yml"
-    - "{{ ansible_facts['distribution'] }}_{{ ansible_facts['distribution_major_version'] }}.yml"
-    - "{{ ansible_facts['distribution'] }}_{{ ansible_facts['distribution_version'] }}.yml"
-  vars:
-    __rolename_vars_file: "{{ role_path }}/vars/{{ item }}"
-  when: __rolename_vars_file is file
+include::../examples/roles/do/ensure_required_facts/tasks/main.yml[]
 ----
 
 * Add this as the first task in `tasks/main.yml`:
 +
 [source,yaml]
 ----
-- name: Set platform/version specific variables
-  include_tasks: tasks/set_vars.yml
+include::../examples/roles/do/include_set_vars/tasks/main.yml[]
 ----
 
 * Add files to `vars/` for the required OS platforms and versions.
@@ -280,20 +233,7 @@ If this is a problem, construct the file list as a list variable, and filter the
 
 [source,yaml]
 ----
-- name: Set vars file list
-  set_fact:
-    __rolename_vars_file_list:
-      - "{{ ansible_facts['os_family'] }}.yml"
-      - "{{ ansible_facts['distribution'] }}.yml"
-      - "{{ ansible_facts['distribution'] }}_{{ ansible_facts['distribution_major_version'] }}.yml"
-      - "{{ ansible_facts['distribution'] }}_{{ ansible_facts['distribution_version'] }}.yml"
-
-- name: Set platform/version specific variables
-  include_vars: "{{ __rolename_vars_file }}"
-  loop: "{{ __rolename_vars_file_list | unique | list }}"
-  vars:
-    __rolename_vars_file: "{{ role_path }}/vars/{{ item }}"
-  when: __rolename_vars_file is file
+include::../examples/roles/do/unique_vars_file_list/tasks/main.yml[]
 ----
 
 Or define your `__rolename_vars_file_list` in your `vars/main.yml`.
@@ -309,19 +249,7 @@ For example, if the role developer wants to pre-populate a VM with the packages 
 
 [source,yaml]
 ----
-- hosts: all
-  tasks:
-    - name: Set platform/version specific variables
-      include_role:
-        name: my.fqcn.rolename
-        tasks_from: set_vars.yml
-        public: true
-
-    - name: Install test packages
-      package:
-        name: "{{ __rolename_packages }}"
-        state: present
-
+include::../examples/roles/do/prepare_test_packages/playbook.yml[]
 ----
 
 In this way, the role developer does not have to copy and maintain a separate list of role packages.
@@ -336,18 +264,7 @@ In that case, use `lookup('first_found')` with the file list in order of most sp
 
 [source,yaml]
 ----
-- name: Perform platform/version specific tasks
-  include_tasks: "{{ lookup('first_found', __rolename_ff_params) }}"
-  vars:
-    __rolename_ff_params:
-      files:
-        - "{{ ansible_facts['distribution'] }}_{{ ansible_facts['distribution_version'] }}.yml"
-        - "{{ ansible_facts['distribution'] }}_{{ ansible_facts['distribution_major_version'] }}.yml"
-        - "{{ ansible_facts['distribution'] }}.yml"
-        - "{{ ansible_facts['os_family'] }}.yml"
-        - "default.yml"
-      paths:
-        - "{{ role_path }}/tasks/setup"
+include::../examples/roles/do/platform_tasks_first_found/tasks/main.yml[]
 ----
 
 Then you would provide `tasks/setup/default.yml` to do the generic setup, and e.g. `tasks/setup/Fedora.yml` to do the Fedora specific setup.
@@ -357,16 +274,7 @@ If you want to have the "use first file found" semantics, but do not want to hav
 
 [source,yaml]
 ----
-- name: Perform platform/version specific tasks
-  include_tasks: "{{ lookup('first_found', __rolename_ff_params) }}"
-  vars:
-    __rolename_ff_params:
-      files:
-        - "{{ ansible_facts['distribution'] }}_{{ ansible_facts['distribution_version'] }}.yml"
-        - "{{ ansible_facts['os_family'] }}.yml"
-      paths:
-        - "{{ role_path }}/tasks/setup"
-      skip: true
+include::../examples/roles/do/platform_tasks_first_found_skip/tasks/main.yml[]
 ----
 
 *NOTE*:
@@ -390,8 +298,7 @@ Use a task file per provider and include it from the main task file, like this e
 
 [source,yaml]
 ----
-- name: include the appropriate provider tasks
-  include_tasks: "main_{{ storage_provider }}.yml"
+include::../examples/roles/do/provider_tasks/tasks/main.yml[]
 ----
 
 The same process should be used for variables (not defaults, as defaults can
@@ -489,15 +396,15 @@ Assuming we have the following inventory (not according to recommended practices
 .An inventory with two clusters
 [source,ini]
 ----
-include::dont_use_groups/inventory[]
+include::dont_use_groups/bad/inventory[]
 ----
 +
 We can then use one of the following three approaches in our role (here as playbook, again for sake of simplicity):
 +
-.A playbook showing how to loop through a group
+.Bad: A playbook showing how to loop through a group
 [source,yaml]
 ----
-include::dont_use_groups/playbook.yml[]
+include::dont_use_groups/bad/playbook.yml[]
 ----
 +
 The first approach is probably best to create a cluster configuration file listing all cluster's hosts.
@@ -523,11 +430,10 @@ Examples:: In a role with one `tasks/main.yml` task file, including `tasks/sub.y
 .A prefixed task in a sub-tasks file
 [source,yaml]
 ----
-- name: sub | Some task description
-  mytask: [...]
+include::prefix_subtasks/roles/prefix_show/tasks/sub_prefix.yml[tag=prefix,indent=0]
 ----
 +
-The log output will then look something like `TASK [myrole : sub | Some task description] ****`, which makes it very clear where the task is coming from.
+The log output will then look something like `TASK [prefix_show : sub_prefix | Show where we are] ****`, which makes it very clear where the task is coming from.
 +
 TIP: with a verbosity of 2 or more, ansible-playbook will show the full path to the task file, but this generally means that you need to restart the play in a higher verbosity to get the information you could have had readily available.
 ====
@@ -548,29 +454,7 @@ Examples:: The specification is defined in the meta/argument_specs.yml. For more
 .Argument Specification file that validates the arguments provided to the role.
 [source,yaml]
 ----
-argument_specs:
-  main:
-    short_description: Role description.
-    options:
-      string_arg1:
-        description: string argument description.
-        type: "str"
-        default: "x"
-        choices: ["x", "y"]
-      dict_arg1:
-        description: dict argument description.
-        type: dict
-        required: True
-        options:
-          key1:
-            description: key1 description.
-            type: int
-          key2:
-            description: key2 description.
-            type: str
-          key3:
-            description: key3 description.
-            type: dict
+include::../examples/roles/do/argument_specs/meta/argument_specs.yml[]
 ----
 ====
 

@@ -11,3 +11,9 @@ docs
 
 # my own files, only for local usage
 *[_.]myown[_.]*
+
+# editor settings
+.vscode/
+
+# ansible-lint cache
+.ansible/

@@ -1,0 +1,8 @@
+---
+- name: Rejectattr anti-pattern example
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Do something
+      ansible.builtin.set_fact:
+        filtered_list: "{{ list_of_dict | rejectattr('type', 'eq', 'bad_type') | list }}"

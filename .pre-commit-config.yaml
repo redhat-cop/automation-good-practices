@@ -10,3 +10,30 @@ repos:
     rev: v8.18.2
     hooks:
       - id: gitleaks
+
+  - repo: local
+    hooks:
+      - id: no-inline-adoc-yaml
+        name: Disallow inline Ansible YAML in AsciiDoc
+        entry: '^\[source,\s?ya?ml(?![^\n]*lint=skip)[^\n]*\]\n----\n(?!include::|\\include::)'
+        language: pygrep
+        types: [asciidoc]
+        args: [--multiline]
+      - id: lint-yaml
+        name: Lint Ansible YAML
+        entry: bash scripts/lint-all-yaml.sh
+        language: python
+        additional_dependencies:
+          - ansible-lint
+        pass_filenames: false
+        files: |
+          (?x)^(
+            \.ansible-lint|
+            scripts/lint-yaml\.sh|
+            scripts/lint-all-yaml\.sh|
+            examples/|
+            playbooks/|
+            roles/|
+            inventories/|
+            .*\.(yml|yaml|adoc)
+          )$

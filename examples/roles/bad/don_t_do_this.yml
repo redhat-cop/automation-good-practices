@@ -1,0 +1,17 @@
+- hosts: all
+  gather_facts: false
+  tasks:
+  - name: Do thing_1
+    include_role:
+      name: mycollection.thing_1
+      tasks_from: thing_1.yaml
+      vars:
+        thing_1_var_1: 1
+        thing_1_var_2: 2
+  - name: Do thing_2
+    include_role:
+      name: mycollection.thing_2
+      tasks_from: thing_2.yaml
+      vars:
+        thing_2_var_1: 1
+        thing_2_var_2: 2

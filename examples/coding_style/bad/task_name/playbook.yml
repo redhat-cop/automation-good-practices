@@ -1,0 +1,8 @@
+---
+- name: Task name anti-pattern example
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Manage {{ storage_device_name }}, the disk device
+      ansible.builtin.debug:
+        msg: "{{ storage_device_name }}"

@@ -1,0 +1,7 @@
+---
+- name: Task args anti-pattern example
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Print a message
+      ansible.builtin.debug: msg="This is the exact opposite of how it's done."

@@ -1,0 +1,6 @@
+- name: Configure API
+  ansible.builtin.template:
+    src: config.j2
+    dest: /etc/app/config.yml
+  vars:
+    api_token: "hardcoded-secret-do-not-commit"

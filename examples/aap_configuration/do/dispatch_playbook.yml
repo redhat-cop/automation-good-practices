@@ -1,0 +1,11 @@
+# playbook.yml - Use the dispatch role for streamlined configuration
+---
+- name: Configure AAP
+  hosts: aap_dev
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Apply AAP Configuration
+      ansible.builtin.include_role:
+        name: infra.aap_configuration.dispatch

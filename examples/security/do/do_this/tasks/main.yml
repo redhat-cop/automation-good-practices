@@ -1,0 +1,13 @@
+- name: Configure API
+  ansible.builtin.template:
+    src: config.j2
+    dest: /etc/app/config.yml
+  vars:
+    api_token: "{{ lookup('env', 'API_TOKEN') }}"
+
+- name: Configure database
+  ansible.builtin.template:
+    src: db.conf.j2
+    dest: /etc/app/db.conf
+  vars:
+    db_password: "{{ vault_db_password }}"

@@ -1,0 +1,3 @@
+when:
+  - myvar is defined
+  - myvar | bool

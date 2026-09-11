@@ -1,0 +1,8 @@
+- name: Print a message
+  debug:
+    msg: "Short name is ambiguous and may cause conflicts when multiple collections are in use."
+
+- name: Ensure a package is installed
+  package:
+    name: vim
+    state: present

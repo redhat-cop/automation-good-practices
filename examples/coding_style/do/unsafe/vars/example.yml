@@ -1,0 +1,7 @@
+vars:
+  # !unsafe is the clearest option for complex patterns with multiple braces
+  prometheus_query: !unsafe "rate(http_requests_total{job='api'}[5m])"
+
+  # both approaches work for simple single-expression cases
+  grafana_template: !unsafe "{{ server }}"
+  grafana_template_alt: "{{ '{{ server }}' }}"

@@ -1,0 +1,6 @@
+vars:
+  # Jinja2 will try to evaluate {job='api'} and fail
+  prometheus_query: "rate(http_requests_total{job='api'}[5m])"
+
+  # resolves the 'server' variable instead of passing the literal string {{ server }}
+  grafana_template: "{{ server }}"

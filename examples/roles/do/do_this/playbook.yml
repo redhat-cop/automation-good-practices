@@ -1,0 +1,18 @@
+---
+- name: Perform collection automation
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Perform several actions
+      ansible.builtin.include_role:
+        name: mycollection.run
+      vars:
+        actions:
+          - name: thing_1
+            vars:
+              thing_1_var_1: 1
+              thing_1_var_2: 2
+          - name: thing_2
+            vars:
+              thing_2_var_1: 1
+              thing_2_var_2: 2

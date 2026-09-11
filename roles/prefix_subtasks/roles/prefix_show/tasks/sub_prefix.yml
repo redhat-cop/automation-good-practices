@@ -1,5 +1,7 @@
 ---
 # tasks file for prefix_show
+# tag::prefix[]
 - name: sub_prefix | Show where we are
   ansible.builtin.debug:
     msg: we're now in a sub task file but which one?
+# end::prefix[]

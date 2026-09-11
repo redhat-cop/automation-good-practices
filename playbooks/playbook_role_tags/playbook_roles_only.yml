@@ -1,0 +1,9 @@
+---
+- name: A playbook can solely be a list of roles
+  hosts: all
+  gather_facts: false
+  become: false
+  roles:
+    - role1
+    - role2
+    - role3

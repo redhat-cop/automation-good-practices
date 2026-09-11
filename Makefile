@@ -71,3 +71,6 @@ preview:
 	$(ADOCHTML) --out-file docs/preview/$(OUTFILE2).html $(INFILE2)
 	mkdir -p docs/preview/images
 	cp -v images/*.svg docs/preview/images
+
+lint-yaml:
+	@scripts/lint-all-yaml.sh

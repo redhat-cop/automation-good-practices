@@ -16,15 +16,7 @@ Examples::
 .An example of playbook containing only roles
 [source,yaml]
 ----
----
-- name: A playbook can solely be a list of roles
-  hosts: all
-  gather_facts: false
-  become: false
-  roles:
-    - role1
-    - role2
-    - role3
+include::playbook_role_tags/playbook_roles_only.yml[]
 ----
 +
 TIP: we'll explain later why there might be a case for using `include_role`/`import_role` tasks instead of the role section.
@@ -63,80 +55,17 @@ Examples::
 .An example of playbook importing roles with tags
 [source,yaml]
 ----
----
-- name: A playbook can be a list of roles imported with tags
-  hosts: all
-  gather_facts: false
-  become: false
-  tasks:
-    - name: Import role1
-      ansible.builtin.import_role:
-        name: role1
-      tags:
-        - role1
-        - deploy
-
-    - name: Import role2
-      ansible.builtin.import_role:
-        name: role2
-      tags:
-        - role2
-        - deploy
-        - configure
-
-    - name: Import role3
-      ansible.builtin.import_role:
-        name: role3
-      tags:
-        - role3
-        - configure
+include::playbook_role_tags/playbook_import.yml[]
 ----
 +
 You see that each role can be skipped/run individually, but also that the tags `deploy` and `configure` can be used to do something we'll assume to be meaningful, without having to explain at length what they do.
 +
 The same approach is also possible with `include_role` but requires additionally to `apply` the same tags to the role's tasks, which doesn't make the code easier to read:
 +
-.An example of playbook including roles with tags
+.An example using include_role with tags applied
 [source,yaml]
 ----
-- name: a playbook can be a list of roles included with tags applied
-  hosts: all
-  gather_facts: false
-  become: false
-
-  tasks:
-    - name: include role1
-      include_role:
-        name: role1
-        apply:
-          tags:
-            - role1
-            - deploy
-      tags:
-        - role1
-        - deploy
-    - name: include role2
-      include_role:
-        name: role2
-        apply:
-          tags:
-            - role2
-            - deploy
-            - configure
-      tags:
-        - role2
-        - deploy
-        - configure
-    - name: include role3
-      include_role:
-        name: role3
-        apply:
-          tags:
-            - role3
-            - configure
-      tags:
-        - role3
-        - configure
+include::playbook_role_tags/playbook_include_role.yml[]
 ----
 
 ====
@@ -153,15 +82,8 @@ However, log messages will clutter your output, which can confuse users with non
 Examples::
 +
 .Adding verbosity to debug messages
-[source, yaml]
+[source,yaml]
 ----
-- name: don't make messages always display
-  debug:
-    msg: "This message will clutter your log in production"
-
-- name: this message will only appear when verbosity is 2 or more
-  debug:
-    msg: "Some more debug information if needed"
-    verbosity: 2
+include::debug_verbosity.yml[]
 ----
 ====

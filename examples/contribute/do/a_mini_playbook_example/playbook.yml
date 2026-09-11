@@ -1,0 +1,9 @@
+---
+- name: A mini example of playbook
+  hosts: all
+  gather_facts: false
+  become: false
+  tasks:
+    - name: Say what we all think
+      ansible.builtin.debug:
+        msg: asciidoctor is {{ my_private_thoughts }}

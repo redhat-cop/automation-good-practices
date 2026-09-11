@@ -23,31 +23,16 @@ A single committed secret can compromise entire environments and is nearly impos
 
 Examples::
 +
+.Do this:
 [source,yaml]
 ----
-# Good - reference environment variable
-- name: Configure API
-  ansible.builtin.template:
-    src: config.j2
-    dest: /etc/app/config.yml
-  vars:
-    api_token: "{{ lookup('env', 'API_TOKEN') }}"
-
-# Good - use ansible-vault encrypted variable
-- name: Configure database
-  ansible.builtin.template:
-    src: db.conf.j2
-    dest: /etc/app/db.conf
-  vars:
-    db_password: "{{ vault_db_password }}"
-
-# Bad - hardcoded secret
-- name: Configure API
-  ansible.builtin.template:
-    src: config.j2
-    dest: /etc/app/config.yml
-  vars:
-    api_token: "sk-1234567890abcdef"
+include::../examples/security/do/do_this/tasks/main.yml[]
+----
++
+.Don't do this:
+[source,yaml]
+----
+include::../examples/security/bad/don_t_do_this/tasks/main.yml[]
 ----
 ====
 
@@ -155,21 +140,9 @@ Examples::
 +
 [source,yaml]
 ----
-# Good - AAP job template references credential by name
-controller_templates:
-  - name: "deploy_webapp_prod"
-    credentials:
-      - "eng_machine_ansible_linux_prod"
-      - "eng_scm_git_github_main"
-
-# Good - CaC credential definition references external secret
-controller_credentials:
-  - name: "eng_machine_ansible_linux_prod"
-    credential_type: "Machine"
-    inputs:
-      username: "ansible"
-      ssh_key_data: "{{ lookup('env', 'SSH_PRIVATE_KEY_PROD') }}"
+include::../examples/security/do/aap_credentials.yml[]
 ----
++
 ====
 
 == Implement regular secret rotation

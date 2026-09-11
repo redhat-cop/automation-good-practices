@@ -1,0 +1,8 @@
+---
+- name: Task args example
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Print a message
+      ansible.builtin.debug:
+        msg: This is how it's done.

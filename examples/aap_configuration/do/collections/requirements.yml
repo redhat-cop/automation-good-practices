@@ -1,0 +1,4 @@
+# collections/requirements.yml
+collections:
+  - name: infra.aap_configuration
+    version: "2.9.0"  # Always pin to an exact version

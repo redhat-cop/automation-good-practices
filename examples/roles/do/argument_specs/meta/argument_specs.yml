@@ -1,0 +1,23 @@
+argument_specs:
+  main:
+    short_description: Role description.
+    options:
+      string_arg1:
+        description: string argument description.
+        type: "str"
+        default: "x"
+        choices: ["x", "y"]
+      dict_arg1:
+        description: dict argument description.
+        type: dict
+        required: true
+        options:
+          key1:
+            description: key1 description.
+            type: int
+          key2:
+            description: key2 description.
+            type: str
+          key3:
+            description: key3 description.
+            type: dict

@@ -27,22 +27,13 @@ Examples:: These are examples
 .A mini playbook example
 [source,yaml]
 ----
----
-- name: A mini example of playbook
-  hosts: all
-  gather_facts: false
-  become: false
-  tasks:
-    - name: Say what we all think
-      ansible.builtin.debug:
-        msg: asciidoctor is {{ my_private_thoughts }}
+\include::examples/contribute/do/a_mini_playbook_example/playbook.yml[]
 ----
 +
 Even more examples...
 ====
 ------------------------------------------------------------------------
-// maintain the code above in sync with the example below
-+
+
 NOTE: see how it looks like in the <<_example>> section below.
 +
 . Those guidelines are grouped into sections and optionally sub-sections, as far as required for maintainability.
@@ -57,6 +48,20 @@ NOTE: this contribution file is obviously not meant for inclusion in the overall
 . Sentences are written in the present tense form, avoid "should", "must", etc.
   For example, "Sentences are written", not "Sentences should be written" or "Sentences must be written". This avoids filler words.
 . The https://en.wikipedia.org/wiki/Singular_they[singular "they"] is used to avoid the unreadable "he/she/it" construct and still be neutral.
+
+== YAML examples in guidelines
+
+Ansible YAML shown in the guidelines is stored in separate files and transcluded with `include::path/to/file.yml[]`.
+This keeps examples lintable with `ansible-lint` and avoids duplicating content between docs and CI.
+
+. Good (lintable) Ansible examples live in `.yml` files under `examples/`, or next to the guideline (for example `playbooks/` or `roles/`).
+  Transclude them from AsciiDoc with `include::relative/path.yml[]`.
+. Intentionally invalid or anti-pattern examples belong under a `bad/` directory segment (for example `examples/foo/bad/bar.yml`).
+  `ansible-lint` excludes `**/bad/**` via `.ansible-lint`.
+. Generic YAML that is not Ansible content (GitHub Actions workflows, release manifests, branch protection settings, and similar) may stay inline in AsciiDoc.
+  Mark those blocks with `[source,yaml,lint=skip]` so pre-commit does not require a separate file.
+. When showing AsciiDoc source inside a listing block (as in the template above), escape transclusion with a leading backslash: `\include::path[]`.
+  Otherwise Asciidoctor expands the include while rendering the template.
 
 == Contributing
 
@@ -86,16 +91,7 @@ Examples:: These are examples
 .A mini playbook example
 [source,yaml]
 ----
-- name: a mini example of playbook
-  hosts: all
-  gather_facts: false
-  become: false
-
-  tasks:
-
-  - name: say what we all think
-    debug:
-      msg: asciidoctor is {{ my_private_thoughts }}
+include::examples/contribute/do/a_mini_playbook_example/playbook.yml[]
 ----
 +
 Even more examples...

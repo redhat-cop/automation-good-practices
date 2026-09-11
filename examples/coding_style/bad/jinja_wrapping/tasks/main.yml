@@ -1,0 +1,21 @@
+- name: Very long line with Jinja expression
+  ansible.builtin.set_fact:
+    wrapped_value: "{{ a_very.long_variable.name | somefilter('with', 'many', 'arguments') | another_filter | list }}"
+
+- name: First line is already too long
+  ansible.builtin.set_fact:
+    very_indented_value: "{{ a_very.long_variable.name |
+      somefilter('with', 'many', 'arguments') |
+      another_filter | list }}"
+  when: a_very.long_variable.name |
+    somefilter('with', 'many', 'arguments') |
+    another_filter | list | length > 0
+
+- name: Redundancy in expressions
+  ansible.builtin.set_fact:
+    my_very_long_variable_1: "{{ a_very.long_variable.name | some_filter | filter1 }}"
+    my_very_long_variable_2: "{{ a_very.long_variable.name | some_filter | filter2 }}"
+
+- name: URL string is too long
+  ansible.builtin.uri:
+    url: "https://{{ my_very_long_value_for_hostname }}:{{ my_very_long_value_for_port }}{{ my_very_long_value_for_uri }}{{ my_very_long_value_for_query }}"

@@ -88,7 +88,7 @@ ONE_DIR_DATA = (('dir1',
                  ('.', ['dir1']),
                  ('dir1', []),
                  ),
-                ) 
+                )
 
 @pytest.mark.parametrize('directory, expected', ((d[0], d[2]) for d in ONE_DIR_DATA))
 def test_split_pre_existing_dir_one_level_exists(directory, expected, mocker):

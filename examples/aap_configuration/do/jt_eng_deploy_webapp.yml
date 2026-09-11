@@ -1,0 +1,19 @@
+controller_execution_environments_eng_deploy_webapp:
+  - name: "eng_automation_ee_26.1.6-0"
+    image: "quay.io/company/eng-ee@sha256:abc123..."
+    credential: "eng_registry_svc_builder_quay_io"
+
+controller_projects_eng_deploy_webapp:
+  - name: "eng_webapp_deploy_playbooks"
+    scm_url: "https://github.com/company/eng-webapp-deploy-playbooks.git"
+    credential: "eng_scm_git_github_main"
+    organization: "engineering"
+
+controller_templates_eng_deploy_webapp:
+  - name: "eng_deploy_webapp_canary"
+    project: "eng_webapp_deploy_playbooks"
+    inventory: "eng_webservers_app"
+    playbook: "deploy-webapp.yml"
+    execution_environment: "eng_automation_ee_26.1.6-0"
+    credentials:
+      - "eng_machine_ansible_linux_prod"

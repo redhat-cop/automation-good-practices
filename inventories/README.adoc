@@ -188,15 +188,15 @@ Our first idea could be to define managers and hosts first in an inventory:
 .Content of the "bad" `groups_and_hosts` file
 [source,ini]
 ----
-include::inventory_loop_hosts/inventory_bad/groups_and_hosts[]
+include::inventory_loop_hosts/bad/inventory/groups_and_hosts[]
 ----
 +
 Each manager has a list of hosts, which can look like this:
 +
-.List of hosts in `inventory_bad/host_vars/manager_a/provision.yml`
+.List of hosts in `bad/inventory/host_vars/manager_a/provision.yml`
 [source,yaml]
 ----
-include::inventory_loop_hosts/inventory_bad/host_vars/manager_a/provision.yml[]
+include::inventory_loop_hosts/bad/inventory/host_vars/manager_a/provision.yml[]
 ----
 +
 So that we can loop over the list in this way:
@@ -204,7 +204,7 @@ So that we can loop over the list in this way:
 .The "bad" way to loop over hosts
 [source,yaml]
 ----
-include::inventory_loop_hosts/playbook_bad.yml[]
+include::inventory_loop_hosts/bad/playbook.yml[]
 ----
 +
 TIP: check the resulting files using e.g. `head -n-0 /tmp/bad_*`.
@@ -215,16 +215,16 @@ Compare then with the recommended approach, with a slightly different structure:
 .Content of the "good" `groups_and_hosts` file
 [source,ini]
 ----
-include::inventory_loop_hosts/inventory_good/groups_and_hosts[]
+include::inventory_loop_hosts/good/inventory/groups_and_hosts[]
 ----
 +
 It is now the hosts and their groups which carry the relevant information, it is not anymore parked in one single list (and can be used for other purposes):
 +
 .The "good" variable structure
 ----
-$ cat inventory_good/host_vars/host1/provision.yml 
+$ cat good/inventory/host_vars/host1/provision.yml
 provision_value: uno
-$ cat inventory_good/group_vars/managed_hosts_a/provision.yml 
+$ cat good/inventory/group_vars/managed_hosts_a/provision.yml
 manager_hostname: manager_a
 ----
 +
@@ -233,7 +233,7 @@ And the provisioning playbook now runs in parallel and can be limited to specifi
 .The "good" way to loop over hosts
 [source,yaml]
 ----
-include::inventory_loop_hosts/playbook_good.yml[]
+include::inventory_loop_hosts/good/playbook.yml[]
 ----
 +
 The result isn't overwhelming in this simple setup but you would of course better appreciate if the provisioning would take half an hour instead of a fraction of seconds:
@@ -241,16 +241,16 @@ The result isn't overwhelming in this simple setup but you would of course bette
 .Comparison of the execution times between the "good" and the "bad" implementation
 ----
 $ ANSIBLE_STDOUT_CALLBACK=profile_tasks \
-	ansible-playbook -i inventory_bad playbook_bad.yml 
-Saturday 23 October 2021  13:11:45 +0200 (0:00:00.040)       0:00:00.040 ****** 
-Saturday 23 October 2021  13:11:45 +0200 (0:00:00.858)       0:00:00.899 ****** 
-=============================================================================== 
+	ansible-playbook -i bad/inventory bad/playbook.yml
+Saturday 23 October 2021  13:11:45 +0200 (0:00:00.040)       0:00:00.040 ******
+Saturday 23 October 2021  13:11:45 +0200 (0:00:00.858)       0:00:00.899 ******
+===============================================================================
 create some file to simulate an API call to provision a host ------------ 0.86s
 $ ANSIBLE_STDOUT_CALLBACK=profile_tasks \
-	ansible-playbook -i inventory_good playbook_good.yml 
-Saturday 23 October 2021  13:11:55 +0200 (0:00:00.040)       0:00:00.040 ****** 
-Saturday 23 October 2021  13:11:56 +0200 (0:00:00.569)       0:00:00.610 ****** 
-=============================================================================== 
+	ansible-playbook -i good/inventory good/playbook.yml
+Saturday 23 October 2021  13:11:55 +0200 (0:00:00.040)       0:00:00.040 ******
+Saturday 23 October 2021  13:11:56 +0200 (0:00:00.569)       0:00:00.610 ******
+===============================================================================
 create some file to simulate an API call to provision a host ------------ 0.57s
 ----
 +
@@ -305,7 +305,7 @@ Use extra vars only for troubleshooting, debugging or validation purposes.
 
 Rationale::
 Inventory variables are typically in some kind of persistent tracked storage (be it a database or Git), and should be your sole source representing your desired state so that you can refer to it non-ambiguously.
-On the other hand, extra vars are bound to a specific job or ansible-call and disappear together with history. 
+On the other hand, extra vars are bound to a specific job or ansible-call and disappear together with history.
 
 Examples::
 Don't use extra vars for the RAM size of VM to create, because this is part of the desired state of your environment, and nobody would know one year down the line if the VM was really created with the proper RAM size according to the state of the inventory.

@@ -1,0 +1,8 @@
+- name: Print a message
+  ansible.builtin.debug:
+    msg: "Using FQCN ensures there is no ambiguity."
+
+- name: Ensure a package is installed
+  ansible.builtin.package:
+    name: vim
+    state: present
