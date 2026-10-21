@@ -35,14 +35,14 @@ Examples::
 .Do this:
 [source,yaml]
 ----
-include::../examples/roles/do/do_this/playbook.yml[]
+include::../examples/roles/do/orchestrate_collection_roles/playbook.yml[]
 ----
 
 * In this example, the user must maintain awareness of the structure of the `thing_1` and `thing_2` roles, and the order of operations necessary for these roles to be used together. If the implementation of these roles is changed, the user will need to modify their playbook.
 .Don't do this:
 [source,yaml]
 ----
-include::../examples/roles/bad/don_t_do_this.yml[]
+include::../examples/roles/bad/expose_role_implementation.yml[]
 ----
 
 ====

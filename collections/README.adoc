@@ -31,13 +31,13 @@ is being overwritten.
 .Alpha defaults/main.yml
 [source,yaml]
 ----
-include::../examples/collections/do/alpha_defaults_main_yml/defaults/main.yml[]
+include::../examples/collections/do/alpha/defaults/main.yml[]
 ----
 +
 .Beta defaults/main.yml
 [source,yaml]
 ----
-include::../examples/collections/do/beta_defaults_main_yml/defaults/main.yml[]
+include::../examples/collections/do/beta/defaults/main.yml[]
 ----
 ====
 

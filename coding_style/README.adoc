@@ -63,7 +63,7 @@ Examples:: there are multiple ways to avoid long lines but the most generic one 
 .Usage of the YAML folding sign
 [source,yaml]
 ----
-include::../examples/coding_style/do/usage_of_the_yaml_folding_sign/tasks/main.yml[]
+include::../examples/coding_style/do/yaml_folding_sign/tasks/main.yml[]
 ----
 +
 TIP: Always use the sign `>-` instead of `>` unless you are absolutely sure the trailing newline is not significant.

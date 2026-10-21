@@ -26,13 +26,13 @@ Examples::
 .Do this:
 [source,yaml]
 ----
-include::../examples/security/do/do_this/tasks/main.yml[]
+include::../examples/security/do/manage_credentials/tasks/main.yml[]
 ----
 +
 .Don't do this:
 [source,yaml]
 ----
-include::../examples/security/bad/don_t_do_this/tasks/main.yml[]
+include::../examples/security/bad/hardcoded_credentials/tasks/main.yml[]
 ----
 ====
 
